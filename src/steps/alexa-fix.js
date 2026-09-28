@@ -58,6 +58,21 @@ export async function enableAlexaFix(ip, flags = {}) {
   );
 }
 
+async function confirmRevert() {
+  const proceed = await promptYN('Revert now?');
+  if (proceed) return true;
+  console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+  return false;
+}
+
+function printRevertResult(confirmed) {
+  console.log(
+    !confirmed
+      ? chalk.green('\nDone. Factory deep-sleep behavior is restored.\n')
+      : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
+  );
+}
+
 /**
  * Risky: reintroduces the deep-sleep bug on purpose. Gated by the guardrail
  * so this can't happen by a stray --yes in a script without --force too.
@@ -85,13 +100,7 @@ export async function disableAlexaFix(ip, flags = {}) {
     standaloneCommand: 'enable-alexa-fix',
   });
 
-  if (interactive) {
-    const proceed = await promptYN('Revert now?');
-    if (!proceed) {
-      console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
-      return;
-    }
-  }
+  if (interactive && !(await confirmRevert())) return;
 
   const allowed = await enforceGuardrail({
     risky: true,
@@ -103,11 +112,7 @@ export async function disableAlexaFix(ip, flags = {}) {
   if (!allowed) return;
 
   const confirmed = await setAlexaFix(ip, false);
-  console.log(
-    !confirmed
-      ? chalk.green('\nDone. Factory deep-sleep behavior is restored.\n')
-      : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
-  );
+  printRevertResult(confirmed);
 }
 
 /**

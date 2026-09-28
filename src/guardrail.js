@@ -17,13 +17,24 @@ import { input } from '@inquirer/prompts';
  * @param {(config: {message: string}) => Promise<string>} [options.promptFn]
  * @returns {Promise<boolean>} whether the caller may proceed
  */
-export async function enforceGuardrail({ risky, warning, saferCommand, force, interactive, promptFn = input }) {
-  if (!risky) return true;
-
+function printWarning(warning, saferCommand) {
   console.log(chalk.yellow(`\n${warning}`));
   if (saferCommand) {
     console.log(chalk.gray(`If that's not what you want, use: ${chalk.green(saferCommand)}`));
   }
+}
+
+async function confirmTyped(promptFn) {
+  const typed = await promptFn({ message: 'Type "yes" to continue, anything else cancels:' });
+  if (typed.trim() === 'yes') return true;
+  console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+  return false;
+}
+
+export async function enforceGuardrail({ risky, warning, saferCommand, force, interactive, promptFn = input }) {
+  if (!risky) return true;
+
+  printWarning(warning, saferCommand);
 
   if (force) {
     console.log(chalk.gray('--force given, continuing.\n'));
@@ -35,10 +46,5 @@ export async function enforceGuardrail({ risky, warning, saferCommand, force, in
     return false;
   }
 
-  const typed = await promptFn({ message: 'Type "yes" to continue, anything else cancels:' });
-  if (typed.trim() !== 'yes') {
-    console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
-    return false;
-  }
-  return true;
+  return confirmTyped(promptFn);
 }

@@ -16,14 +16,7 @@ export const FLAG_SPEC = {
  * @param {{yes?: boolean}} [flags]
  * @returns {Promise<boolean>} whether adb is installed when this returns
  */
-export async function installAdbStep(flags = {}) {
-  if (await isAdbInstalled()) {
-    console.log(chalk.green('\nadb is already installed. Nothing to do.\n'));
-    return true;
-  }
-
-  const platform = platformInstallCommand();
-
+function explainInstallStep(platform) {
   explainStep({
     title: 'Step: Install Android SDK Platform Tools (adb)',
     body: [
@@ -40,6 +33,29 @@ export async function installAdbStep(flags = {}) {
         : platform.note || '',
     ].filter(Boolean),
   });
+}
+
+async function runInstall(platform) {
+  const spinner = ora(`Running ${platform.display}...`).start();
+  try {
+    await runInstallCommand(platform);
+    spinner.succeed('adb installed.');
+    return true;
+  } catch (err) {
+    spinner.fail('Install failed.');
+    console.log(chalk.red(err.stderr || err.message));
+    return false;
+  }
+}
+
+export async function installAdbStep(flags = {}) {
+  if (await isAdbInstalled()) {
+    console.log(chalk.green('\nadb is already installed. Nothing to do.\n'));
+    return true;
+  }
+
+  const platform = platformInstallCommand();
+  explainInstallStep(platform);
 
   if (!platform) {
     console.log(chalk.yellow('\nInstall adb manually, then run this again.\n'));
@@ -52,14 +68,5 @@ export async function installAdbStep(flags = {}) {
     return false;
   }
 
-  const spinner = ora(`Running ${platform.display}...`).start();
-  try {
-    await runInstallCommand(platform);
-    spinner.succeed('adb installed.');
-    return true;
-  } catch (err) {
-    spinner.fail('Install failed.');
-    console.log(chalk.red(err.stderr || err.message));
-    return false;
-  }
+  return runInstall(platform);
 }
