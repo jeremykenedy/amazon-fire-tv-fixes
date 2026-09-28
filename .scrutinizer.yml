@@ -10,7 +10,7 @@ build:
       environment:
         docker: true
       commands:
-        - docker run --rm -v $(pwd):/repo -w /repo node:20-alpine sh -c "pwd && ls -la /repo && npm ci && npm test"
+        - docker run --rm -v /home/scrutinizer/build:/repo -w /repo node:20-alpine sh -c "npm ci && npm test"
 
 checks:
   javascript: true
