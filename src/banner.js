@@ -1,3 +1,4 @@
+import { randomInt } from 'crypto';
 import figlet from 'figlet';
 import chalk from 'chalk';
 
@@ -6,7 +7,7 @@ import chalk from 'chalk';
 const COLOR_PALETTE = ['cyan', 'magenta', 'green', 'yellow', 'blue', 'red'];
 
 function randomColor() {
-  return COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+  return COLOR_PALETTE[randomInt(COLOR_PALETTE.length)];
 }
 
 /**

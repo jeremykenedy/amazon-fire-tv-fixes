@@ -9,7 +9,7 @@ import { input } from '@inquirer/prompts';
 // from.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..');
-const ENV_PATH = path.join(PROJECT_ROOT, '.env');
+export const ENV_PATH = path.join(PROJECT_ROOT, '.env');
 const ENV_EXAMPLE_PATH = path.join(PROJECT_ROOT, '.env.example');
 
 const IP_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
@@ -73,4 +73,3 @@ export async function promptForIp(defaultValue) {
   return ip.trim();
 }
 
-export { ENV_PATH };

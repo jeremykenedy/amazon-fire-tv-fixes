@@ -20,10 +20,7 @@ export class FlagError extends Error {}
  * @returns {Record<string, string | boolean>}
  */
 export function parseFlags(spec, argv) {
-  const options = {};
-  for (const [name, def] of Object.entries(spec)) {
-    options[name] = { type: def.type };
-  }
+  const options = Object.fromEntries(Object.entries(spec).map(([name, def]) => [name, { type: def.type }]));
 
   let values;
   try {

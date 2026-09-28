@@ -22,7 +22,7 @@ async function main() {
   const ip = await ensureDeviceReady();
 
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (true) { // NOSONAR - exits via process.exit(0) inside menu() on "Exit"
     const choice = await menu({
       top: true,
       message: 'What would you like to do?',

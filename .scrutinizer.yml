@@ -1,0 +1,25 @@
+build:
+  environment:
+    node: "20"
+  nodes:
+    analysis:
+      tests:
+        override:
+          - js-scrutinizer-run
+    tests:
+      dependencies:
+        override:
+          - npm ci
+      tests:
+        override:
+          - npm test
+
+checks:
+  javascript: true
+
+filter:
+  excluded_paths:
+    - "test/*"
+    - "node_modules/*"
+    - "screensavers/*"
+    - "docs/*"
