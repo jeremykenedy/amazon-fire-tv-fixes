@@ -9,12 +9,8 @@ build:
     tests:
       environment:
         docker: true
-      dependencies:
-        override:
-          - true
-      tests:
-        override:
-          - docker run --rm -v $(pwd):/repo -w /repo node:20-alpine sh -c "npm ci && npm test"
+      commands:
+        - docker run --rm -v $(pwd):/repo -w /repo node:20-alpine sh -c "npm ci && npm test"
 
 checks:
   javascript: true
