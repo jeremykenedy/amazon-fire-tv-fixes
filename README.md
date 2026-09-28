@@ -10,6 +10,7 @@
 
 <p align="center">
     <a href="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+    <a href="https://dashboard.gitguardian.com/"><img src="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_amazon-fire-tv-fixes"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_amazon-fire-tv-fixes&metric=alert_status" alt="Quality Gate Status"></a>
     <a href="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/build-status/main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/badges/build.png?b=main" alt="Scrutinizer Build Status"></a>
     <a href="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/?branch=main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/badges/quality-score.png?b=main" alt="Scrutinizer Code Quality"></a>
