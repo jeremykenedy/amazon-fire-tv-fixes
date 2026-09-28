@@ -90,6 +90,11 @@ export async function uninstallEverything(ip, flags = {}) {
     return;
   }
 
+  if (flags.yes && !flags.all) {
+    console.log(chalk.gray('\n--yes without --all reverts nothing. Pass --all to revert everything, or run this interactively to pick what to keep.\n'));
+    return;
+  }
+
   if (flags.all) {
     const selected = options.map((o) => o.value);
     const allowed = await enforceGuardrail({

@@ -71,7 +71,7 @@ export async function manageScreensavers(ip, flags = {}) {
   const installedPkgs = await listPackages(ip);
   const alreadyInstalledIds = SCREENSAVERS.filter((s) => installedPkgs.includes(s.pkg)).map((s) => s.id);
 
-  const flagDriven = flags.install !== undefined || flags.uninstall !== undefined;
+  const flagDriven = flags.install !== undefined || flags.uninstall !== undefined || flags.yes;
 
   if (flagDriven) {
     const toInstall = SCREENSAVERS.filter((s) => parseIdList(flags.install).includes(s.id));
