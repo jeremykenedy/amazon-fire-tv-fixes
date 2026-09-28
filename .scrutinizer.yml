@@ -1,18 +1,20 @@
 build:
-  environment:
-    node: "20"
   nodes:
     analysis:
+      environment:
+        node: "16"
       tests:
         override:
           - js-scrutinizer-run
     tests:
+      environment:
+        docker: true
       dependencies:
         override:
-          - npm ci
+          - true
       tests:
         override:
-          - npm test
+          - docker run --rm -v $(pwd):/repo -w /repo node:20-alpine sh -c "npm ci && npm test"
 
 checks:
   javascript: true
