@@ -1,0 +1,50 @@
+{
+  "name": "amazon-fire-tv-fixes",
+  "version": "1.0.0",
+  "description": "Fix Alexa deep-sleep disconnects and remove ad screensavers on Fire TV Edition, over adb.",
+  "license": "MIT",
+  "author": "Jeremy Kenedy",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "bin": {
+    "amazon-fire-tv-fixes": "./bin/amazon-fire-tv-fixes.js",
+    "amazon-fire-tv-fixes-uninstall": "./bin/amazon-fire-tv-fixes-uninstall.js",
+    "enable-alexa-fix": "./bin/enable-alexa-fix.js",
+    "disable-alexa-fix": "./bin/disable-alexa-fix.js",
+    "firetv-install-adb": "./bin/firetv-install-adb.js",
+    "firetv-screensavers": "./bin/firetv-screensavers.js",
+    "firetv-set-screensaver": "./bin/firetv-set-screensaver.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "art",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "fire-tv",
+    "amazon-fire-tv",
+    "alexa",
+    "adb",
+    "screensaver",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremykenedy/amazon-fire-tv-fixes.git"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.1",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "dotenv": "^16.4.7",
+    "figlet": "^1.8.0",
+    "ora": "^8.1.1"
+  }
+}

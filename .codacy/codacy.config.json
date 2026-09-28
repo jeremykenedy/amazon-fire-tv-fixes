@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "metadata": {
+    "source": "local",
+    "provider": null,
+    "organization": null,
+    "repositoryId": null,
+    "repositoryName": null,
+    "createdAt": "2026-09-28T04:57:51.041Z",
+    "updatedAt": "2026-09-28T04:57:51.041Z",
+    "languages": [
+      "JSON",
+      "Javascript",
+      "Markdown",
+      "TypeScript",
+      "YAML"
+    ]
+  },
+  "tools": [
+    { "toolId": "ESLint9", "patterns": [] }
+  ],
+  "exclude": ["node_modules/**"]
+}

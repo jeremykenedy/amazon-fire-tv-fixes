@@ -1,0 +1,49 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { SCREENSAVERS, AMAZON_DEFAULT } from '../src/screensaver-registry.js';
+
+const REQUIRED_FIELDS = ['id', 'name', 'pkg', 'dreamComponent', 'repo', 'blurb'];
+
+test('every screensaver entry has all required fields, non-empty', () => {
+  for (const entry of SCREENSAVERS) {
+    for (const field of REQUIRED_FIELDS) {
+      assert.ok(entry[field] && entry[field].length > 0, `${entry.id || '(unknown)'} is missing "${field}"`);
+    }
+  }
+});
+
+test('screensaver ids are unique', () => {
+  const ids = SCREENSAVERS.map((s) => s.id);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test('screensaver package names are unique', () => {
+  const pkgs = SCREENSAVERS.map((s) => s.pkg);
+  assert.equal(new Set(pkgs).size, pkgs.length);
+});
+
+test('every dreamComponent starts with its own package name', () => {
+  for (const entry of SCREENSAVERS) {
+    assert.ok(
+      entry.dreamComponent.startsWith(`${entry.pkg}/`),
+      `${entry.id}: dreamComponent "${entry.dreamComponent}" does not start with pkg "${entry.pkg}/"`
+    );
+  }
+});
+
+test('every repo points at a jeremykenedy fork, not an upstream author repo', () => {
+  for (const entry of SCREENSAVERS) {
+    assert.match(entry.repo, /^jeremykenedy\//, `${entry.id}: repo "${entry.repo}" is not under jeremykenedy/`);
+  }
+});
+
+test('AMAZON_DEFAULT has the fields the rest of the code relies on', () => {
+  assert.ok(AMAZON_DEFAULT.name);
+  assert.ok(AMAZON_DEFAULT.pkg);
+  assert.ok(AMAZON_DEFAULT.dreamComponent.startsWith(`${AMAZON_DEFAULT.pkg}/`));
+});
+
+test('AMAZON_DEFAULT is not duplicated inside the SCREENSAVERS list', () => {
+  const pkgs = SCREENSAVERS.map((s) => s.pkg);
+  assert.ok(!pkgs.includes(AMAZON_DEFAULT.pkg));
+});

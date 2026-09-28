@@ -1,0 +1,32 @@
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="200" rx="16" fill="#fff" stroke="#e5e7eb"/>
+
+  <g transform="translate(575,40)">
+    <rect x="0" y="0" width="170" height="110" rx="10" fill="none" stroke="#6d28d9" stroke-width="3"/>
+    <rect x="14" y="14" width="142" height="82" rx="4" fill="#f5f3ff"/>
+    <circle cx="45" cy="55" r="9" fill="#c4b5fd"/>
+    <circle cx="85" cy="40" r="6" fill="#a78bfa"/>
+    <circle cx="118" cy="65" r="12" fill="#8b5cf6"/>
+    <circle cx="150" cy="30" r="7" fill="#c4b5fd"/>
+    <circle cx="60" cy="80" r="5" fill="#a78bfa"/>
+    <circle cx="15" cy="-10" r="14" fill="none" stroke="#3b82f6" stroke-width="3"/>
+    <circle cx="15" cy="-10" r="7" fill="#3b82f6"/>
+  </g>
+
+  <text x="40" y="80" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="40" font-weight="700" letter-spacing="-.5" fill="#0f172a">amazon-fire-tv-fixes</text>
+  <text x="40" y="110" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" fill="#64748b">Fix the Alexa deep-sleep bug. Remove ad screensavers.</text>
+
+  <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" font-weight="500" text-anchor="middle">
+    <rect x="40" y="128" width="82" height="22" rx="11" fill="#f5f3ff" stroke="#8b5cf6" stroke-width=".8"/>
+    <text x="81" y="142.5" fill="#6d28d9">Alexa Fix</text>
+
+    <rect x="130" y="128" width="150" height="22" rx="11" fill="#eff6ff" stroke="#3b82f6" stroke-width=".8"/>
+    <text x="205" y="142.5" fill="#1e40af">No-Ad Screensavers</text>
+
+    <rect x="288" y="128" width="94" height="22" rx="11" fill="#f0fdf4" stroke="#22c55e" stroke-width=".8"/>
+    <text x="335" y="142.5" fill="#166534">Reversible</text>
+
+    <rect x="390" y="128" width="104" height="22" rx="11" fill="#fffbeb" stroke="#f59e0b" stroke-width=".8"/>
+    <text x="442" y="142.5" fill="#b45309">MIT Licensed</text>
+  </g>
+</svg>
