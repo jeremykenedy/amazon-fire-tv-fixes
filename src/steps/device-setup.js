@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { explainStep, promptYN } from '../ui.js';
-import { connect, isReachable } from '../adb.js';
+import { explainStep, promptYesDefaultOrQuit } from '../ui.js';
+import { connectAndCheck } from '../adb.js';
 import { getSavedIp, saveIp, promptForIp } from '../device-config.js';
 
 /**
@@ -30,9 +30,9 @@ export async function ensureDeviceReady() {
     ],
   });
 
-  const ready = await promptYN('Have you turned on Developer Mode and ADB debugging?');
+  const ready = await promptYesDefaultOrQuit('Have you turned on Developer Mode and ADB debugging?');
   if (!ready) {
-    console.log(chalk.yellow('\nNo changes were made. Turn those on, then run this again.\n'));
+    console.log(chalk.yellow('\nNo changes were made. Run this again once Developer Mode and ADB debugging are on.\n'));
     process.exit(0);
   }
 
@@ -41,9 +41,7 @@ export async function ensureDeviceReady() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     ip = await promptForIp(ip || undefined);
-    await connect(ip);
-
-    if (await isReachable(ip)) {
+    if (await connectAndCheck(ip)) {
       saveIp(ip);
       console.log(chalk.green(`\nConnected to ${ip}. Saved to .env for next time.\n`));
       return ip;

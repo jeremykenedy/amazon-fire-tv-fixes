@@ -47,3 +47,17 @@ test('AMAZON_DEFAULT is not duplicated inside the SCREENSAVERS list', () => {
   const pkgs = SCREENSAVERS.map((s) => s.pkg);
   assert.ok(!pkgs.includes(AMAZON_DEFAULT.pkg));
 });
+
+import { parseSha256FromNotes } from '../src/apply/screensavers.js';
+
+test('parseSha256FromNotes reads the recorded checksum, case-insensitively, from release notes', () => {
+  const hex = 'A'.repeat(64);
+  assert.equal(parseSha256FromNotes(`Mirror.\nSHA-256: ${hex}\nmore`), 'a'.repeat(64));
+});
+
+test('parseSha256FromNotes returns null when the notes record no valid checksum', () => {
+  assert.equal(parseSha256FromNotes('no checksum here'), null);
+  assert.equal(parseSha256FromNotes('SHA-256: tooshort'), null);
+  assert.equal(parseSha256FromNotes(null), null);
+  assert.equal(parseSha256FromNotes(undefined), null);
+});

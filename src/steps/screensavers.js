@@ -1,12 +1,13 @@
 import chalk from 'chalk';
-import ora from 'ora';
-import { checkbox } from '@inquirer/prompts';
+import { startSpinner } from '../spinner.js';
+import { checkbox } from '../prompts.js';
 import { explainStep } from '../ui.js';
 import { runWizard } from '../wizard.js';
 import { enforceGuardrail } from '../guardrail.js';
 import { listPackages } from '../adb.js';
 import { installScreensaver, uninstallScreensaver } from '../apply/screensavers.js';
 import { SCREENSAVERS } from '../screensaver-registry.js';
+import { markFailed } from '../exit-status.js';
 
 const VALID_IDS = SCREENSAVERS.map((s) => s.id);
 
@@ -24,10 +25,10 @@ export function validateIdList(value) {
 }
 
 export const FLAG_SPEC = {
-  install: { type: 'string', validate: validateIdList },
-  uninstall: { type: 'string', validate: validateIdList },
-  yes: { type: 'boolean' },
-  force: { type: 'boolean' },
+  install: { type: 'string', validate: validateIdList, desc: 'Comma-separated screensaver ids to install (aerial, androsaver, snoozy).' },
+  uninstall: { type: 'string', validate: validateIdList, desc: 'Comma-separated screensaver ids to remove (needs --force).' },
+  yes: { type: 'boolean', desc: 'Skip prompts.' },
+  force: { type: 'boolean', desc: 'Allow removing screensavers without the typed confirmation.' },
 };
 
 /**
@@ -46,19 +47,24 @@ export function parseIdList(value) {
  */
 async function applyChanges(ip, toInstall, toUninstall) {
   for (const entry of toInstall) {
-    const spinner = ora(`${entry.name}: starting`).start();
+    const spinner = startSpinner(`${entry.name}: starting`);
     try {
       await installScreensaver(ip, entry, { onProgress: (msg) => (spinner.text = `${entry.name}: ${msg}`) });
       spinner.succeed(`${entry.name} installed.`);
     } catch (err) {
       spinner.fail(`${entry.name}: ${err.message}`);
+      markFailed();
     }
   }
 
   for (const entry of toUninstall) {
-    const spinner = ora(`Removing ${entry.name}`).start();
-    await uninstallScreensaver(ip, entry);
-    spinner.succeed(`${entry.name} removed.`);
+    const spinner = startSpinner(`Removing ${entry.name}`);
+    if (await uninstallScreensaver(ip, entry)) {
+      spinner.succeed(`${entry.name} removed.`);
+    } else {
+      spinner.fail(`${entry.name} could not be removed. It may still be installed.`);
+      markFailed();
+    }
   }
 }
 
@@ -134,7 +140,7 @@ export async function manageScreensavers(ip, flags = {}) {
       const toUninstall = SCREENSAVERS.filter((s) => !state.selectedIds.includes(s.id) && alreadyInstalledIds.includes(s.id));
 
       if (toInstall.length === 0 && toUninstall.length === 0) {
-        console.log(chalk.gray('\nNo changes selected.\n'));
+        console.log(chalk.gray('\nNothing to do: everything you checked is already on the TV, and nothing was unchecked.\n'));
         return;
       }
 

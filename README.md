@@ -89,34 +89,71 @@ doing anything else.
 ```bash
 git clone https://github.com/jeremykenedy/amazon-fire-tv-fixes.git
 cd amazon-fire-tv-fixes
-npm install
-npm link
-amazon-fire-tv-fixes
+node setup.js
 ```
 
-The first run walks you through everything: installing adb if you do not
-already have it, confirming developer mode, and entering your TV's IP
-address. Nothing is installed or changed on your TV until you confirm each
-step. Your TV's IP address is saved to a local `.env` file (copied from
-`.env.example`) so you are not asked again.
+`setup.js` works on a fresh clone: if the dependencies are not installed yet
+it offers to run `npm install` first. It then shows a checklist: install
+dependencies and link every command onto your PATH, and/or launch the guided
+app right away. Nothing runs until you confirm on the summary screen. To do it
+by hand instead:
+
+```bash
+npm install
+npm link
+start
+```
+
+After that, run `start` any time to open the guided menu. The first run walks you through everything: installing
+adb if you do not already have it, confirming developer mode, and entering
+your TV's IP address. Nothing is installed or changed on your TV until you
+confirm each step. Your TV's IP address is saved to a local `.env` file
+(copied from `.env.example`) so you are not asked again. Once setup completes,
+`.env` records `INSTALLED=true`.
+
+The app counts as installed only when `INSTALLED=true` **and** `FIRE_TV_IP` is
+a valid IP address. Until then, every command except `start`, `update`,
+`info`, `uninstall`, `delete` and `remove` refuses to run and points you at
+`start`, and `info` shows only `start`.
 
 ## Commands
 
 Every step in the guided installer is also its own standalone command, so you
 can run just the part you need without going through the full menu.
 
+`info` (also `information`, `guide` and `firetv`) lists every command and what
+it does. `start` opens the guided menu; if the app is already installed it
+says so and runs `update`. `update` re-runs setup and warns that the values
+you enter will override what is already installed.
+
 | Command | What it does |
 |---------|--------------|
-| `amazon-fire-tv-fixes` | Runs the full guided installer with all four steps below. |
-| `amazon-fire-tv-fixes-uninstall` | Reverses everything this tool has applied, in the same guided fashion. |
+| `start` | Opens the guided menu. Runs setup if nothing is installed yet, or hands off to `update` if it already is. |
+| `update` | Re-runs setup, overriding what is already installed. Runs plain setup if nothing is installed yet. |
+| `info`, `information`, `guide`, `firetv` | Lists every command and what it does, with the banner. Shows only `start` until the app is installed. |
+| `amazon-fire-tv-fixes` | Runs the full guided installer with all the steps below. |
+| `amazon-fire-tv-fixes-uninstall` | Reverses the fixes this tool applied to the TV, in the same guided fashion. |
 | `firetv-install-adb` | Installs adb (Android SDK Platform Tools) if it is not already on your machine. |
 | `enable-alexa-fix` | Turns on the Alexa deep-sleep fix by itself. |
 | `disable-alexa-fix` | Reverts the Alexa deep-sleep fix back to the factory default. |
 | `firetv-screensavers` | Installs or removes the ad-free screensavers, by itself. |
 | `firetv-set-screensaver` | Chooses which installed screensaver is active, by itself. |
+| `firetv-timeouts` | Review, edit, and/or reset any of the TV timeouts, all in one guided flow. Choose "Skip" to leave them alone. |
+| `firetv-timeout-sleep` | Changes the sleep (deep-sleep/standby) timeout by itself. |
+| `firetv-timeout-screensaver` | Changes the screensaver timeout by itself. |
+| `firetv-timeouts-reset` | Resets one, several (`--only=`), or all (`--all`) timeouts back to their first-observed baseline. |
+| `firetv-timeouts-possible` | Reports which timeouts this specific TV actually supports right now. |
+| `firetv-timeouts-current` | Reports the current value and captured baseline for every known timeout. |
+| `uninstall` | Unlinks the commands and resets `.env`, then offers to delete the repo. Does not change the TV. |
+| `delete`, `remove` | Permanently deletes this repo from your machine, after typing `confirm`. Does not touch the TV. |
 
 Every command explains what it is about to do and exactly which setting it
 changes before asking you to confirm. Nothing runs until you say yes.
+
+Every command accepts `--help` to list its options. At any prompt, press Esc
+(or Ctrl-C) to cancel and quit; Esc is ignored while an action is already
+running, so it can never interrupt a change halfway. Commands that fail or
+refuse to act exit with a non-zero status, so they are safe to use in scripts.
 
 ## How it works
 
@@ -139,15 +176,40 @@ Screensavers you choose to install are cloned from a fork under this GitHub
 account into a local `screensavers/` folder (not committed to git), and the
 matching APK from that fork's latest GitHub release is installed on the TV.
 
+The timeout commands change two more Android settings directly:
+
+```
+adb shell settings put secure sleep_timeout <ms>       # deep-sleep/standby timeout
+adb shell settings put system screen_off_timeout <ms>   # screensaver timeout
+```
+
+The first time a timeout is read, its current value is saved to `.env` as
+its baseline, since stock values can vary by TV. `firetv-timeouts-reset`
+restores that captured value, not a hardcoded default.
+
 ## Uninstalling
+
+```bash
+uninstall
+```
+
+This does everything in two steps. First it connects to the TV and offers to
+put it back how it was: revert the Alexa fix, reset the active screensaver to
+the Amazon default, remove the screensavers this tool installed, and reset any
+timeouts you changed to their first-observed values. Everything is checked by
+default and you can uncheck anything you want to keep. If the TV cannot be
+reached, or you cancel that step, it asks before going on, because the next
+step deletes the saved IP and the recorded timeout baselines.
+
+Second, it removes the commands from your PATH and resets `.env` to its
+template. It then offers to delete the repo itself (`delete` / `remove` does
+only that last part).
+
+To revert only the TV and keep everything installed, run:
 
 ```bash
 amazon-fire-tv-fixes-uninstall
 ```
-
-This checks what is actually applied right now (the Alexa fix, the active
-screensaver, and any installed screensaver packages) and lets you pick which
-of it to revert, with the same explain-then-confirm pattern as installation.
 
 ## Testing
 

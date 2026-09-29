@@ -24,6 +24,9 @@ test('risky, non-interactive, no --force is refused without prompting', async ()
   };
   const allowed = await enforceGuardrail({ risky: true, warning: 'careful', force: false, interactive: false, promptFn });
   assert.equal(allowed, false);
+  // A non-interactive refusal is a failure scripts must be able to see.
+  assert.equal(process.exitCode, 1);
+  process.exitCode = 0;
 });
 
 test('risky, interactive, no --force is allowed when the user types yes', async () => {

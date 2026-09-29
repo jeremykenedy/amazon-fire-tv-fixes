@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import { input } from '@inquirer/prompts';
+import { input } from './prompts.js';
+import { markFailed } from './exit-status.js';
 
 /**
  * Gate for anything regressive or destructive. Not risky: no-op, returns
@@ -43,6 +44,7 @@ export async function enforceGuardrail({ risky, warning, saferCommand, force, in
 
   if (!interactive) {
     console.log(chalk.red('\nRefusing to continue without --force in non-interactive mode. Nothing was changed.\n'));
+    markFailed();
     return false;
   }
 

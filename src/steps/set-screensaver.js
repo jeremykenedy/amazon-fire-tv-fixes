@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import { select } from '@inquirer/prompts';
+import { select } from '../prompts.js';
 import { explainStep } from '../ui.js';
 import { runWizard } from '../wizard.js';
 import { listPackages } from '../adb.js';
 import { getActiveScreensaver, setActiveScreensaver } from '../apply/set-screensaver.js';
 import { SCREENSAVERS, AMAZON_DEFAULT } from '../screensaver-registry.js';
+import { markFailed } from '../exit-status.js';
 
 const VALID_IDS = [AMAZON_DEFAULT.id, ...SCREENSAVERS.map((s) => s.id)];
 
@@ -12,8 +13,9 @@ export const FLAG_SPEC = {
   set: {
     type: 'string',
     choices: VALID_IDS,
+    desc: 'Which installed screensaver to make active.',
   },
-  yes: { type: 'boolean' },
+  yes: { type: 'boolean', desc: 'Skip prompts; picks the only installed screensaver if there is exactly one.' },
 };
 
 function findById(id) {
@@ -47,6 +49,7 @@ export async function setScreensaver(ip, flags = {}) {
     const choice = findById(flags.set);
     if (!available.some((s) => s.id === choice.id)) {
       console.log(chalk.red(`\n${choice.name} is not installed. Install it first with firetv-screensavers.\n`));
+      markFailed();
       return;
     }
     if (choice.dreamComponent === current) {
@@ -70,6 +73,7 @@ export async function setScreensaver(ip, flags = {}) {
             : `\nMore than one screensaver is installed, so there is no single default. Pass --set explicitly: ${ids}\n`
         )
       );
+      markFailed();
       return;
     }
     if (resolved.choice.dreamComponent === current) {
@@ -106,7 +110,10 @@ export async function setScreensaver(ip, flags = {}) {
           }),
       },
     ],
-    buildSummary: (state) => [{ label: `Set active screensaver to ${state.choice.name}`, detail: state.choice.dreamComponent }],
+    buildSummary: (state) =>
+      state.choice.dreamComponent === current
+        ? []
+        : [{ label: `Set active screensaver to ${state.choice.name}`, detail: state.choice.dreamComponent }],
     onConfirm: async (state) => {
       if (state.choice.dreamComponent === current) {
         console.log(chalk.gray(`\n${state.choice.name} is already the active screensaver.\n`));

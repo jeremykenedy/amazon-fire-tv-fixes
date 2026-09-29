@@ -2,14 +2,15 @@ import chalk from 'chalk';
 import { explainStep, promptYN } from '../ui.js';
 import { enforceGuardrail } from '../guardrail.js';
 import { isAlexaFixEnabled, setAlexaFix } from '../apply/alexa-fix.js';
+import { markFailed } from '../exit-status.js';
 
 export const ENABLE_FLAG_SPEC = {
-  yes: { type: 'boolean' },
+  yes: { type: 'boolean', desc: 'Apply the fix without asking first.' },
 };
 
 export const DISABLE_FLAG_SPEC = {
-  yes: { type: 'boolean' },
-  force: { type: 'boolean' },
+  yes: { type: 'boolean', desc: 'Skip the confirmation prompt (also needs --force, since this brings the bug back).' },
+  force: { type: 'boolean', desc: 'Allow re-introducing the deep-sleep bug without the typed confirmation.' },
 };
 
 const EXPLANATION = [
@@ -56,6 +57,7 @@ export async function enableAlexaFix(ip, flags = {}) {
       ? chalk.green('\nDone. Alexa should stay able to reach the TV when it is asleep.\n')
       : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
   );
+  if (!confirmed) markFailed();
 }
 
 async function confirmRevert() {
@@ -71,6 +73,7 @@ function printRevertResult(confirmed) {
       ? chalk.green('\nDone. Factory deep-sleep behavior is restored.\n')
       : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
   );
+  if (confirmed) markFailed();
 }
 
 /**

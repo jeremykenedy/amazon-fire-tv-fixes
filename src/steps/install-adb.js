@@ -1,11 +1,12 @@
 import chalk from 'chalk';
-import ora from 'ora';
+import { startSpinner } from '../spinner.js';
 import { explainStep, promptYN } from '../ui.js';
 import { isAdbInstalled } from '../adb.js';
 import { platformInstallCommand, runInstallCommand } from '../apply/install-adb.js';
+import { markFailed } from '../exit-status.js';
 
 export const FLAG_SPEC = {
-  yes: { type: 'boolean' },
+  yes: { type: 'boolean', desc: 'Install without asking first.' },
 };
 
 /**
@@ -36,7 +37,7 @@ function explainInstallStep(platform) {
 }
 
 async function runInstall(platform) {
-  const spinner = ora(`Running ${platform.display}...`).start();
+  const spinner = startSpinner(`Running ${platform.display}...`);
   try {
     await runInstallCommand(platform);
     spinner.succeed('adb installed.');
@@ -44,6 +45,7 @@ async function runInstall(platform) {
   } catch (err) {
     spinner.fail('Install failed.');
     console.log(chalk.red(err.stderr || err.message));
+    markFailed();
     return false;
   }
 }
@@ -59,6 +61,7 @@ export async function installAdbStep(flags = {}) {
 
   if (!platform) {
     console.log(chalk.yellow('\nInstall adb manually, then run this again.\n'));
+    markFailed();
     return false;
   }
 

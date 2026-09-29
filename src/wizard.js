@@ -48,7 +48,15 @@ export async function runWizard({ steps, buildSummary, onConfirm, confirmFn = co
       stepIndex += 1;
     }
 
-    const decision = await confirmFn(buildSummary(state));
+    // Nothing to confirm means nothing will change: skip the empty
+    // "this is exactly what will happen" box and let onConfirm report it.
+    const summary = buildSummary(state);
+    if (summary.length === 0) {
+      await onConfirm(state);
+      return state;
+    }
+
+    const decision = await confirmFn(summary);
 
     if (decision === 'continue') {
       await onConfirm(state);

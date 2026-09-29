@@ -45,7 +45,7 @@ test('runWizard returns null and skips onConfirm when the summary is cancelled',
 
   const result = await runWizard({
     steps: [step('a', ['one'])],
-    buildSummary: () => [],
+    buildSummary: () => [{ label: 'something' }],
     confirmFn: async () => 'cancel',
     onConfirm: async () => {
       onConfirmCalled = true;
@@ -69,4 +69,25 @@ test('runWizard starts over from step one when the summary says restart', async 
 
   assert.equal(confirmCalls, 2);
   assert.deepEqual(result, { a: 'second-pass' });
+});
+
+test('runWizard skips the confirm screen when the summary is empty, and still calls onConfirm', async () => {
+  let confirmCalled = false;
+  let confirmedState = null;
+
+  const result = await runWizard({
+    steps: [step('a', ['nothing-picked'])],
+    buildSummary: () => [],
+    confirmFn: async () => {
+      confirmCalled = true;
+      return 'continue';
+    },
+    onConfirm: async (state) => {
+      confirmedState = state;
+    },
+  });
+
+  assert.equal(confirmCalled, false);
+  assert.deepEqual(confirmedState, { a: 'nothing-picked' });
+  assert.deepEqual(result, { a: 'nothing-picked' });
 });

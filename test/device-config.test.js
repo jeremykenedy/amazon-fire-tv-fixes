@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isValidIp, parseIpFromEnv, mergeIpIntoEnv } from '../src/device-config.js';
+import { isValidIp, parseIpFromEnv, mergeIpIntoEnv, parseInstalledFromEnv, mergeInstalledIntoEnv, computeInstalled, isQuitInput } from '../src/device-config.js';
 
 test('isValidIp accepts well-formed IPv4 addresses', () => {
   assert.equal(isValidIp('192.168.1.49'), true);
@@ -51,4 +51,75 @@ test('mergeIpIntoEnv replaces an existing FIRE_TV_IP line in place, keeping othe
 test('mergeIpIntoEnv falls back to the given template when the file does not exist yet', () => {
   const result = mergeIpIntoEnv(null, '192.168.1.49', 'FIRE_TV_IP=192.168.1.XXX\n');
   assert.equal(result.trim(), 'FIRE_TV_IP=192.168.1.49');
+});
+
+test('parseInstalledFromEnv reads INSTALLED as a strict boolean', () => {
+  assert.equal(parseInstalledFromEnv('INSTALLED=true\n'), true);
+  assert.equal(parseInstalledFromEnv('INSTALLED=false\n'), false);
+});
+
+test('parseInstalledFromEnv defaults to false when missing, empty, or not exactly "true"', () => {
+  assert.equal(parseInstalledFromEnv('FIRE_TV_IP=192.168.1.49\n'), false);
+  assert.equal(parseInstalledFromEnv(''), false);
+  assert.equal(parseInstalledFromEnv(null), false);
+  assert.equal(parseInstalledFromEnv('INSTALLED=yes\n'), false);
+});
+
+test('mergeInstalledIntoEnv appends the key when the file has no INSTALLED line yet', () => {
+  const result = mergeInstalledIntoEnv('FIRE_TV_IP=192.168.1.49\n', true);
+  assert.match(result, /FIRE_TV_IP=192\.168\.1\.49/);
+  assert.match(result, /INSTALLED=true/);
+});
+
+test('mergeInstalledIntoEnv replaces an existing INSTALLED line in place, keeping other lines', () => {
+  const raw = '# a comment\nINSTALLED=false\nFIRE_TV_IP=192.168.1.49\n';
+  const result = mergeInstalledIntoEnv(raw, true);
+  assert.match(result, /# a comment/);
+  assert.match(result, /FIRE_TV_IP=192\.168\.1\.49/);
+  assert.match(result, /INSTALLED=true/);
+  assert.doesNotMatch(result, /INSTALLED=false/);
+  assert.equal((result.match(/INSTALLED=/g) || []).length, 1);
+});
+
+test('mergeInstalledIntoEnv starts a fresh file when raw is null', () => {
+  const result = mergeInstalledIntoEnv(null, true);
+  assert.equal(result.trim(), 'INSTALLED=true');
+});
+
+test('computeInstalled is true only when INSTALLED=true and FIRE_TV_IP is a valid IP', () => {
+  assert.equal(computeInstalled('INSTALLED=true\nFIRE_TV_IP=192.168.1.49\n'), true);
+});
+
+test('computeInstalled is false when INSTALLED is not true, even with a valid IP', () => {
+  assert.equal(computeInstalled('INSTALLED=false\nFIRE_TV_IP=192.168.1.49\n'), false);
+  assert.equal(computeInstalled('FIRE_TV_IP=192.168.1.49\n'), false);
+});
+
+test('computeInstalled is false when INSTALLED=true but FIRE_TV_IP is missing or empty', () => {
+  assert.equal(computeInstalled('INSTALLED=true\n'), false);
+  assert.equal(computeInstalled('INSTALLED=true\nFIRE_TV_IP=\n'), false);
+});
+
+test('computeInstalled is false when INSTALLED=true but FIRE_TV_IP is the .env.example placeholder', () => {
+  assert.equal(computeInstalled('INSTALLED=true\nFIRE_TV_IP=192.168.1.XXX\n'), false);
+});
+
+test('computeInstalled is false for a missing or empty file', () => {
+  assert.equal(computeInstalled(null), false);
+  assert.equal(computeInstalled(''), false);
+});
+
+test('isQuitInput accepts q and quit in any case, with whitespace, and nothing else', () => {
+  assert.equal(isQuitInput('q'), true);
+  assert.equal(isQuitInput(' Q '), true);
+  assert.equal(isQuitInput('quit'), true);
+  assert.equal(isQuitInput('192.168.1.49'), false);
+  assert.equal(isQuitInput(''), false);
+  assert.equal(isQuitInput('quiet'), false);
+});
+
+test('a placeholder or malformed FIRE_TV_IP never counts as a saved IP', async () => {
+  const { isValidIp } = await import('../src/device-config.js');
+  assert.equal(isValidIp('192.168.1.XXX'), false);
+  assert.equal(isValidIp('192.168.1.49'), true);
 });

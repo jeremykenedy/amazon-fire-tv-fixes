@@ -6,6 +6,8 @@ import { ENABLE_FLAG_SPEC, DISABLE_FLAG_SPEC } from '../src/steps/alexa-fix.js';
 import { FLAG_SPEC as SCREENSAVERS_SPEC } from '../src/steps/screensavers.js';
 import { FLAG_SPEC as SET_SCREENSAVER_SPEC } from '../src/steps/set-screensaver.js';
 import { FLAG_SPEC as UNINSTALL_SPEC } from '../src/steps/uninstall.js';
+import { FLAG_SPEC as TIMEOUT_SPEC } from '../src/steps/timeout-set.js';
+import { RESET_FLAG_SPEC } from '../src/steps/timeout-reset.js';
 import { SCREENSAVERS, AMAZON_DEFAULT } from '../src/screensaver-registry.js';
 
 test('firetv-install-adb accepts --yes and rejects unknown flags', () => {
@@ -61,4 +63,34 @@ test('amazon-fire-tv-fixes-uninstall accepts --all, --yes, and --force in any co
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, ['--all', '--force']) }, { all: true, force: true });
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, ['--yes']) }, { yes: true });
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, []) }, {});
+});
+
+test('firetv-timeout-sleep/screensaver accept --ms, --minutes, and --yes', () => {
+  assert.deepEqual({ ...parseFlags(TIMEOUT_SPEC, ['--ms=1200000']) }, { ms: '1200000' });
+  assert.deepEqual({ ...parseFlags(TIMEOUT_SPEC, ['--minutes=20']) }, { minutes: '20' });
+  assert.deepEqual({ ...parseFlags(TIMEOUT_SPEC, ['--yes']) }, { yes: true });
+});
+
+test('firetv-timeout-sleep/screensaver reject a non-whole-number value', () => {
+  assert.throws(() => parseFlags(TIMEOUT_SPEC, ['--ms=-5']), (err) => err instanceof FlagError);
+  assert.throws(() => parseFlags(TIMEOUT_SPEC, ['--minutes=1.5']), (err) => err instanceof FlagError);
+});
+
+test('firetv-timeouts-reset accepts --all, --only with real ids, and --yes', () => {
+  assert.deepEqual({ ...parseFlags(RESET_FLAG_SPEC, ['--all']) }, { all: true });
+  assert.deepEqual({ ...parseFlags(RESET_FLAG_SPEC, ['--only=sleep,screensaver']) }, { only: 'sleep,screensaver' });
+  assert.deepEqual({ ...parseFlags(RESET_FLAG_SPEC, ['--yes']) }, { yes: true });
+});
+
+test('firetv-timeouts-reset rejects an --only id that is not a known timeout', () => {
+  assert.throws(() => parseFlags(RESET_FLAG_SPEC, ['--only=bogus']), (err) => {
+    assert.ok(err instanceof FlagError);
+    assert.match(err.message, /Unknown timeout id/);
+    return true;
+  });
+});
+
+test('firetv-timeouts-reset rejects a blank or comma-only --only instead of silently resetting nothing', () => {
+  assert.throws(() => parseFlags(RESET_FLAG_SPEC, ['--only=']), (err) => err instanceof FlagError);
+  assert.throws(() => parseFlags(RESET_FLAG_SPEC, ['--only=,']), (err) => err instanceof FlagError);
 });

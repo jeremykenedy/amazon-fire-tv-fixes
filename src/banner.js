@@ -1,6 +1,7 @@
 import { randomInt } from 'crypto';
 import figlet from 'figlet';
 import chalk from 'chalk';
+import { installCliRuntime } from './cli-runtime.js';
 
 // Picked fresh, at random, on every invocation. Not meant to mean anything,
 // just keeps the tool from looking the same twice in a row.
@@ -14,6 +15,7 @@ function randomColor() {
  * Renders the ASCII banner. Called first thing by every command.
  */
 export function renderBanner() {
+  installCliRuntime();
   const text = figlet.textSync('FIRE TV FIXES', { font: 'Standard' });
   const color = randomColor();
   console.log(chalk[color](text));
