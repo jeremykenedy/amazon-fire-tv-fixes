@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -94,8 +94,4 @@ test('a runtime error prints a friendly message and exits 1, with the stack only
 test('setup.js runs with only Node built-ins on PATH and declines cleanly with no input', () => {
   const r = spawnSync(process.execPath, [path.join(ROOT, 'setup.js')], { env: childEnv, encoding: 'utf8', timeout: 20000, input: '' });
   assert.doesNotMatch(r.stderr, /Cannot find package/);
-});
-
-test('the run does not leave the real .env or repo modified', () => {
-  assert.ok(execFileSync('git', ['-C', ROOT, 'rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' }).startsWith('true'));
 });

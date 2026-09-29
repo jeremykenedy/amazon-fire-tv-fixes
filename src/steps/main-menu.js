@@ -10,6 +10,40 @@ import { setScreensaver } from './set-screensaver.js';
 import { reviewTimeoutsIfWanted, manageAllTimeoutsStep } from './timeout-manage.js';
 import { print } from '../output.js';
 
+const MENU_CHOICES = [
+  { name: 'Install Android SDK Platform Tools (adb)', value: 'adb' },
+  { name: 'Toggle Amazon deep-sleep fix', value: 'alexa' },
+  { name: 'Install or uninstall screensavers', value: 'screensavers' },
+  { name: 'Choose the active screensaver', value: 'set-screensaver' },
+  { name: 'Review or adjust TV timeouts', value: 'timeouts' },
+];
+
+const MENU_ACTIONS = {
+  adb: () => installAdbStep(),
+  alexa: (ip) => alexaFixMenu(ip),
+  screensavers: (ip) => manageScreensavers(ip),
+  'set-screensaver': (ip) => setScreensaver(ip),
+  timeouts: (ip) => manageAllTimeoutsStep(ip),
+};
+
+function printIntro() {
+  print('What this does, one line per step:');
+  print(chalk.gray('  1. Install Android SDK Platform Tools (adb) if you do not have it.'));
+  print(chalk.gray('  2. Turn the Alexa deep-sleep fix on or off.'));
+  print(chalk.gray('  3. Install or remove ad-free screensavers.'));
+  print(chalk.gray('  4. Choose which installed screensaver is active.'));
+  print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts (optional).'));
+  print(chalk.gray('\nEach standalone command is named after its step in the README.\n'));
+}
+
+async function runMenuLoop(ip) {
+  let choice;
+  do {
+    choice = await menu({ top: true, message: 'What would you like to do?', choices: MENU_CHOICES });
+    await MENU_ACTIONS[choice]?.(ip);
+  } while (choice !== EXIT);
+}
+
 /**
  * The full guided flow: banner, adb check, device setup, optional timeout
  * review, then the interactive "What would you like to do?" menu loop.
@@ -23,14 +57,7 @@ export async function runMainMenu({ showBanner = true } = {}) {
   if (showBanner) {
     renderBanner();
   }
-
-  print('What this does, one line per step:');
-  print(chalk.gray('  1. Install Android SDK Platform Tools (adb) if you do not have it.'));
-  print(chalk.gray('  2. Turn the Alexa deep-sleep fix on or off.'));
-  print(chalk.gray('  3. Install or remove ad-free screensavers.'));
-  print(chalk.gray('  4. Choose which installed screensaver is active.'));
-  print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts (optional).'));
-  print(chalk.gray('\nEach standalone command is named after its step in the README.\n'));
+  printIntro();
 
   await installAdbStep();
   const ip = await ensureDeviceReady();
@@ -39,37 +66,7 @@ export async function runMainMenu({ showBanner = true } = {}) {
   }
   setInstalled(true);
   await reviewTimeoutsIfWanted(ip);
-
-  let choice;
-  do {
-    choice = await menu({
-      top: true,
-      message: 'What would you like to do?',
-      choices: [
-        { name: 'Install Android SDK Platform Tools (adb)', value: 'adb' },
-        { name: 'Toggle Amazon deep-sleep fix', value: 'alexa' },
-        { name: 'Install or uninstall screensavers', value: 'screensavers' },
-        { name: 'Choose the active screensaver', value: 'set-screensaver' },
-        { name: 'Review or adjust TV timeouts', value: 'timeouts' },
-      ],
-    });
-
-    if (choice === 'adb') {
-      await installAdbStep();
-    }
-    if (choice === 'alexa') {
-      await alexaFixMenu(ip);
-    }
-    if (choice === 'screensavers') {
-      await manageScreensavers(ip);
-    }
-    if (choice === 'set-screensaver') {
-      await setScreensaver(ip);
-    }
-    if (choice === 'timeouts') {
-      await manageAllTimeoutsStep(ip);
-    }
-  } while (choice !== EXIT);
+  await runMenuLoop(ip);
 }
 
 /**

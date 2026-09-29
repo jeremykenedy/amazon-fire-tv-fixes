@@ -46,21 +46,25 @@ export async function enableAlexaFix(ip, flags = {}) {
     standaloneCommand: 'disable-alexa-fix',
   });
 
-  const proceed = flags.yes || (await promptYN('Apply the fix?'));
-  if (!proceed) {
+  if (!(await wantsToApply(flags))) {
     print(chalk.gray('\nCancelled. Nothing was changed.\n'));
     return;
   }
 
-  const confirmed = await setAlexaFix(ip, true);
-  print(
-    confirmed
-      ? chalk.green('\nDone. Alexa should stay able to reach the TV when it is asleep.\n')
-      : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
-  );
-  if (!confirmed) {
-    markFailed();
+  reportEnableResult(await setAlexaFix(ip, true));
+}
+
+async function wantsToApply(flags) {
+  return flags.yes || (await promptYN('Apply the fix?'));
+}
+
+function reportEnableResult(confirmed) {
+  if (confirmed) {
+    print(chalk.green('\nDone. Alexa should stay able to reach the TV when it is asleep.\n'));
+    return;
   }
+  print(chalk.red('\nThe write did not take. Check the adb connection and try again.\n'));
+  markFailed();
 }
 
 async function confirmRevert() {

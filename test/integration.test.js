@@ -1,6 +1,7 @@
 import { test, before, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
 import { installFakeAdb, captured, AERIAL } from './helpers/fake-adb.js';
 import { AMAZON_DEFAULT } from '../src/screensaver-registry.js';
 
@@ -188,13 +189,13 @@ test('unreadable .env gives a specific error, not "not installed"', async () => 
   fs.rmdirSync(fake.envFile);
 });
 
-test('app teardown wipes .env to its template and refuses to delete a non-checkout', async () => {
+test('app teardown wipes .env to its template', async () => {
   const dc = await import('../src/device-config.js');
   const td = await import('../src/app-teardown.js');
   dc.saveIp(ip);
   td.wipeEnvToTemplate();
   assert.equal(dc.getSavedIp(), null);
-  assert.equal(td.repoParentDir(), td.PROJECT_ROOT.replace(/\/[^/]+$/, ''));
+  assert.equal(td.repoParentDir(), path.dirname(td.PROJECT_ROOT));
 });
 
 test('local screensaver clones are detected and removed', async () => {

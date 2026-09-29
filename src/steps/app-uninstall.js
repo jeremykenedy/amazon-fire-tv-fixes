@@ -46,6 +46,57 @@ async function revertTvFirst() {
 }
 
 /**
+ * Unlinks the global commands and wipes .env, printing what happened.
+ * @returns {Promise<void>}
+ */
+async function removeCommandsAndConfig() {
+  const unlinked = await unlinkCommands();
+  if (unlinked.ok) {
+    print(chalk.green('Commands unlinked from your PATH.'));
+  } else {
+    print(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g amazon-fire-tv-fixes" yourself.`));
+    markFailed();
+  }
+
+  wipeEnvToTemplate();
+  print(chalk.green('.env reset to its template.'));
+  print(
+    unlinked.ok
+      ? chalk.green('\nFire TV Tools was successfully uninstalled.\n')
+      : chalk.yellow('\nFire TV Tools was only partly uninstalled: the commands are still linked.\n')
+  );
+}
+
+/**
+ * Setup can link the commands and then be quit before a TV is connected, so
+ * "not installed" does not mean nothing is on the PATH.
+ * @returns {Promise<void>}
+ */
+async function removeLeftoverCommands() {
+  const unlinked = await unlinkCommands();
+  print(
+    unlinked.ok
+      ? chalk.yellow('\nFire TV Tools is not installed, so there was nothing to revert. Any leftover commands were removed from your PATH.\n')
+      : chalk.yellow('\nFire TV Tools is not installed, so there is nothing to uninstall.\n')
+  );
+}
+
+/**
+ * The installed branch of `uninstall`: revert the TV, then remove the commands.
+ * @returns {Promise<boolean>} false if the user chose to stop before anything was removed
+ */
+async function uninstallInstalled() {
+  print(chalk.bold.white('\nUninstalling Fire TV Tools...\n'));
+  if (!(await revertTvFirst())) {
+    print(chalk.gray('\nNo changes were made to this computer.\n'));
+    return false;
+  }
+  print(chalk.bold.white('\nStep 2: remove the commands from this computer\n'));
+  await removeCommandsAndConfig();
+  return true;
+}
+
+/**
  * `uninstall`. If Fire TV Tools is installed, first offers to put the TV
  * back how it was, then unlinks the global commands and wipes .env back to
  * its template. Either way, then offers to also delete the repo code, using
@@ -54,42 +105,14 @@ async function revertTvFirst() {
  */
 export async function runUninstallCommand() {
   if (isInstalled()) {
-    print(chalk.bold.white('\nUninstalling Fire TV Tools...\n'));
-
-    if (!(await revertTvFirst())) {
-      print(chalk.gray('\nNo changes were made to this computer.\n'));
+    if (!(await uninstallInstalled())) {
       return;
     }
-
-    print(chalk.bold.white('\nStep 2: remove the commands from this computer\n'));
-    const unlinked = await unlinkCommands();
-    if (unlinked.ok) {
-      print(chalk.green('Commands unlinked from your PATH.'));
-    } else {
-      print(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g amazon-fire-tv-fixes" yourself.`));
-      markFailed();
-    }
-
-    wipeEnvToTemplate();
-    print(chalk.green('.env reset to its template.'));
-    print(
-      unlinked.ok
-        ? chalk.green('\nFire TV Tools was successfully uninstalled.\n')
-        : chalk.yellow('\nFire TV Tools was only partly uninstalled: the commands are still linked.\n')
-    );
   } else {
-    // Setup can link the commands and then be quit before a TV is connected,
-    // so "not installed" does not mean nothing is on the PATH.
-    const unlinked = await unlinkCommands();
-    print(
-      unlinked.ok
-        ? chalk.yellow('\nFire TV Tools is not installed, so there was nothing to revert. Any leftover commands were removed from your PATH.\n')
-        : chalk.yellow('\nFire TV Tools is not installed, so there is nothing to uninstall.\n')
-    );
+    await removeLeftoverCommands();
   }
 
-  const wantsRepoRemoved = await promptYN('Would you also like to remove the repo code from your machine?');
-  if (!wantsRepoRemoved) {
+  if (!(await promptYN('Would you also like to remove the repo code from your machine?'))) {
     print(chalk.gray('\nDone. The repo was left in place.\n'));
     return;
   }
