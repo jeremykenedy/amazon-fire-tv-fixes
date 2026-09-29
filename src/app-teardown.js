@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import chalk from 'chalk';
 import { input } from './prompts.js';
-import { ENV_PATH } from './device-config.js';
+import { writeEnvFile } from './device-config.js';
 import { markFailed } from './exit-status.js';
 
 const execFileAsync = promisify(execFile);
@@ -44,7 +44,7 @@ export async function unlinkCommands() {
  */
 export function wipeEnvToTemplate() {
   const template = fs.existsSync(ENV_EXAMPLE_PATH) ? fs.readFileSync(ENV_EXAMPLE_PATH, 'utf8') : '';
-  fs.writeFileSync(ENV_PATH, template);
+  writeEnvFile(template);
 }
 
 /**

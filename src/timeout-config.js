@@ -1,5 +1,4 @@
-import fs from 'fs';
-import { ENV_PATH } from './device-config.js';
+import { readEnvFile, writeEnvFile } from './device-config.js';
 
 /**
  * Pure: the .env key name a timeout id's captured baseline is stored under.
@@ -47,14 +46,6 @@ export function mergeBaselineIntoEnv(id, raw, ms) {
   return base.trim() === '' ? `${line}\n` : `${base.trimEnd()}\n${line}\n`;
 }
 
-function readEnvFile() {
-  try {
-    return fs.readFileSync(ENV_PATH, 'utf8');
-  } catch {
-    return null;
-  }
-}
-
 /**
  * @param {string} id
  * @returns {number | null}
@@ -77,5 +68,5 @@ export function hasFactoryBaseline(id) {
  */
 export function saveFactoryBaseline(id, ms) {
   const raw = readEnvFile();
-  fs.writeFileSync(ENV_PATH, mergeBaselineIntoEnv(id, raw, ms));
+  writeEnvFile(mergeBaselineIntoEnv(id, raw, ms));
 }

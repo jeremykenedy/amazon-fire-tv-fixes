@@ -69,7 +69,7 @@ export function mergeInstalledIntoEnv(raw, installed) {
   return base.trim() === '' ? `${line}\n` : `${base.trimEnd()}\n${line}\n`;
 }
 
-function readEnvFile() {
+export function readEnvFile() {
   try {
     return fs.readFileSync(ENV_PATH, 'utf8');
   } catch (err) {
@@ -78,7 +78,7 @@ function readEnvFile() {
   }
 }
 
-function writeEnvFile(contents) {
+export function writeEnvFile(contents) {
   try {
     fs.writeFileSync(ENV_PATH, contents);
   } catch (err) {
