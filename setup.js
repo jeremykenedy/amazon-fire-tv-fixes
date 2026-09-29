@@ -7,6 +7,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
+import { format } from 'node:util';
+
+// Local on purpose: this file may only import Node built-ins (see test/packaging.test.js).
+const print = (...args) => process.stdout.write(`${format(...args)}\n`);
+const printError = (...args) => process.stderr.write(`${format(...args)}\n`);
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,44 +22,48 @@ function missingDependencies() {
 
 async function ensureDependencies() {
   const missing = missingDependencies();
-  if (missing.length === 0) return;
+  if (missing.length === 0) {
+    return;
+  }
 
-  console.log('\nFire TV Tools needs to install its dependencies before it can start.');
-  console.log(`Missing: ${missing.join(', ')}\n`);
+  print('\nFire TV Tools needs to install its dependencies before it can start.');
+  print(`Missing: ${missing.join(', ')}\n`);
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   rl.input.on('keypress', (_chunk, key) => {
     if (key && key.name === 'escape') {
       rl.close();
-      console.log('\n\nCancelled. No changes were made.\n');
+      print('\n\nCancelled. No changes were made.\n');
       process.exit(0);
     }
   });
   let answered = false;
   rl.once('close', () => {
-    if (answered) return;
-    console.log('\n\nCancelled. No changes were made.\n');
+    if (answered) {
+      return;
+    }
+    print('\n\nCancelled. No changes were made.\n');
     process.exit(130);
   });
   let answer;
   try {
     answer = (await rl.question('Run "npm install" now? [Y/n/q] ')).trim().toLowerCase();
   } catch {
-    console.log('\n\nCancelled. No changes were made.\n');
+    print('\n\nCancelled. No changes were made.\n');
     process.exit(130);
   }
   answered = true;
   rl.close();
 
   if (['n', 'q', 'no', 'quit'].includes(answer)) {
-    console.log('\nNo changes were made. Run "npm install" yourself, then run this again.\n');
+    print('\nNo changes were made. Run "npm install" yourself, then run this again.\n');
     process.exit(0);
   }
 
   try {
     execFileSync('npm', ['install'], { cwd: ROOT, stdio: 'inherit' });
   } catch {
-    console.error('\nnpm install failed. Fix the error above, then run this again.\n');
+    printError('\nnpm install failed. Fix the error above, then run this again.\n');
     process.exit(1);
   }
 }

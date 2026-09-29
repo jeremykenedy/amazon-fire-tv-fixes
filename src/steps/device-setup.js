@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { explainStep, promptYesDefaultOrQuit } from '../ui.js';
 import { connectAndCheck } from '../adb.js';
 import { getSavedIp, saveIp, promptForIp } from '../device-config.js';
+import { print } from '../output.js';
 
 /**
  * The installer's first real step: confirm Developer Mode + ADB debugging
@@ -9,7 +10,7 @@ import { getSavedIp, saveIp, promptForIp } from '../device-config.js';
  * the main guided installer. Standalone commands call adb.ensureConnected()
  * directly instead, which reads the same .env but skips this instructional
  * framing.
- * @returns {Promise<string>} the working IP
+ * @returns {Promise<string | null>} the working IP, or null if the user is not ready yet
  */
 export async function ensureDeviceReady() {
   explainStep({
@@ -32,26 +33,27 @@ export async function ensureDeviceReady() {
 
   const ready = await promptYesDefaultOrQuit('Have you turned on Developer Mode and ADB debugging?');
   if (!ready) {
-    console.log(chalk.yellow('\nNo changes were made. Run this again once Developer Mode and ADB debugging are on.\n'));
-    process.exit(0);
+    print(chalk.yellow('\nNo changes were made. Run this again once Developer Mode and ADB debugging are on.\n'));
+    return null;
   }
 
   let ip = getSavedIp();
+  let connected = false;
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (!connected) {
     ip = await promptForIp(ip || undefined);
-    if (await connectAndCheck(ip)) {
-      saveIp(ip);
-      console.log(chalk.green(`\nConnected to ${ip}. Saved to .env for next time.\n`));
-      return ip;
+    connected = await connectAndCheck(ip);
+    if (!connected) {
+      print(chalk.red(`\nCouldn't reach a Fire TV at ${ip}.`));
+      print(
+        chalk.gray(
+          'Double-check the IP, and check the TV screen for a debugging-authorization prompt to accept.\n'
+        )
+      );
     }
-
-    console.log(chalk.red(`\nCouldn't reach a Fire TV at ${ip}.`));
-    console.log(
-      chalk.gray(
-        'Double-check the IP, and check the TV screen for a debugging-authorization prompt to accept.\n'
-      )
-    );
   }
+
+  saveIp(ip);
+  print(chalk.green(`\nConnected to ${ip}. Saved to .env for next time.\n`));
+  return ip;
 }

@@ -1,16 +1,17 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import crypto from 'crypto';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { installApk, uninstallPackage, describeAdbError } from '../adb.js';
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
-export const SCREENSAVERS_DIR = path.join(PROJECT_ROOT, 'screensavers');
+// FIRE_TV_SCREENSAVERS_DIR lets the tests use a throwaway folder for the local clones.
+export const SCREENSAVERS_DIR = process.env.FIRE_TV_SCREENSAVERS_DIR || path.join(PROJECT_ROOT, 'screensavers');
 
 /**
  * @typedef {Object} ScreensaverEntry
@@ -89,7 +90,9 @@ async function fetchTrusted(apkUrl) {
     const res = await fetch(current, { redirect: 'manual' });
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
-      if (!location) throw new Error('Download redirected without a destination');
+      if (!location) {
+        throw new Error('Download redirected without a destination');
+      }
       current = new URL(location, current);
       assertTrustedRedirect(current);
       continue;
@@ -108,10 +111,14 @@ export async function latestRelease(repo) {
   if (res.status === 404) {
     throw new Error(`${repo} has no published release, so there is no APK to install from it`);
   }
-  if (!res.ok) throw new Error(`GitHub API returned ${res.status} for ${repo}`);
+  if (!res.ok) {
+    throw new Error(`GitHub API returned ${res.status} for ${repo}`);
+  }
   const release = await res.json();
   const apk = (release.assets || []).find((a) => a.name.endsWith('.apk'));
-  if (!apk) throw new Error(`No .apk asset found on the latest release of ${repo}`);
+  if (!apk) {
+    throw new Error(`No .apk asset found on the latest release of ${repo}`);
+  }
   return { apkUrl: apk.browser_download_url, sha256: parseSha256FromNotes(release.body), tag: release.tag_name };
 }
 
@@ -125,11 +132,13 @@ export async function latestReleaseApkUrl(repo) {
 
 /**
  * @param {ScreensaverEntry} entry
- * @returns {Promise<string>} local clone path
+ * @returns {Promise<boolean>} true if a clone was made, false if one already existed
  */
 export async function cloneIfMissing(entry) {
   const dest = path.join(SCREENSAVERS_DIR, entry.id);
-  if (fs.existsSync(dest)) return dest;
+  if (fs.existsSync(dest)) {
+    return false;
+  }
   fs.mkdirSync(SCREENSAVERS_DIR, { recursive: true });
   // GIT_TERMINAL_PROMPT=0 makes a missing or private repo fail instead of
   // waiting on a hidden credential prompt.
@@ -137,7 +146,7 @@ export async function cloneIfMissing(entry) {
     timeout: 60000,
     env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
   });
-  return dest;
+  return true;
 }
 
 /**
@@ -148,7 +157,9 @@ export async function downloadApk(entry) {
   const { apkUrl, sha256 } = await latestRelease(entry.repo);
   assertTrustedApkUrl(apkUrl, entry.repo);
   const res = await fetchTrusted(apkUrl);
-  if (!res.ok) throw new Error(`Download failed with status ${res.status}`);
+  if (!res.ok) {
+    throw new Error(`Download failed with status ${res.status}`);
+  }
   const buf = Buffer.from(await res.arrayBuffer());
 
   if (!sha256) {

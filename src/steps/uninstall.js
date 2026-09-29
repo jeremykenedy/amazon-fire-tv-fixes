@@ -13,6 +13,7 @@ import { SCREENSAVERS, AMAZON_DEFAULT } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, msToLabel } from './timeouts-shared.js';
+import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   all: { type: 'boolean', desc: 'Revert everything that is currently applied.' },
@@ -73,56 +74,76 @@ async function findOptions(ip) {
  * @returns {Promise<boolean>} whether every selected revert actually took effect
  */
 async function applySelection(ip, selected, installedScreensavers, probedTimeouts) {
-  let ok = true;
-  const fail = (message) => {
-    console.log(chalk.red(message));
-    markFailed();
-    ok = false;
-  };
+  const results = [];
 
   if (selected.includes('alexa')) {
-    if (await revertAlexaFix(ip)) console.log(chalk.green('Alexa deep-sleep fix reverted.'));
-    else fail('The Alexa deep-sleep fix is still on after the revert.');
+    results.push(await applyAlexaRevert(ip));
   }
-
   if (selected.includes('active')) {
-    if (await revertActiveScreensaver(ip)) console.log(chalk.green('Active screensaver reset to Amazon default.'));
-    else fail('The active screensaver did not switch back to the Amazon default.');
+    results.push(await applyActiveRevert(ip));
   }
-
-  for (const s of installedScreensavers) {
-    if (!selected.includes(`pkg:${s.id}`)) continue;
-    const spinner = startSpinner(`Removing ${s.name}`);
-    if (await removeScreensaver(ip, s)) {
-      spinner.succeed(`${s.name} removed.`);
-    } else {
-      spinner.fail(`${s.name} could not be removed. It may still be installed.`);
-      markFailed();
-      ok = false;
-    }
+  for (const s of installedScreensavers.filter((x) => selected.includes(`pkg:${x.id}`))) {
+    results.push(await applyScreensaverRemoval(ip, s));
   }
-
-  for (const r of probedTimeouts) {
-    if (!selected.includes(`timeout:${r.def.id}`)) continue;
-    const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
-    console.log(
-      applied
-        ? chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`)
-        : chalk.red(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`)
-    );
-    if (!applied) {
-      markFailed();
-      ok = false;
-    }
+  for (const r of probedTimeouts.filter((x) => selected.includes(`timeout:${x.def.id}`))) {
+    results.push(await applyTimeoutRevert(ip, r));
   }
 
   if (selected.includes('local')) {
     removeLocalClones();
-    console.log(chalk.green('Local screensaver source removed.'));
+    print(chalk.green('Local screensaver source removed.'));
   }
 
-  console.log(ok ? chalk.green('\nDone.\n') : chalk.yellow('\nFinished with errors. The TV was not fully reverted.\n'));
+  const ok = results.every(Boolean);
+  print(ok ? chalk.green('\nDone.\n') : chalk.yellow('\nFinished with errors. The TV was not fully reverted.\n'));
   return ok;
+}
+
+/**
+ * Prints a red failure line, flags the run as failed, and reports not-ok.
+ * @param {string} message
+ * @returns {false}
+ */
+function reportFailure(message) {
+  print(chalk.red(message));
+  markFailed();
+  return false;
+}
+
+async function applyAlexaRevert(ip) {
+  if (!(await revertAlexaFix(ip))) {
+    return reportFailure('The Alexa deep-sleep fix is still on after the revert.');
+  }
+  print(chalk.green('Alexa deep-sleep fix reverted.'));
+  return true;
+}
+
+async function applyActiveRevert(ip) {
+  if (!(await revertActiveScreensaver(ip))) {
+    return reportFailure('The active screensaver did not switch back to the Amazon default.');
+  }
+  print(chalk.green('Active screensaver reset to Amazon default.'));
+  return true;
+}
+
+async function applyScreensaverRemoval(ip, s) {
+  const spinner = startSpinner(`Removing ${s.name}`);
+  if (await removeScreensaver(ip, s)) {
+    spinner.succeed(`${s.name} removed.`);
+    return true;
+  }
+  spinner.fail(`${s.name} could not be removed. It may still be installed.`);
+  markFailed();
+  return false;
+}
+
+async function applyTimeoutRevert(ip, r) {
+  const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
+  if (!applied) {
+    return reportFailure(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`);
+  }
+  print(chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`));
+  return true;
 }
 
 /**
@@ -137,16 +158,16 @@ export async function uninstallEverything(ip, flags = {}) {
   if (options.length === 0) {
     const unreadable = probedTimeouts.filter((r) => !r.possible);
     if (unreadable.length > 0) {
-      console.log(chalk.red(`\nCould not check ${unreadable.map((r) => r.def.label).join(', ')} (${unreadable[0].reason}), so this cannot confirm the TV is at factory defaults.\n`));
+      print(chalk.red(`\nCould not check ${unreadable.map((r) => r.def.label).join(', ')} (${unreadable[0].reason}), so this cannot confirm the TV is at factory defaults.\n`));
       markFailed();
       return 'failed';
     }
-    console.log(chalk.green('\nNothing to undo. The device is already at factory defaults.\n'));
+    print(chalk.green('\nNothing to undo. The device is already at factory defaults.\n'));
     return 'nothing';
   }
 
   if (flags.yes && !flags.all) {
-    console.log(chalk.red('\n--yes without --all reverts nothing. Pass --all to revert everything, or run this interactively to pick what to keep.\n'));
+    print(chalk.red('\n--yes without --all reverts nothing. Pass --all to revert everything, or run this interactively to pick what to keep.\n'));
     markFailed();
     return 'failed';
   }
@@ -160,7 +181,9 @@ export async function uninstallEverything(ip, flags = {}) {
       force: Boolean(flags.force),
       interactive: false,
     });
-    if (!allowed) return 'cancelled';
+    if (!allowed) {
+      return 'cancelled';
+    }
     return (await applySelection(ip, selected, installedScreensavers, probedTimeouts)) ? 'reverted' : 'failed';
   }
 
@@ -187,7 +210,7 @@ export async function uninstallEverything(ip, flags = {}) {
     buildSummary: (state) => options.filter((o) => state.selected.includes(o.value)).map((o) => ({ label: o.name })),
     onConfirm: async (state) => {
       if (state.selected.length === 0) {
-        console.log(chalk.gray('\nNothing selected. No changes were made.\n'));
+        print(chalk.gray('\nNothing selected. No changes were made.\n'));
         outcome = 'nothing';
         return;
       }
@@ -200,7 +223,9 @@ export async function uninstallEverything(ip, flags = {}) {
         force: Boolean(flags.force),
         interactive: true,
       });
-      if (!allowed) return;
+      if (!allowed) {
+        return;
+      }
 
       outcome = (await applySelection(ip, state.selected, installedScreensavers, probedTimeouts)) ? 'reverted' : 'failed';
     },

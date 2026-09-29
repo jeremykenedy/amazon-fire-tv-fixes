@@ -5,19 +5,15 @@ import { ensureConnected } from '../src/adb.js';
 import { requireInstalled } from '../src/device-config.js';
 import { setScreensaver, FLAG_SPEC } from '../src/steps/set-screensaver.js';
 
-async function main() {
-  let flags;
-  try {
-    flags = parseFlags(FLAG_SPEC, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'firetv-set-screensaver --set=aerial --yes');
-  }
-
-  renderBanner();
-  requireInstalled();
-
-  const ip = await ensureConnected();
-  await setScreensaver(ip, flags);
+let flags;
+try {
+  flags = parseFlags(FLAG_SPEC, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'firetv-set-screensaver --set=aerial --yes');
 }
 
-main();
+renderBanner();
+requireInstalled();
+
+const ip = await ensureConnected();
+await setScreensaver(ip, flags);

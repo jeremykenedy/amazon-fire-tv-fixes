@@ -13,7 +13,9 @@ export function cancellableOnEsc(prompt) {
   return (config, context = {}) => {
     const controller = new AbortController();
     const onKeypress = (_chunk, key) => {
-      if (key && key.name === 'escape') controller.abort();
+      if (key?.name === 'escape') {
+        controller.abort();
+      }
     };
     process.stdin.on('keypress', onKeypress);
     return prompt(config, { ...context, signal: controller.signal }).finally(() => {

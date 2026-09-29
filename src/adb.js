@@ -1,8 +1,9 @@
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import chalk from 'chalk';
 import { startSpinner } from './spinner.js';
 import { getSavedIp, saveIp, promptForIp } from './device-config.js';
+import { print } from './output.js';
 
 const execFileAsync = promisify(execFile);
 const PORT = 5555;
@@ -25,10 +26,14 @@ const INSTALL_TIMEOUT_MS = 180000;
  * @returns {string}
  */
 export function describeAdbError(err) {
-  if (err?.code === 'ENOENT') return 'adb was not found on your PATH';
-  if (err?.killed || err?.signal === 'SIGTERM') return 'adb timed out waiting for the TV';
+  if (err?.code === 'ENOENT') {
+    return 'adb was not found on your PATH';
+  }
+  if (err?.killed || err?.signal === 'SIGTERM') {
+    return 'adb timed out waiting for the TV';
+  }
   const text = `${err?.stderr ?? ''}`.trim() || `${err?.message ?? ''}`.trim();
-  return text.split('\n').filter(Boolean).pop() || 'adb failed with no message';
+  return text.split('\n').findLast(Boolean) || 'adb failed with no message';
 }
 
 let lastAdbError = null;
@@ -43,8 +48,12 @@ async function run(args, { allowFail = false, timeout = 15000, remember = false 
     const { stdout } = await execFileAsync('adb', args, { timeout });
     return stdout.trim();
   } catch (err) {
-    if (remember) lastAdbError = describeAdbError(err);
-    if (allowFail) return null;
+    if (remember) {
+      lastAdbError = describeAdbError(err);
+    }
+    if (allowFail) {
+      return null;
+    }
     throw err;
   }
 }
@@ -101,8 +110,8 @@ export async function connectAndCheck(ip) {
  */
 export async function ensureConnected() {
   if (!(await isAdbInstalled())) {
-    console.log(chalk.red('\nadb (Android SDK Platform Tools) is not installed, so this cannot talk to your TV.'));
-    console.log(chalk.gray('Run ') + chalk.green('firetv-install-adb') + chalk.gray(' to install it, then try again.\n'));
+    print(chalk.red('\nadb (Android SDK Platform Tools) is not installed, so this cannot talk to your TV.'));
+    print(chalk.gray('Run ') + chalk.green('firetv-install-adb') + chalk.gray(' to install it, then try again.\n'));
     process.exit(1);
   }
 
@@ -111,7 +120,7 @@ export async function ensureConnected() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     if (!ip && !process.stdin.isTTY) {
-      console.log(chalk.red('\nNo saved Fire TV IP and no terminal to ask for one. Run start interactively first.\n'));
+      print(chalk.red('\nNo saved Fire TV IP and no terminal to ask for one. Run start interactively first.\n'));
       process.exit(1);
     }
     if (!ip) {
@@ -123,10 +132,14 @@ export async function ensureConnected() {
       return ip;
     }
 
-    console.log(chalk.red(`\nCouldn't reach a Fire TV at ${ip}:${PORT}.`));
-    if (getLastAdbError()) console.log(chalk.gray(`adb said: ${getLastAdbError()}`));
-    console.log(chalk.gray('Make sure ADB debugging is on and you accepted the pairing prompt on the TV.\n'));
-    if (!process.stdin.isTTY) process.exit(1);
+    print(chalk.red(`\nCouldn't reach a Fire TV at ${ip}:${PORT}.`));
+    if (getLastAdbError()) {
+      print(chalk.gray(`adb said: ${getLastAdbError()}`));
+    }
+    print(chalk.gray('Make sure ADB debugging is on and you accepted the pairing prompt on the TV.\n'));
+    if (!process.stdin.isTTY) {
+      process.exit(1);
+    }
     ip = await promptForIp(ip);
   }
 }

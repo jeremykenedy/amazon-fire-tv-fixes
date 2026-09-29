@@ -3,6 +3,7 @@ import { explainStep, promptYN } from '../ui.js';
 import { enforceGuardrail } from '../guardrail.js';
 import { isAlexaFixEnabled, setAlexaFix } from '../apply/alexa-fix.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 export const ENABLE_FLAG_SPEC = {
   yes: { type: 'boolean', desc: 'Apply the fix without asking first.' },
@@ -33,7 +34,7 @@ const EXPLANATION = [
  */
 export async function enableAlexaFix(ip, flags = {}) {
   if (await isAlexaFixEnabled(ip)) {
-    console.log(chalk.green('\nThe fix is already applied. Nothing to do.\n'));
+    print(chalk.green('\nThe fix is already applied. Nothing to do.\n'));
     return;
   }
 
@@ -47,33 +48,39 @@ export async function enableAlexaFix(ip, flags = {}) {
 
   const proceed = flags.yes || (await promptYN('Apply the fix?'));
   if (!proceed) {
-    console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+    print(chalk.gray('\nCancelled. Nothing was changed.\n'));
     return;
   }
 
   const confirmed = await setAlexaFix(ip, true);
-  console.log(
+  print(
     confirmed
       ? chalk.green('\nDone. Alexa should stay able to reach the TV when it is asleep.\n')
       : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
   );
-  if (!confirmed) markFailed();
+  if (!confirmed) {
+    markFailed();
+  }
 }
 
 async function confirmRevert() {
   const proceed = await promptYN('Revert now?');
-  if (proceed) return true;
-  console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+  if (proceed) {
+    return true;
+  }
+  print(chalk.gray('\nCancelled. Nothing was changed.\n'));
   return false;
 }
 
 function printRevertResult(confirmed) {
-  console.log(
+  print(
     !confirmed
       ? chalk.green('\nDone. Factory deep-sleep behavior is restored.\n')
       : chalk.red('\nThe write did not take. Check the adb connection and try again.\n')
   );
-  if (confirmed) markFailed();
+  if (confirmed) {
+    markFailed();
+  }
 }
 
 /**
@@ -87,7 +94,7 @@ export async function disableAlexaFix(ip, flags = {}) {
   const interactive = !flags.yes;
 
   if (!(await isAlexaFixEnabled(ip))) {
-    console.log(chalk.green('\nThe fix is not currently applied. Nothing to do.\n'));
+    print(chalk.green('\nThe fix is not currently applied. Nothing to do.\n'));
     return;
   }
 
@@ -103,7 +110,9 @@ export async function disableAlexaFix(ip, flags = {}) {
     standaloneCommand: 'enable-alexa-fix',
   });
 
-  if (interactive && !(await confirmRevert())) return;
+  if (interactive && !(await confirmRevert())) {
+    return;
+  }
 
   const allowed = await enforceGuardrail({
     risky: true,
@@ -112,7 +121,9 @@ export async function disableAlexaFix(ip, flags = {}) {
     force: Boolean(flags.force),
     interactive,
   });
-  if (!allowed) return;
+  if (!allowed) {
+    return;
+  }
 
   const confirmed = await setAlexaFix(ip, false);
   printRevertResult(confirmed);
@@ -124,7 +135,7 @@ export async function disableAlexaFix(ip, flags = {}) {
  */
 export async function alexaFixMenu(ip) {
   const enabled = await isAlexaFixEnabled(ip);
-  console.log(chalk.gray(`\nCurrent state: fix is ${enabled ? 'ON' : 'OFF'}.\n`));
+  print(chalk.gray(`\nCurrent state: fix is ${enabled ? 'ON' : 'OFF'}.\n`));
   if (enabled) {
     await disableAlexaFix(ip);
   } else {

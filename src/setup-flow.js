@@ -12,6 +12,7 @@ import { runStartCommand } from './steps/main-menu.js';
 import { printCommandList } from './command-list.js';
 import { isInstalled } from './device-config.js';
 import { markFailed } from './exit-status.js';
+import { print } from './output.js';
 
 const execFileAsync = promisify(execFile);
 const PROJECT_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -23,7 +24,7 @@ async function runInstallAndLink() {
     installSpinner.succeed('Dependencies installed.');
   } catch (err) {
     installSpinner.fail('npm install failed.');
-    console.log(chalk.red(err.stderr || err.message));
+    print(chalk.red(err.stderr || err.message));
     markFailed();
     return false;
   }
@@ -35,7 +36,7 @@ async function runInstallAndLink() {
     return true;
   } catch (err) {
     linkSpinner.fail('npm link failed.');
-    console.log(chalk.red(err.stderr || err.message));
+    print(chalk.red(err.stderr || err.message));
     markFailed();
     return false;
   }
@@ -43,15 +44,17 @@ async function runInstallAndLink() {
 
 function printFinishMessage({ willRun, linked }) {
   if (!linked) {
-    if (willRun) console.log(chalk.gray('\nStarting the guided setup now.\n'));
+    if (willRun) {
+      print(chalk.gray('\nStarting the guided setup now.\n'));
+    }
     return;
   }
 
   if (!isInstalled()) {
     // Linking the commands does not connect to a TV, so nothing but start
     // works yet. Say so instead of listing commands that would refuse to run.
-    console.log(chalk.green('\nCommands linked.'));
-    console.log(
+    print(chalk.green('\nCommands linked.'));
+    print(
       willRun
         ? chalk.gray('Starting the guided setup now. Once it finishes, run ') + chalk.green('info') + chalk.gray(' any time to see every command.\n')
         : chalk.gray('Next, run ') + chalk.green('start') + chalk.gray(' to connect to your TV and finish setup. Until then, ') + chalk.green('info') + chalk.gray(' shows only ') + chalk.green('start') + chalk.gray('.\n')
@@ -59,7 +62,7 @@ function printFinishMessage({ willRun, linked }) {
     return;
   }
 
-  console.log(
+  print(
     chalk.bold.white('\nTip: run ') +
       chalk.green('info') +
       chalk.bold.white(' any time to see this list again, or ') +
@@ -90,7 +93,7 @@ export async function runSetup() {
 
   const wantsSetup = await promptYN('Start setting up Fire TV Tools?');
   if (!wantsSetup) {
-    console.log(chalk.gray('\nNo changes were made.\n'));
+    print(chalk.gray('\nNo changes were made.\n'));
     return;
   }
 
@@ -115,7 +118,7 @@ export async function runSetup() {
       ].filter(Boolean),
     onConfirm: async (state) => {
       if (state.selected.length === 0) {
-        console.log(chalk.gray('\nNothing selected. No changes were made.\n'));
+        print(chalk.gray('\nNothing selected. No changes were made.\n'));
         return;
       }
 
@@ -128,7 +131,7 @@ export async function runSetup() {
 
       if (state.selected.includes('run')) {
         if (!installOk) {
-          console.log(chalk.yellow('Continuing to launch the app even though install/link had a problem above.\n'));
+          print(chalk.yellow('Continuing to launch the app even though install/link had a problem above.\n'));
         }
         await runStartCommand();
       }

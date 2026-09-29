@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { COMMANDS } from './command-list.js';
+import { print, printError } from './output.js';
 
 export class FlagError extends Error {}
 
@@ -41,14 +42,18 @@ export function parseFlags(spec, argv) {
 
   for (const [name, def] of Object.entries(spec)) {
     const value = values[name];
-    if (value === undefined) continue;
+    if (value === undefined) {
+      continue;
+    }
 
     if (def.choices && !def.choices.includes(value)) {
       throw new FlagError(`--${name} must be one of: ${def.choices.join(', ')} (got "${value}")`);
     }
     if (def.validate) {
       const error = def.validate(value);
-      if (error) throw new FlagError(`--${name}: ${error}`);
+      if (error) {
+        throw new FlagError(`--${name}: ${error}`);
+      }
     }
   }
 
@@ -82,16 +87,22 @@ function commandName() {
 export function buildUsage(name, spec) {
   const description = COMMANDS.find((c) => c.name === name)?.desc;
   const rows = Object.entries(spec).map(([flag, def]) => {
-    const label = def.type === 'string' ? `--${flag} <${def.choices ? def.choices.join('|') : 'value'}>` : `--${flag}`;
+    const placeholder = def.choices ? def.choices.join('|') : 'value';
+    const label = def.type === 'string' ? `--${flag} <${placeholder}>` : `--${flag}`;
     return [label, def.desc || ''];
   });
   rows.push(['-h, --help', 'Show this help.']);
 
   const width = Math.max(...rows.map(([label]) => label.length));
   const lines = [`Usage: ${name}${Object.keys(spec).length ? ' [options]' : ''}`];
-  if (description) lines.push('', description);
+  if (description) {
+    lines.push('', description);
+  }
   lines.push('', 'Options:');
-  for (const [label, desc] of rows) lines.push(`  ${label.padEnd(width)}${desc ? `  ${desc}` : ''}`);
+  for (const [label, desc] of rows) {
+    const text = desc ? `  ${desc}` : '';
+    lines.push(`  ${label.padEnd(width)}${text}`);
+  }
   return lines.join('\n');
 }
 
@@ -105,12 +116,14 @@ export function buildUsage(name, spec) {
  */
 export function exitOnFlagError(err, example) {
   if (err instanceof HelpRequested) {
-    console.log(err.message);
-    console.log(`\nExample: ${example}`);
+    print(err.message);
+    print(`\nExample: ${example}`);
     process.exit(0);
   }
-  if (!(err instanceof FlagError)) throw err;
-  console.error(err.message);
-  console.error(`Example: ${example}`);
+  if (!(err instanceof FlagError)) {
+    throw err;
+  }
+  printError(err.message);
+  printError(`Example: ${example}`);
   process.exit(1);
 }

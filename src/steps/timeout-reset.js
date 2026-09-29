@@ -5,6 +5,7 @@ import { runWizard } from '../wizard.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, mustBeKnownTimeoutIds, msToLabel } from './timeouts-shared.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 export const RESET_FLAG_SPEC = {
   all: { type: 'boolean', desc: 'Reset every timeout to its first-observed value.' },
@@ -20,11 +21,61 @@ export const RESET_FLAG_SPEC = {
  * @returns {string[]}
  */
 export function resolveResetIds(flags, allIds) {
-  if (flags.all) return allIds;
+  if (flags.all) {
+    return allIds;
+  }
   if (flags.only !== undefined) {
     return flags.only.split(',').map((s) => s.trim()).filter(Boolean);
   }
   return [];
+}
+
+/**
+ * @param {{all?: boolean, only?: string, yes?: boolean}} flags
+ * @returns {string | null} what is wrong with this flag combination, if anything
+ */
+function flagProblem(flags) {
+  if (flags.all && flags.only !== undefined) {
+    return 'Pass only one of --all or --only, not both.';
+  }
+  if (flags.yes && !flags.all && flags.only === undefined) {
+    return '--yes alone does not pick what to reset. Pass --all or --only=<id,...>.';
+  }
+  return null;
+}
+
+/**
+ * Resets one timeout to its baseline and prints the outcome.
+ * @param {string} ip
+ * @param {{def: {label: string}, baselineMs: number}} r
+ */
+async function resetOne(ip, r) {
+  const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
+  print(
+    applied
+      ? chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`)
+      : chalk.red(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`)
+  );
+  if (!applied) {
+    markFailed();
+  }
+}
+
+/**
+ * Flag-driven reset (--all or --only), no prompts.
+ */
+async function resetFromFlags(ip, flags, resettable) {
+  const ids = resolveResetIds(flags, resettable.map((r) => r.def.id));
+  for (const id of ids) {
+    const r = resettable.find((x) => x.def.id === id);
+    if (r) {
+      await resetOne(ip, r);
+    } else {
+      print(chalk.red(`\n${id} has no captured baseline (or isn't a known timeout). Skipped.\n`));
+      markFailed();
+    }
+  }
+  print(chalk.green('\nDone.\n'));
 }
 
 /**
@@ -37,41 +88,20 @@ export async function resetTimeoutsStep(ip, flags = {}) {
   const resettable = probe.filter((r) => r.possible && r.baselineMs !== null && r.baselineMs !== undefined);
 
   if (resettable.length === 0) {
-    console.log(chalk.red('\nNo timeouts have a captured baseline to reset to yet. Run firetv-timeouts-current first.\n'));
+    print(chalk.red('\nNo timeouts have a captured baseline to reset to yet. Run firetv-timeouts-current first.\n'));
     markFailed();
     return;
   }
 
-  if (flags.all && flags.only !== undefined) {
-    console.log(chalk.red('\nPass only one of --all or --only, not both.\n'));
-    markFailed();
-    return;
-  }
-
-  if (flags.yes && !flags.all && flags.only === undefined) {
-    console.log(chalk.red('\n--yes alone does not pick what to reset. Pass --all or --only=<id,...>.\n'));
+  const problem = flagProblem(flags);
+  if (problem) {
+    print(chalk.red(`\n${problem}\n`));
     markFailed();
     return;
   }
 
   if (flags.all || flags.only !== undefined) {
-    const ids = resolveResetIds(flags, resettable.map((r) => r.def.id));
-    for (const id of ids) {
-      const r = resettable.find((x) => x.def.id === id);
-      if (!r) {
-        console.log(chalk.red(`\n${id} has no captured baseline (or isn't a known timeout). Skipped.\n`));
-        markFailed();
-        continue;
-      }
-      const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
-      console.log(
-        applied
-          ? chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`)
-          : chalk.red(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`)
-      );
-      if (!applied) markFailed();
-    }
-    console.log(chalk.green('\nDone.\n'));
+    await resetFromFlags(ip, flags, resettable);
     return;
   }
 
@@ -95,20 +125,13 @@ export async function resetTimeoutsStep(ip, flags = {}) {
       resettable.filter((r) => state.selected.includes(r.def.id)).map((r) => ({ label: `Reset ${r.def.label} to ${msToLabel(r.baselineMs)}` })),
     onConfirm: async (state) => {
       if (state.selected.length === 0) {
-        console.log(chalk.gray('\nNothing selected. No changes were made.\n'));
+        print(chalk.gray('\nNothing selected. No changes were made.\n'));
         return;
       }
       for (const id of state.selected) {
-        const r = resettable.find((x) => x.def.id === id);
-        const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
-        console.log(
-          applied
-            ? chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`)
-            : chalk.red(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`)
-        );
-        if (!applied) markFailed();
+        await resetOne(ip, resettable.find((x) => x.def.id === id));
       }
-      console.log(chalk.green('\nDone.\n'));
+      print(chalk.green('\nDone.\n'));
     },
   });
 }

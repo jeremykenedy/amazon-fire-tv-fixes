@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { input } from './prompts.js';
 import { markFailed } from './exit-status.js';
+import { print } from './output.js';
 
 /**
  * Gate for anything regressive or destructive. Not risky: no-op, returns
@@ -19,31 +20,35 @@ import { markFailed } from './exit-status.js';
  * @returns {Promise<boolean>} whether the caller may proceed
  */
 function printWarning(warning, saferCommand) {
-  console.log(chalk.yellow(`\n${warning}`));
+  print(chalk.yellow(`\n${warning}`));
   if (saferCommand) {
-    console.log(chalk.gray(`If that's not what you want, use: ${chalk.green(saferCommand)}`));
+    print(chalk.gray(`If that's not what you want, use: ${chalk.green(saferCommand)}`));
   }
 }
 
 async function confirmTyped(promptFn) {
   const typed = await promptFn({ message: 'Type "yes" to continue, anything else cancels:' });
-  if (typed.trim() === 'yes') return true;
-  console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+  if (typed.trim() === 'yes') {
+    return true;
+  }
+  print(chalk.gray('\nCancelled. Nothing was changed.\n'));
   return false;
 }
 
 export async function enforceGuardrail({ risky, warning, saferCommand, force, interactive, promptFn = input }) {
-  if (!risky) return true;
+  if (!risky) {
+    return true;
+  }
 
   printWarning(warning, saferCommand);
 
   if (force) {
-    console.log(chalk.gray('--force given, continuing.\n'));
+    print(chalk.gray('--force given, continuing.\n'));
     return true;
   }
 
   if (!interactive) {
-    console.log(chalk.red('\nRefusing to continue without --force in non-interactive mode. Nothing was changed.\n'));
+    print(chalk.red('\nRefusing to continue without --force in non-interactive mode. Nothing was changed.\n'));
     markFailed();
     return false;
   }

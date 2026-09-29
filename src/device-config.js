@@ -1,23 +1,27 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import chalk from 'chalk';
 import { input } from './prompts.js';
+import { print } from './output.js';
 
 // Resolved relative to this file, not process.cwd(), so it always finds
 // the project's own .env regardless of the directory the command was run
 // from.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..');
-export const ENV_PATH = path.join(PROJECT_ROOT, '.env');
+// FIRE_TV_ENV_FILE lets the tests point at a throwaway file instead of the real .env.
+export const ENV_PATH = process.env.FIRE_TV_ENV_FILE || path.join(PROJECT_ROOT, '.env');
 const ENV_EXAMPLE_PATH = path.join(PROJECT_ROOT, '.env.example');
 
 const IP_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 
 export function isValidIp(value) {
   const match = IP_RE.exec(value.trim());
-  if (!match) return false;
+  if (!match) {
+    return false;
+  }
   return match.slice(1).every((octet) => Number(octet) >= 0 && Number(octet) <= 255);
 }
 
@@ -27,7 +31,9 @@ export function isValidIp(value) {
  * own.
  */
 export function parseIpFromEnv(raw) {
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
   const parsed = dotenv.parse(raw);
   return parsed.FIRE_TV_IP || null;
 }
@@ -51,7 +57,9 @@ export function mergeIpIntoEnv(raw, ip, fallbackTemplate = 'FIRE_TV_IP=\n') {
  * anything other than the literal string "true" reads as false.
  */
 export function parseInstalledFromEnv(raw) {
-  if (!raw) return false;
+  if (!raw) {
+    return false;
+  }
   return dotenv.parse(raw).INSTALLED === 'true';
 }
 
@@ -65,7 +73,9 @@ export function mergeInstalledIntoEnv(raw, installed) {
   const base = raw === null ? '' : raw;
   const line = `INSTALLED=${Boolean(installed)}`;
   const hasKey = /^INSTALLED=.*$/m.test(base);
-  if (hasKey) return base.replace(/^INSTALLED=.*$/m, line);
+  if (hasKey) {
+    return base.replace(/^INSTALLED=.*$/m, line);
+  }
   return base.trim() === '' ? `${line}\n` : `${base.trimEnd()}\n${line}\n`;
 }
 
@@ -73,7 +83,9 @@ export function readEnvFile() {
   try {
     return fs.readFileSync(ENV_PATH, 'utf8');
   } catch (err) {
-    if (err.code === 'ENOENT') return null;
+    if (err.code === 'ENOENT') {
+      return null;
+    }
     throw new Error(`Could not read ${ENV_PATH} (${err.code || err.message}). Check that the file is readable.`);
   }
 }
@@ -136,9 +148,11 @@ export function setInstalled(installed) {
  * was never connected.
  */
 export function requireInstalled() {
-  if (isInstalled()) return;
-  console.log(chalk.red('\nFire TV Tools is not installed yet.'));
-  console.log(chalk.gray('Run ') + chalk.green('start') + chalk.gray(' to set it up first, or ') + chalk.green('info') + chalk.gray(' to see what is available.\n'));
+  if (isInstalled()) {
+    return;
+  }
+  print(chalk.red('\nFire TV Tools is not installed yet.'));
+  print(chalk.gray('Run ') + chalk.green('start') + chalk.gray(' to set it up first, or ') + chalk.green('info') + chalk.gray(' to see what is available.\n'));
   process.exit(1);
 }
 
@@ -159,7 +173,7 @@ export async function promptForIp(defaultValue) {
       isQuitInput(value) || isValidIp(value) ? true : 'Enter a valid IPv4 address, e.g. 192.168.1.49 (or q to quit)',
   });
   if (isQuitInput(ip)) {
-    console.log(chalk.gray('\nNo changes were made.\n'));
+    print(chalk.gray('\nNo changes were made.\n'));
     process.exit(0);
   }
   return ip.trim();

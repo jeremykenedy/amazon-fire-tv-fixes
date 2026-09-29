@@ -5,6 +5,7 @@ import { runWizard } from '../wizard.js';
 import { findTimeoutById, setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, mustBeValidMinutes, msToLabel } from './timeouts-shared.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 /**
  * Pure: builds the checkbox choices for the combined timeouts wizard, given
@@ -43,11 +44,15 @@ export function buildManageSummary(state, possible) {
   const lines = [];
   for (const id of editIds) {
     const r = possible.find((p) => p.def.id === id);
-    if (r) lines.push({ label: `Set ${r.def.label} to ${msToLabel(state.values?.[id])}` });
+    if (r) {
+      lines.push({ label: `Set ${r.def.label} to ${msToLabel(state.values?.[id])}` });
+    }
   }
   for (const id of resetIds) {
     const r = possible.find((p) => p.def.id === id);
-    if (r) lines.push({ label: `Reset ${r.def.label} to observed baseline (${msToLabel(r.baselineMs)})` });
+    if (r) {
+      lines.push({ label: `Reset ${r.def.label} to observed baseline (${msToLabel(r.baselineMs)})` });
+    }
   }
   return lines;
 }
@@ -85,7 +90,7 @@ export function resolveManageSelection(selected, possible) {
 
 async function applyManageSelection(ip, state, possible) {
   if (state.selected.length === 0) {
-    console.log(chalk.gray('\nNo timeout changes. Moving on.\n'));
+    print(chalk.gray('\nNo timeout changes. Moving on.\n'));
     return;
   }
 
@@ -94,27 +99,31 @@ async function applyManageSelection(ip, state, possible) {
   for (const id of resetIds) {
     const r = possible.find((p) => p.def.id === id);
     const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
-    console.log(
+    print(
       applied
         ? chalk.green(`${r.def.label} reset to ${msToLabel(r.baselineMs)}.`)
         : chalk.red(`${r.def.label} did not accept the reset. Read back: ${msToLabel(readBackMs)}.`)
     );
-    if (!applied) markFailed();
+    if (!applied) {
+      markFailed();
+    }
   }
 
   for (const id of editIds) {
     const r = possible.find((p) => p.def.id === id);
     const ms = state.values[id];
     const { applied, readBackMs } = await setTimeoutMs(ip, r.def, ms);
-    console.log(
+    print(
       applied
         ? chalk.green(`${r.def.label} set to ${msToLabel(ms)}.`)
         : chalk.red(`${r.def.label} did not accept that value. Read back: ${msToLabel(readBackMs)}.`)
     );
-    if (!applied) markFailed();
+    if (!applied) {
+      markFailed();
+    }
   }
 
-  console.log(chalk.green('\nDone.\n'));
+  print(chalk.green('\nDone.\n'));
 }
 
 /**
@@ -128,7 +137,7 @@ export async function manageAllTimeoutsStep(ip) {
   const possible = probe.filter((r) => r.possible);
 
   if (possible.length === 0) {
-    console.log(chalk.red('\nNone of the known timeouts could be read from this TV. Run firetv-timeouts-possible for details.\n'));
+    print(chalk.red('\nNone of the known timeouts could be read from this TV. Run firetv-timeouts-possible for details.\n'));
     markFailed();
     return;
   }
@@ -171,6 +180,8 @@ export async function manageAllTimeoutsStep(ip) {
  */
 export async function reviewTimeoutsIfWanted(ip) {
   const wants = await promptYN('Would you like to review or adjust TV timeout settings (sleep, screensaver)?');
-  if (!wants) return;
+  if (!wants) {
+    return;
+  }
   await manageAllTimeoutsStep(ip);
 }

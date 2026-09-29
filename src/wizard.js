@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { confirmSummary } from './ui.js';
+import { print } from './output.js';
 
 export const BACK = '__wizard_back__';
 
@@ -64,7 +65,7 @@ export async function runWizard({ steps, buildSummary, onConfirm, confirmFn = co
     }
 
     if (decision === 'cancel') {
-      console.log(chalk.gray('\nCancelled. Nothing was changed.\n'));
+      print(chalk.gray('\nCancelled. Nothing was changed.\n'));
       return null;
     }
 

@@ -6,6 +6,7 @@ import { listPackages } from '../adb.js';
 import { getActiveScreensaver, setActiveScreensaver } from '../apply/set-screensaver.js';
 import { SCREENSAVERS, AMAZON_DEFAULT } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 const VALID_IDS = [AMAZON_DEFAULT.id, ...SCREENSAVERS.map((s) => s.id)];
 
@@ -48,16 +49,16 @@ export async function setScreensaver(ip, flags = {}) {
   if (flags.set !== undefined) {
     const choice = findById(flags.set);
     if (!available.some((s) => s.id === choice.id)) {
-      console.log(chalk.red(`\n${choice.name} is not installed. Install it first with firetv-screensavers.\n`));
+      print(chalk.red(`\n${choice.name} is not installed. Install it first with firetv-screensavers.\n`));
       markFailed();
       return;
     }
     if (choice.dreamComponent === current) {
-      console.log(chalk.gray(`\n${choice.name} is already the active screensaver.\n`));
+      print(chalk.gray(`\n${choice.name} is already the active screensaver.\n`));
       return;
     }
     await setActiveScreensaver(ip, choice.dreamComponent);
-    console.log(chalk.green(`\nDone. Active screensaver is now ${choice.name}.\n`));
+    print(chalk.green(`\nDone. Active screensaver is now ${choice.name}.\n`));
     return;
   }
 
@@ -66,7 +67,7 @@ export async function setScreensaver(ip, flags = {}) {
     const resolved = resolveYesDefault(installedForks);
     if (!resolved.ok) {
       const ids = VALID_IDS.join(', ');
-      console.log(
+      print(
         chalk.red(
           resolved.reason === 'none'
             ? `\nNo screensaver forks are installed, so there is nothing to default to. Pass --set explicitly: ${ids}\n`
@@ -77,11 +78,11 @@ export async function setScreensaver(ip, flags = {}) {
       return;
     }
     if (resolved.choice.dreamComponent === current) {
-      console.log(chalk.gray(`\n${resolved.choice.name} is already the active screensaver.\n`));
+      print(chalk.gray(`\n${resolved.choice.name} is already the active screensaver.\n`));
       return;
     }
     await setActiveScreensaver(ip, resolved.choice.dreamComponent);
-    console.log(chalk.green(`\nDone. Active screensaver is now ${resolved.choice.name}.\n`));
+    print(chalk.green(`\nDone. Active screensaver is now ${resolved.choice.name}.\n`));
     return;
   }
 
@@ -116,11 +117,11 @@ export async function setScreensaver(ip, flags = {}) {
         : [{ label: `Set active screensaver to ${state.choice.name}`, detail: state.choice.dreamComponent }],
     onConfirm: async (state) => {
       if (state.choice.dreamComponent === current) {
-        console.log(chalk.gray(`\n${state.choice.name} is already the active screensaver.\n`));
+        print(chalk.gray(`\n${state.choice.name} is already the active screensaver.\n`));
         return;
       }
       await setActiveScreensaver(ip, state.choice.dreamComponent);
-      console.log(chalk.green(`\nDone. Active screensaver is now ${state.choice.name}.\n`));
+      print(chalk.green(`\nDone. Active screensaver is now ${state.choice.name}.\n`));
     },
   });
 }

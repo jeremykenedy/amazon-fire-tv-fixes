@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { listRelatedSettings } from '../apply/timeouts.js';
 import { probeTimeouts } from './timeouts-shared.js';
+import { print } from '../output.js';
 
 /**
  * `firetv-timeouts-possible`: reports which known timeouts this TV actually
@@ -11,17 +12,19 @@ import { probeTimeouts } from './timeouts-shared.js';
  */
 export async function possibleTimeoutsReport(ip) {
   const results = await probeTimeouts(ip);
-  console.log(chalk.bold.white('\nWhat this TV supports:\n'));
+  print(chalk.bold.white('\nWhat this TV supports:\n'));
   for (const r of results) {
-    console.log(
+    print(
       r.possible ? `${chalk.green('possible')}      ${r.def.label}` : `${chalk.red('not possible')}  ${r.def.label} - ${r.reason}`
     );
   }
 
   const related = await listRelatedSettings(ip);
   if (related.length > 0) {
-    console.log(chalk.gray('\nOther settings detected on your TV that might be timeout-related (not yet supported by this tool):'));
-    for (const line of related) console.log(chalk.gray(`  ${line}`));
+    print(chalk.gray('\nOther settings detected on your TV that might be timeout-related (not yet supported by this tool):'));
+    for (const line of related) {
+      print(chalk.gray(`  ${line}`));
+    }
   }
-  console.log('');
+  print('');
 }

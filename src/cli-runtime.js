@@ -1,25 +1,26 @@
 import chalk from 'chalk';
+import { print, printError } from './output.js';
 
 let installed = false;
 
 function handleFatal(err) {
   // Ctrl-C at an @inquirer prompt rejects with ExitPromptError.
-  if (err && err.name === 'ExitPromptError') {
-    console.log(chalk.gray('\nCancelled.\n'));
+  if (err?.name === 'ExitPromptError') {
+    print(chalk.gray('\nCancelled.\n'));
     process.exit(130);
   }
 
   // Esc at a prompt aborts it (see prompts.js); that is a deliberate cancel.
-  if (err && err.name === 'AbortPromptError') {
-    console.log(chalk.gray('\nCancelled.\n'));
+  if (err?.name === 'AbortPromptError') {
+    print(chalk.gray('\nCancelled.\n'));
     process.exit(0);
   }
 
-  console.error(chalk.red(`\nSomething went wrong: ${err?.message || err}`));
+  printError(chalk.red(`\nSomething went wrong: ${err?.message || err}`));
   if (process.env.DEBUG && err?.stack) {
-    console.error(err.stack);
+    printError(err.stack);
   } else {
-    console.error(chalk.gray('Run again with DEBUG=1 for the full error.\n'));
+    printError(chalk.gray('Run again with DEBUG=1 for the full error.\n'));
   }
   process.exit(1);
 }
@@ -30,7 +31,9 @@ function handleFatal(err) {
  * first, so tests that import modules never get these handlers.
  */
 export function installCliRuntime() {
-  if (installed) return;
+  if (installed) {
+    return;
+  }
   installed = true;
   process.on('uncaughtException', handleFatal);
   process.on('unhandledRejection', handleFatal);

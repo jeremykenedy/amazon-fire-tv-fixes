@@ -5,19 +5,15 @@ import { ensureConnected } from '../src/adb.js';
 import { requireInstalled } from '../src/device-config.js';
 import { resetTimeoutsStep, RESET_FLAG_SPEC } from '../src/steps/timeout-reset.js';
 
-async function main() {
-  let flags;
-  try {
-    flags = parseFlags(RESET_FLAG_SPEC, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'firetv-timeouts-reset --all');
-  }
-
-  renderBanner();
-  requireInstalled();
-
-  const ip = await ensureConnected();
-  await resetTimeoutsStep(ip, flags);
+let flags;
+try {
+  flags = parseFlags(RESET_FLAG_SPEC, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'firetv-timeouts-reset --all');
 }
 
-main();
+renderBanner();
+requireInstalled();
+
+const ip = await ensureConnected();
+await resetTimeoutsStep(ip, flags);

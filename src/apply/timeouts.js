@@ -50,7 +50,9 @@ export function findTimeoutById(id) {
  */
 export async function getTimeoutMs(ip, def) {
   const raw = await getSetting(ip, def.namespace, def.key);
-  if (raw === null || raw === '' || raw === 'null') return null;
+  if (raw === null || raw === '' || raw === 'null') {
+    return null;
+  }
   const ms = Number(raw);
   return Number.isFinite(ms) ? ms : null;
 }
@@ -81,7 +83,9 @@ export async function setTimeoutMs(ip, def, ms) {
   try {
     await putSetting(ip, def.namespace, def.key, ms);
   } catch (err) {
-    if (!isDeviceRejection(err)) throw err;
+    if (!isDeviceRejection(err)) {
+      throw err;
+    }
     const readBackMs = await getTimeoutMs(ip, def).catch(() => null);
     return { applied: false, readBackMs };
   }
@@ -104,7 +108,9 @@ export async function listRelatedSettings(ip) {
     const lines = await listSettings(ip, namespace);
     for (const line of lines) {
       const key = line.split('=')[0];
-      if (!key || known.has(`${namespace}:${key}`)) continue;
+      if (!key || known.has(`${namespace}:${key}`)) {
+        continue;
+      }
       if (RELATED_KEYWORDS.some((word) => key.toLowerCase().includes(word))) {
         found.push(`${namespace} ${line}`);
       }

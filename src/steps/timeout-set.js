@@ -5,6 +5,7 @@ import { runWizard } from '../wizard.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { mustBeNonNegativeInteger, mustBeValidMinutes, msToLabel, probeTimeouts } from './timeouts-shared.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   ms: { type: 'string', validate: mustBeNonNegativeInteger, desc: 'New timeout in milliseconds.' },
@@ -29,12 +30,16 @@ export function resolveRequestedMs(flags) {
   }
   if (hasMs) {
     const error = mustBeNonNegativeInteger(flags.ms);
-    if (error) return { ok: false, error: `--ms ${error}.` };
+    if (error) {
+      return { ok: false, error: `--ms ${error}.` };
+    }
     return { ok: true, ms: Number(flags.ms) };
   }
   if (hasMinutes) {
     const error = mustBeValidMinutes(flags.minutes);
-    if (error) return { ok: false, error: `--minutes ${error}.` };
+    if (error) {
+      return { ok: false, error: `--minutes ${error}.` };
+    }
     return { ok: true, ms: Number(flags.minutes) * 60000 };
   }
   return { ok: true, ms: undefined };
@@ -50,7 +55,7 @@ export function resolveRequestedMs(flags) {
 export async function setOneTimeoutStep(ip, def, flags = {}) {
   const resolved = resolveRequestedMs(flags);
   if (!resolved.ok) {
-    console.log(chalk.red(`\n${resolved.error}\n`));
+    print(chalk.red(`\n${resolved.error}\n`));
     markFailed();
     return;
   }
@@ -60,17 +65,19 @@ export async function setOneTimeoutStep(ip, def, flags = {}) {
 
   if (resolved.ms !== undefined) {
     const { applied, readBackMs } = await setTimeoutMs(ip, def, resolved.ms);
-    console.log(
+    print(
       applied
         ? chalk.green(`\nDone. ${def.label} is now ${msToLabel(resolved.ms)}.\n`)
         : chalk.red(`\nThe TV did not accept that value. Read back: ${msToLabel(readBackMs)}.\n`)
     );
-    if (!applied) markFailed();
+    if (!applied) {
+      markFailed();
+    }
     return;
   }
 
   if (flags.yes) {
-    console.log(chalk.red('\n--yes alone does not set a value. Pass --ms=<n> or --minutes=<n>.\n'));
+    print(chalk.red('\n--yes alone does not set a value. Pass --ms=<n> or --minutes=<n>.\n'));
     markFailed();
     return;
   }
@@ -101,12 +108,14 @@ export async function setOneTimeoutStep(ip, def, flags = {}) {
     onConfirm: async (state) => {
       const ms = Number(state.minutes) * 60000;
       const { applied, readBackMs } = await setTimeoutMs(ip, def, ms);
-      console.log(
+      print(
         applied
           ? chalk.green(`\nDone. ${def.label} is now ${msToLabel(ms)}.\n`)
           : chalk.red(`\nThe TV did not accept that value. Read back: ${msToLabel(readBackMs)}.\n`)
       );
-      if (!applied) markFailed();
+      if (!applied) {
+        markFailed();
+      }
     },
   });
 }

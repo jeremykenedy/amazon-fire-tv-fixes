@@ -18,9 +18,13 @@ function envKeyFor(id) {
  * @returns {number | null}
  */
 export function parseBaselineFromEnv(id, raw) {
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
   const match = new RegExp(`^${envKeyFor(id)}=(.*)$`, 'm').exec(raw);
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
   const ms = Number(match[1].trim());
   return Number.isFinite(ms) ? ms : null;
 }
@@ -42,7 +46,9 @@ export function mergeBaselineIntoEnv(id, raw, ms) {
   const key = envKeyFor(id);
   const line = `${key}=${ms}`;
   const keyRe = new RegExp(`^${key}=.*$`, 'm');
-  if (keyRe.test(base)) return base.replace(keyRe, line);
+  if (keyRe.test(base)) {
+    return base.replace(keyRe, line);
+  }
   return base.trim() === '' ? `${line}\n` : `${base.trimEnd()}\n${line}\n`;
 }
 

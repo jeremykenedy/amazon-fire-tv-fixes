@@ -6,19 +6,15 @@ import { requireInstalled } from '../src/device-config.js';
 import { setOneTimeoutStep, FLAG_SPEC } from '../src/steps/timeout-set.js';
 import { findTimeoutById } from '../src/apply/timeouts.js';
 
-async function main() {
-  let flags;
-  try {
-    flags = parseFlags(FLAG_SPEC, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'firetv-timeout-sleep --minutes=20');
-  }
-
-  renderBanner();
-  requireInstalled();
-
-  const ip = await ensureConnected();
-  await setOneTimeoutStep(ip, findTimeoutById('sleep'), flags);
+let flags;
+try {
+  flags = parseFlags(FLAG_SPEC, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'firetv-timeout-sleep --minutes=20');
 }
 
-main();
+renderBanner();
+requireInstalled();
+
+const ip = await ensureConnected();
+await setOneTimeoutStep(ip, findTimeoutById('sleep'), flags);

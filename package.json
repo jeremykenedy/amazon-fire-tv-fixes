@@ -9,7 +9,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "coverage": "node --test --test-timeout=90000 --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info"
   },
   "bin": {
     "amazon-fire-tv-fixes": "./bin/amazon-fire-tv-fixes.js",

@@ -42,3 +42,6 @@ Thumbs.db
 .claude/
 CLAUDE.md
 VERITY.md
+
+lcov.info
+coverage/

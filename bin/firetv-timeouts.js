@@ -5,17 +5,13 @@ import { ensureConnected } from '../src/adb.js';
 import { requireInstalled } from '../src/device-config.js';
 import { manageAllTimeoutsStep } from '../src/steps/timeout-manage.js';
 
-async function main() {
-  try {
-    parseFlags({}, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'firetv-timeouts');
-  }
-
-  renderBanner();
-  requireInstalled();
-  const ip = await ensureConnected();
-  await manageAllTimeoutsStep(ip);
+try {
+  parseFlags({}, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'firetv-timeouts');
 }
 
-main();
+renderBanner();
+requireInstalled();
+const ip = await ensureConnected();
+await manageAllTimeoutsStep(ip);

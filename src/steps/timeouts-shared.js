@@ -20,9 +20,13 @@ const WHOLE_NUMBER_RE = /^\d+$/;
  * @returns {string | null}
  */
 export function mustBeNonNegativeInteger(value) {
-  if (!WHOLE_NUMBER_RE.test(value)) return 'must be a whole number 0 or greater';
+  if (!WHOLE_NUMBER_RE.test(value)) {
+    return 'must be a whole number 0 or greater';
+  }
   const n = Number(value);
-  if (!Number.isSafeInteger(n) || n > MAX_SAFE_MS) return `must be ${MAX_SAFE_MS} or less`;
+  if (!Number.isSafeInteger(n) || n > MAX_SAFE_MS) {
+    return `must be ${MAX_SAFE_MS} or less`;
+  }
   return null;
 }
 
@@ -33,9 +37,13 @@ export function mustBeNonNegativeInteger(value) {
  * @returns {string | null}
  */
 export function mustBeValidMinutes(value) {
-  if (!WHOLE_NUMBER_RE.test(value)) return 'must be a whole number 0 or greater';
+  if (!WHOLE_NUMBER_RE.test(value)) {
+    return 'must be a whole number 0 or greater';
+  }
   const n = Number(value);
-  if (!Number.isSafeInteger(n) || n > MAX_SAFE_MINUTES) return `must be ${MAX_SAFE_MINUTES} or less`;
+  if (!Number.isSafeInteger(n) || n > MAX_SAFE_MINUTES) {
+    return `must be ${MAX_SAFE_MINUTES} or less`;
+  }
   return null;
 }
 
@@ -45,7 +53,9 @@ export function mustBeValidMinutes(value) {
  */
 export function mustBeKnownTimeoutIds(value) {
   const parts = value.split(',').map((s) => s.trim());
-  if (parts.some((id) => !id)) return 'provide one or more timeout ids, e.g. sleep,screensaver';
+  if (parts.some((id) => !id)) {
+    return 'provide one or more timeout ids, e.g. sleep,screensaver';
+  }
   const validIds = TIMEOUTS.map((t) => t.id);
   const unknown = parts.filter((id) => !validIds.includes(id));
   if (unknown.length > 0) {
@@ -59,9 +69,15 @@ export function mustBeKnownTimeoutIds(value) {
  * @returns {string}
  */
 export function msToLabel(ms) {
-  if (ms === null || ms === undefined) return 'unknown';
-  if (ms === 0) return '0 ms (never)';
-  if (ms % 60000 === 0) return `${ms / 60000} min (${ms} ms)`;
+  if (ms === null || ms === undefined) {
+    return 'unknown';
+  }
+  if (ms === 0) {
+    return '0 ms (never)';
+  }
+  if (ms % 60000 === 0) {
+    return `${ms / 60000} min (${ms} ms)`;
+  }
   return `${ms} ms`;
 }
 
@@ -85,7 +101,9 @@ export async function probeTimeouts(ip) {
         results.push({ def, possible: false, reason: 'Could not read a value for this setting from your TV.' });
         continue;
       }
-      if (!hasFactoryBaseline(def.id)) saveFactoryBaseline(def.id, currentMs);
+      if (!hasFactoryBaseline(def.id)) {
+        saveFactoryBaseline(def.id, currentMs);
+      }
       results.push({ def, possible: true, currentMs, baselineMs: getFactoryBaseline(def.id) });
     } catch (err) {
       results.push({ def, possible: false, reason: err.message || String(err) });

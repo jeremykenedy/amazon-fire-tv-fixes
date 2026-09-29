@@ -1,7 +1,8 @@
-import { randomInt } from 'crypto';
+import { randomInt } from 'node:crypto';
 import figlet from 'figlet';
 import chalk from 'chalk';
 import { installCliRuntime } from './cli-runtime.js';
+import { print } from './output.js';
 
 // Picked fresh, at random, on every invocation. Not meant to mean anything,
 // just keeps the tool from looking the same twice in a row.
@@ -18,6 +19,6 @@ export function renderBanner() {
   installCliRuntime();
   const text = figlet.textSync('FIRE TV FIXES', { font: 'Standard' });
   const color = randomColor();
-  console.log(chalk[color](text));
-  console.log(chalk.gray('Alexa deep-sleep fix + ad-free screensavers for Fire TV Edition\n'));
+  print(chalk[color](text));
+  print(chalk.gray('Alexa deep-sleep fix + ad-free screensavers for Fire TV Edition\n'));
 }

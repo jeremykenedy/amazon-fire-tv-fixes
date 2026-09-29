@@ -5,19 +5,15 @@ import { ensureConnected } from '../src/adb.js';
 import { requireInstalled } from '../src/device-config.js';
 import { disableAlexaFix, DISABLE_FLAG_SPEC } from '../src/steps/alexa-fix.js';
 
-async function main() {
-  let flags;
-  try {
-    flags = parseFlags(DISABLE_FLAG_SPEC, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'disable-alexa-fix --yes --force');
-  }
-
-  renderBanner();
-  requireInstalled();
-
-  const ip = await ensureConnected();
-  await disableAlexaFix(ip, flags);
+let flags;
+try {
+  flags = parseFlags(DISABLE_FLAG_SPEC, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'disable-alexa-fix --yes --force');
 }
 
-main();
+renderBanner();
+requireInstalled();
+
+const ip = await ensureConnected();
+await disableAlexaFix(ip, flags);

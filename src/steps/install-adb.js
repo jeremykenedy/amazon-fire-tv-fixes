@@ -4,6 +4,7 @@ import { explainStep, promptYN } from '../ui.js';
 import { isAdbInstalled } from '../adb.js';
 import { platformInstallCommand, runInstallCommand } from '../apply/install-adb.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   yes: { type: 'boolean', desc: 'Install without asking first.' },
@@ -44,7 +45,7 @@ async function runInstall(platform) {
     return true;
   } catch (err) {
     spinner.fail('Install failed.');
-    console.log(chalk.red(err.stderr || err.message));
+    print(chalk.red(err.stderr || err.message));
     markFailed();
     return false;
   }
@@ -52,7 +53,7 @@ async function runInstall(platform) {
 
 export async function installAdbStep(flags = {}) {
   if (await isAdbInstalled()) {
-    console.log(chalk.green('\nadb is already installed. Nothing to do.\n'));
+    print(chalk.green('\nadb is already installed. Nothing to do.\n'));
     return true;
   }
 
@@ -60,14 +61,14 @@ export async function installAdbStep(flags = {}) {
   explainInstallStep(platform);
 
   if (!platform) {
-    console.log(chalk.yellow('\nInstall adb manually, then run this again.\n'));
+    print(chalk.yellow('\nInstall adb manually, then run this again.\n'));
     markFailed();
     return false;
   }
 
   const proceed = flags.yes || (await promptYN('Install it now?'));
   if (!proceed) {
-    console.log(chalk.gray('\nCancelled. Nothing was installed.\n'));
+    print(chalk.gray('\nCancelled. Nothing was installed.\n'));
     return false;
   }
 

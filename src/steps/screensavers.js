@@ -8,6 +8,7 @@ import { listPackages } from '../adb.js';
 import { installScreensaver, uninstallScreensaver } from '../apply/screensavers.js';
 import { SCREENSAVERS } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 const VALID_IDS = SCREENSAVERS.map((s) => s.id);
 
@@ -75,7 +76,7 @@ async function applyChanges(ip, toInstall, toUninstall) {
  */
 export async function manageScreensavers(ip, flags = {}) {
   const installedPkgs = await listPackages(ip);
-  const alreadyInstalledIds = SCREENSAVERS.filter((s) => installedPkgs.includes(s.pkg)).map((s) => s.id);
+  const alreadyInstalledIds = new Set(SCREENSAVERS.filter((s) => installedPkgs.includes(s.pkg)).map((s) => s.id));
 
   const flagDriven = flags.install !== undefined || flags.uninstall !== undefined || flags.yes;
 
@@ -84,7 +85,7 @@ export async function manageScreensavers(ip, flags = {}) {
     const toUninstall = SCREENSAVERS.filter((s) => parseIdList(flags.uninstall).includes(s.id));
 
     if (toInstall.length === 0 && toUninstall.length === 0) {
-      console.log(chalk.gray('\nNothing to do.\n'));
+      print(chalk.gray('\nNothing to do.\n'));
       return;
     }
 
@@ -95,7 +96,9 @@ export async function manageScreensavers(ip, flags = {}) {
       force: Boolean(flags.force),
       interactive: false,
     });
-    if (!allowed) return;
+    if (!allowed) {
+      return;
+    }
 
     await applyChanges(ip, toInstall, toUninstall);
     return;
@@ -122,25 +125,25 @@ export async function manageScreensavers(ip, flags = {}) {
             choices: SCREENSAVERS.map((s) => ({
               name: `${s.name} (${s.blurb})`,
               value: s.id,
-              checked: alreadyInstalledIds.includes(s.id),
+              checked: alreadyInstalledIds.has(s.id),
             })),
           }),
       },
     ],
     buildSummary: (state) => {
-      const toInstall = SCREENSAVERS.filter((s) => state.selectedIds.includes(s.id) && !alreadyInstalledIds.includes(s.id));
-      const toUninstall = SCREENSAVERS.filter((s) => !state.selectedIds.includes(s.id) && alreadyInstalledIds.includes(s.id));
+      const toInstall = SCREENSAVERS.filter((s) => state.selectedIds.includes(s.id) && !alreadyInstalledIds.has(s.id));
+      const toUninstall = SCREENSAVERS.filter((s) => !state.selectedIds.includes(s.id) && alreadyInstalledIds.has(s.id));
       return [
         ...toInstall.map((s) => ({ label: `Install ${s.name}`, detail: s.repo })),
         ...toUninstall.map((s) => ({ label: `Remove ${s.name}`, detail: s.pkg })),
       ];
     },
     onConfirm: async (state) => {
-      const toInstall = SCREENSAVERS.filter((s) => state.selectedIds.includes(s.id) && !alreadyInstalledIds.includes(s.id));
-      const toUninstall = SCREENSAVERS.filter((s) => !state.selectedIds.includes(s.id) && alreadyInstalledIds.includes(s.id));
+      const toInstall = SCREENSAVERS.filter((s) => state.selectedIds.includes(s.id) && !alreadyInstalledIds.has(s.id));
+      const toUninstall = SCREENSAVERS.filter((s) => !state.selectedIds.includes(s.id) && alreadyInstalledIds.has(s.id));
 
       if (toInstall.length === 0 && toUninstall.length === 0) {
-        console.log(chalk.gray('\nNothing to do: everything you checked is already on the TV, and nothing was unchecked.\n'));
+        print(chalk.gray('\nNothing to do: everything you checked is already on the TV, and nothing was unchecked.\n'));
         return;
       }
 
@@ -151,7 +154,9 @@ export async function manageScreensavers(ip, flags = {}) {
         force: Boolean(flags.force),
         interactive: true,
       });
-      if (!allowed) return;
+      if (!allowed) {
+        return;
+      }
 
       await applyChanges(ip, toInstall, toUninstall);
     },

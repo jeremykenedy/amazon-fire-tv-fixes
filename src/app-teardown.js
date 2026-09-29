@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { input } from './prompts.js';
 import { writeEnvFile } from './device-config.js';
 import { markFailed } from './exit-status.js';
+import { print } from './output.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -62,9 +63,15 @@ export function repoParentDir() {
  * @returns {boolean}
  */
 function looksSafeToDelete() {
-  if (PROJECT_ROOT === path.parse(PROJECT_ROOT).root) return false;
-  if (PROJECT_ROOT === osHomeDir()) return false;
-  if (!fs.existsSync(PACKAGE_JSON_PATH)) return false;
+  if (PROJECT_ROOT === path.parse(PROJECT_ROOT).root) {
+    return false;
+  }
+  if (PROJECT_ROOT === osHomeDir()) {
+    return false;
+  }
+  if (!fs.existsSync(PACKAGE_JSON_PATH)) {
+    return false;
+  }
   try {
     const pkg = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'));
     return pkg.name === 'amazon-fire-tv-fixes';
@@ -85,8 +92,8 @@ function osHomeDir() {
  * @returns {Promise<boolean>}
  */
 export async function confirmDestructive(whatWillHappen) {
-  console.log(chalk.red.bold('\nThis is a destructive command and cannot be undone.'));
-  console.log(chalk.red(whatWillHappen));
+  print(chalk.red.bold('\nThis is a destructive command and cannot be undone.'));
+  print(chalk.red(whatWillHappen));
   const typed = await input({ message: 'Type "confirm" to proceed, anything else cancels:' });
   return typed.trim().toLowerCase() === 'confirm';
 }
@@ -99,7 +106,7 @@ export async function confirmDestructive(whatWillHappen) {
  */
 export async function runDeleteRepoFlow() {
   if (!looksSafeToDelete()) {
-    console.log(chalk.red('\nRefusing to delete: this does not look like a genuine amazon-fire-tv-fixes checkout. Nothing was deleted.\n'));
+    print(chalk.red('\nRefusing to delete: this does not look like a genuine amazon-fire-tv-fixes checkout. Nothing was deleted.\n'));
     markFailed();
     return;
   }
@@ -107,18 +114,18 @@ export async function runDeleteRepoFlow() {
   const parent = repoParentDir();
   const confirmed = await confirmDestructive(`This will permanently delete this entire repository from your machine:\n  ${PROJECT_ROOT}`);
   if (!confirmed) {
-    console.log(chalk.gray('\nCancelled. Nothing was deleted.\n'));
+    print(chalk.gray('\nCancelled. Nothing was deleted.\n'));
     return;
   }
 
   const unlinked = await unlinkCommands();
   if (!unlinked.ok) {
-    console.log(chalk.yellow(`Could not unlink the commands first (${unlinked.error}). Run "npm uninstall -g amazon-fire-tv-fixes" after this to clear them from your PATH.`));
+    print(chalk.yellow(`Could not unlink the commands first (${unlinked.error}). Run "npm uninstall -g amazon-fire-tv-fixes" after this to clear them from your PATH.`));
   }
 
   fs.rmSync(PROJECT_ROOT, { recursive: true, force: true });
 
-  console.log(chalk.green('\nDeleted.\n'));
-  console.log(chalk.yellow('Your shell is still sitting in the directory that was just deleted (a script cannot change your shell\'s directory for you). Run this yourself:\n'));
-  console.log(`  ${chalk.green(`cd ${parent}`)}\n`);
+  print(chalk.green('\nDeleted.\n'));
+  print(chalk.yellow('Your shell is still sitting in the directory that was just deleted (a script cannot change your shell\'s directory for you). Run this yourself:\n'));
+  print(`  ${chalk.green('cd ' + parent)}\n`);
 }

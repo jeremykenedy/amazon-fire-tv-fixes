@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { renderBanner } from './banner.js';
 import { isInstalled } from './device-config.js';
+import { print } from './output.js';
 
 /**
  * Every command this package installs, and what it does. Kept in sync with
@@ -37,11 +38,11 @@ export const COMMANDS = [
  */
 export function printCommandList() {
   const width = Math.max(...COMMANDS.map((c) => c.name.length));
-  console.log(chalk.bold.white('Commands installed:\n'));
+  print(chalk.bold.white('Commands installed:\n'));
   for (const { name, desc } of COMMANDS) {
-    console.log(`  ${chalk.green(name.padEnd(width))}  ${chalk.gray(desc)}`);
+    print(`  ${chalk.green(name.padEnd(width))}  ${chalk.gray(desc)}`);
   }
-  console.log('');
+  print('');
 }
 
 /**
@@ -54,10 +55,10 @@ export function printInfoScreen() {
   renderBanner();
 
   if (!isInstalled()) {
-    console.log(chalk.yellow('Fire TV Tools is not installed yet. Nothing else will work until you run:\n'));
+    print(chalk.yellow('Fire TV Tools is not installed yet. Nothing else will work until you run:\n'));
     const start = COMMANDS.find((c) => c.name === 'start');
-    console.log(`  ${chalk.green(start.name)}  ${chalk.gray(start.desc)}\n`);
-    console.log(chalk.gray('Once installed, this command will change to list every app command instead.\n'));
+    print(`  ${chalk.green(start.name)}  ${chalk.gray(start.desc)}\n`);
+    print(chalk.gray('Once installed, this command will change to list every app command instead.\n'));
     return;
   }
 

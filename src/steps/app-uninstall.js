@@ -5,6 +5,7 @@ import { isAdbInstalled, connectAndCheck } from '../adb.js';
 import { unlinkCommands, wipeEnvToTemplate, runDeleteRepoFlow } from '../app-teardown.js';
 import { uninstallEverything } from './uninstall.js';
 import { markFailed } from '../exit-status.js';
+import { print } from '../output.js';
 
 const WIPE_WARNING = 'Removing the commands also deletes the saved IP and the recorded timeout baselines, so the TV could no longer be reverted by this tool.';
 
@@ -28,17 +29,17 @@ async function revertTvFirst() {
 
   const ip = getSavedIp();
   if (!(await isAdbInstalled())) {
-    console.log(chalk.red('\nadb is not installed, so the TV cannot be reached.'));
+    print(chalk.red('\nadb is not installed, so the TV cannot be reached.'));
     return promptYN(`Continue anyway? ${WIPE_WARNING}`);
   }
   if (!(await connectAndCheck(ip))) {
-    console.log(chalk.red(`\nCould not reach the TV at ${ip}, so its settings cannot be reverted right now.`));
+    print(chalk.red(`\nCould not reach the TV at ${ip}, so its settings cannot be reverted right now.`));
     return promptYN(`Continue anyway? ${WIPE_WARNING}`);
   }
 
   const outcome = await uninstallEverything(ip, {});
   if (outcome === 'cancelled' || outcome === 'failed') {
-    console.log(chalk.yellow('\nThe TV was left as it is.'));
+    print(chalk.yellow('\nThe TV was left as it is.'));
     return promptYN(`Remove the commands and reset .env anyway? ${WIPE_WARNING}`);
   }
   return true;
@@ -53,25 +54,25 @@ async function revertTvFirst() {
  */
 export async function runUninstallCommand() {
   if (isInstalled()) {
-    console.log(chalk.bold.white('\nUninstalling Fire TV Tools...\n'));
+    print(chalk.bold.white('\nUninstalling Fire TV Tools...\n'));
 
     if (!(await revertTvFirst())) {
-      console.log(chalk.gray('\nNo changes were made to this computer.\n'));
+      print(chalk.gray('\nNo changes were made to this computer.\n'));
       return;
     }
 
-    console.log(chalk.bold.white('\nStep 2: remove the commands from this computer\n'));
+    print(chalk.bold.white('\nStep 2: remove the commands from this computer\n'));
     const unlinked = await unlinkCommands();
     if (unlinked.ok) {
-      console.log(chalk.green('Commands unlinked from your PATH.'));
+      print(chalk.green('Commands unlinked from your PATH.'));
     } else {
-      console.log(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g amazon-fire-tv-fixes" yourself.`));
+      print(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g amazon-fire-tv-fixes" yourself.`));
       markFailed();
     }
 
     wipeEnvToTemplate();
-    console.log(chalk.green('.env reset to its template.'));
-    console.log(
+    print(chalk.green('.env reset to its template.'));
+    print(
       unlinked.ok
         ? chalk.green('\nFire TV Tools was successfully uninstalled.\n')
         : chalk.yellow('\nFire TV Tools was only partly uninstalled: the commands are still linked.\n')
@@ -80,7 +81,7 @@ export async function runUninstallCommand() {
     // Setup can link the commands and then be quit before a TV is connected,
     // so "not installed" does not mean nothing is on the PATH.
     const unlinked = await unlinkCommands();
-    console.log(
+    print(
       unlinked.ok
         ? chalk.yellow('\nFire TV Tools is not installed, so there was nothing to revert. Any leftover commands were removed from your PATH.\n')
         : chalk.yellow('\nFire TV Tools is not installed, so there is nothing to uninstall.\n')
@@ -89,7 +90,7 @@ export async function runUninstallCommand() {
 
   const wantsRepoRemoved = await promptYN('Would you also like to remove the repo code from your machine?');
   if (!wantsRepoRemoved) {
-    console.log(chalk.gray('\nDone. The repo was left in place.\n'));
+    print(chalk.gray('\nDone. The repo was left in place.\n'));
     return;
   }
 

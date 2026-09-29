@@ -5,17 +5,13 @@ import { ensureConnected } from '../src/adb.js';
 import { requireInstalled } from '../src/device-config.js';
 import { possibleTimeoutsReport } from '../src/steps/timeout-possible.js';
 
-async function main() {
-  try {
-    parseFlags({}, process.argv.slice(2));
-  } catch (err) {
-    exitOnFlagError(err, 'firetv-timeouts-possible');
-  }
-
-  renderBanner();
-  requireInstalled();
-  const ip = await ensureConnected();
-  await possibleTimeoutsReport(ip);
+try {
+  parseFlags({}, process.argv.slice(2));
+} catch (err) {
+  exitOnFlagError(err, 'firetv-timeouts-possible');
 }
 
-main();
+renderBanner();
+requireInstalled();
+const ip = await ensureConnected();
+await possibleTimeoutsReport(ip);
