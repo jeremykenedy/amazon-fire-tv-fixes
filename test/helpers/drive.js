@@ -26,7 +26,8 @@ export function drive(bin, args, steps, { env = {}, timeoutMs = 30000, noAdb = f
   const onlyNode = fs.mkdtempSync(path.join(os.tmpdir(), 'firetv-path-'));
   fs.symlinkSync(process.execPath, path.join(onlyNode, 'node'));
   const fakeDir = path.dirname(process.env.FAKE_ADB_STATE);
-  const child = spawn(process.execPath, [path.join(ROOT, bin), ...args], {
+  const preload = path.join(ROOT, 'test', 'helpers', 'test-paths.js');
+  const child = spawn(process.execPath, ['--import', preload, path.join(ROOT, bin), ...args], {
     env: { ...process.env, PATH: noAdb ? onlyNode : `${fakeDir}${path.delimiter}${onlyNode}`, NO_COLOR: '1', FORCE_COLOR: '0', ...env },
     stdio: ['pipe', 'pipe', 'pipe'],
   });

@@ -11,8 +11,17 @@ import { print } from './output.js';
 // from.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..');
-// FIRE_TV_ENV_FILE lets the tests point at a throwaway file instead of the real .env.
-export const ENV_PATH = process.env.FIRE_TV_ENV_FILE || path.join(PROJECT_ROOT, '.env');
+const DEFAULT_ENV_PATH = path.join(PROJECT_ROOT, '.env');
+export let ENV_PATH = DEFAULT_ENV_PATH;
+
+/**
+ * Test-only: points .env reads and writes at a throwaway file. Never read
+ * from the environment, so nothing outside the tests can redirect it.
+ * @param {string | null} filePath null restores the project's own .env
+ */
+export function setEnvPathForTesting(filePath) {
+  ENV_PATH = filePath || DEFAULT_ENV_PATH;
+}
 const ENV_EXAMPLE_PATH = path.join(PROJECT_ROOT, '.env.example');
 
 const IP_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;

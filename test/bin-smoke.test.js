@@ -7,6 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+// Gives each child the throwaway .env and clone folder (test/helpers/test-paths.js).
+const PRELOAD = path.join(ROOT, 'test', 'helpers', 'test-paths.js');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const bins = [...new Set(Object.values(pkg.bin))];
 
@@ -19,14 +21,14 @@ fs.symlinkSync(process.execPath, path.join(onlyNode, 'node'));
 // Every child also gets a throwaway .env, never the real one.
 const childEnv = {
   ...process.env,
-  FIRE_TV_ENV_FILE: path.join(scratch, '.env'),
-  FIRE_TV_SCREENSAVERS_DIR: path.join(scratch, 'screensavers'),
+  FIRE_TV_TEST_ENV_FILE: path.join(scratch, '.env'),
+  FIRE_TV_TEST_SCREENSAVERS_DIR: path.join(scratch, 'screensavers'),
   PATH: onlyNode,
   NO_COLOR: '1',
 };
 
 function run(bin, args, extraEnv = {}) {
-  return spawnSync(process.execPath, [path.join(ROOT, bin), ...args], {
+  return spawnSync(process.execPath, ['--import', PRELOAD, path.join(ROOT, bin), ...args], {
     env: { ...childEnv, ...extraEnv },
     encoding: 'utf8',
     timeout: 20000,
@@ -67,9 +69,9 @@ test('info lists only start until setup is done', () => {
 });
 
 test('info lists every command once setup is done', () => {
-  fs.writeFileSync(childEnv.FIRE_TV_ENV_FILE, 'FIRE_TV_IP=192.168.1.49\nINSTALLED=true\n');
+  fs.writeFileSync(childEnv.FIRE_TV_TEST_ENV_FILE, 'FIRE_TV_IP=192.168.1.49\nINSTALLED=true\n');
   const r = run('bin/info.js', []);
-  fs.rmSync(childEnv.FIRE_TV_ENV_FILE, { force: true });
+  fs.rmSync(childEnv.FIRE_TV_TEST_ENV_FILE, { force: true });
   assert.equal(r.status, 0);
   assert.match(r.stdout, /enable-alexa-fix/);
   assert.match(r.stdout, /firetv-timeouts-reset/);
@@ -92,6 +94,16 @@ test('a runtime error prints a friendly message and exits 1, with the stack only
 });
 
 test('setup.js runs with only Node built-ins on PATH and declines cleanly with no input', () => {
-  const r = spawnSync(process.execPath, [path.join(ROOT, 'setup.js')], { env: childEnv, encoding: 'utf8', timeout: 20000, input: '' });
+  const r = spawnSync(process.execPath, ['--import', PRELOAD, path.join(ROOT, 'setup.js')], { env: childEnv, encoding: 'utf8', timeout: 20000, input: '' });
   assert.doesNotMatch(r.stderr, /Cannot find package/);
+});
+
+test('environment variables cannot redirect where .env or the clones are written', () => {
+  const script = `Promise.all([import('${path.join(ROOT, 'src/device-config.js')}'), import('${path.join(ROOT, 'src/apply/screensavers.js')}')]).then(([d, s]) => console.log(JSON.stringify([d.ENV_PATH, s.SCREENSAVERS_DIR])));`;
+  const r = spawnSync(process.execPath, ['-e', script], {
+    env: { ...process.env, FIRE_TV_ENV_FILE: '/tmp/elsewhere/.env', FIRE_TV_SCREENSAVERS_DIR: '/tmp/elsewhere/clones', FIRE_TV_TEST_ENV_FILE: '/tmp/elsewhere/.env' },
+    encoding: 'utf8',
+    timeout: 20000,
+  });
+  assert.deepEqual(JSON.parse(r.stdout), [path.join(ROOT, '.env'), path.join(ROOT, 'screensavers')]);
 });

@@ -10,8 +10,17 @@ import { installApk, uninstallPackage, describeAdbError } from '../adb.js';
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
-// FIRE_TV_SCREENSAVERS_DIR lets the tests use a throwaway folder for the local clones.
-export const SCREENSAVERS_DIR = process.env.FIRE_TV_SCREENSAVERS_DIR || path.join(PROJECT_ROOT, 'screensavers');
+const DEFAULT_SCREENSAVERS_DIR = path.join(PROJECT_ROOT, 'screensavers');
+export let SCREENSAVERS_DIR = DEFAULT_SCREENSAVERS_DIR;
+
+/**
+ * Test-only: points the local clones at a throwaway folder. Never read from
+ * the environment, so nothing outside the tests can redirect what gets deleted.
+ * @param {string | null} dirPath null restores the project's own folder
+ */
+export function setScreensaversDirForTesting(dirPath) {
+  SCREENSAVERS_DIR = dirPath || DEFAULT_SCREENSAVERS_DIR;
+}
 
 /**
  * @typedef {Object} ScreensaverEntry

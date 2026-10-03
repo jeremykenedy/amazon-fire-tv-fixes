@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { setEnvPathForTesting } from '../../src/device-config.js';
+import { setScreensaversDirForTesting } from '../../src/apply/screensavers.js';
+
 
 const SCRIPT = `#!/usr/bin/env node
 const fs = require('node:fs');
@@ -55,24 +58,28 @@ export function installFakeAdb(overrides = {}) {
   const defaults = JSON.parse(JSON.stringify(state));
   fs.writeFileSync(statePath, JSON.stringify(state));
 
-  const saved = { PATH: process.env.PATH, ...Object.fromEntries(['FAKE_ADB_STATE', 'FIRE_TV_ENV_FILE', 'FIRE_TV_SCREENSAVERS_DIR'].map((k) => [k, process.env[k]])) };
+  const saved = { PATH: process.env.PATH, ...Object.fromEntries(['FAKE_ADB_STATE', 'FIRE_TV_TEST_ENV_FILE', 'FIRE_TV_TEST_SCREENSAVERS_DIR'].map((k) => [k, process.env[k]])) };
   process.env.PATH = `${dir}${path.delimiter}${process.env.PATH}`;
   process.env.FAKE_ADB_STATE = statePath;
-  process.env.FIRE_TV_ENV_FILE = path.join(dir, '.env');
-  process.env.FIRE_TV_SCREENSAVERS_DIR = path.join(dir, 'screensavers');
+  process.env.FIRE_TV_TEST_ENV_FILE = path.join(dir, '.env');
+  process.env.FIRE_TV_TEST_SCREENSAVERS_DIR = path.join(dir, 'screensavers');
+  setEnvPathForTesting(process.env.FIRE_TV_TEST_ENV_FILE);
+  setScreensaversDirForTesting(process.env.FIRE_TV_TEST_SCREENSAVERS_DIR);
 
   return {
     dir,
-    envFile: process.env.FIRE_TV_ENV_FILE,
+    envFile: process.env.FIRE_TV_TEST_ENV_FILE,
     readState: () => JSON.parse(fs.readFileSync(statePath, 'utf8')),
     setState: (patch) => fs.writeFileSync(statePath, JSON.stringify({ ...JSON.parse(fs.readFileSync(statePath, 'utf8')), ...patch })),
     /** Puts the fake device back to its defaults and clears the temp .env and clones. */
     reset() {
       fs.writeFileSync(statePath, JSON.stringify(defaults));
-      fs.rmSync(process.env.FIRE_TV_ENV_FILE, { recursive: true, force: true });
-      fs.rmSync(process.env.FIRE_TV_SCREENSAVERS_DIR, { recursive: true, force: true });
+      fs.rmSync(process.env.FIRE_TV_TEST_ENV_FILE, { recursive: true, force: true });
+      fs.rmSync(process.env.FIRE_TV_TEST_SCREENSAVERS_DIR, { recursive: true, force: true });
     },
     restore() {
+      setEnvPathForTesting(null);
+      setScreensaversDirForTesting(null);
       for (const [k, v] of Object.entries(saved)) {
         if (v === undefined) delete process.env[k];
         else process.env[k] = v;
