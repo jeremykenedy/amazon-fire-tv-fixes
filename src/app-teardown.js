@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import chalk from 'chalk';
@@ -14,11 +15,28 @@ const execFileAsync = promisify(execFile);
 // Resolved relative to this file, same convention as device-config.js.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const PROJECT_ROOT = path.join(__dirname, '..');
-const ENV_EXAMPLE_PATH = path.join(PROJECT_ROOT, '.env.example');
-const PACKAGE_JSON_PATH = path.join(PROJECT_ROOT, 'package.json');
+
+let projectRootOverride = null;
+
+/**
+ * Test-only: points every path below at a throwaway checkout instead of
+ * this repository, so the delete flow can never touch the real one.
+ * @param {string | null} dir null restores the default
+ */
+export function setProjectRootForTesting(dir) {
+  projectRootOverride = dir;
+}
+
+function projectRoot() {
+  return projectRootOverride || PROJECT_ROOT;
+}
+
+function packageJsonPath() {
+  return path.join(projectRoot(), 'package.json');
+}
 
 function packageName() {
-  return JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8')).name;
+  return JSON.parse(fs.readFileSync(packageJsonPath(), 'utf8')).name;
 }
 
 /**
@@ -31,7 +49,7 @@ function packageName() {
  */
 export async function unlinkCommands() {
   try {
-    await execFileAsync('npm', ['uninstall', '-g', packageName()], { cwd: PROJECT_ROOT });
+    await execFileAsync('npm', ['uninstall', '-g', packageName()], { cwd: projectRoot() });
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err.stderr || err.message };
@@ -44,7 +62,8 @@ export async function unlinkCommands() {
  * timeout baselines in one step.
  */
 export function wipeEnvToTemplate() {
-  const template = fs.existsSync(ENV_EXAMPLE_PATH) ? fs.readFileSync(ENV_EXAMPLE_PATH, 'utf8') : '';
+  const envExamplePath = path.join(projectRoot(), '.env.example');
+  const template = fs.existsSync(envExamplePath) ? fs.readFileSync(envExamplePath, 'utf8') : '';
   writeEnvFile(template);
 }
 
@@ -53,35 +72,36 @@ export function wipeEnvToTemplate() {
  * parent once this repo is deleted.
  */
 export function repoParentDir() {
-  return path.dirname(PROJECT_ROOT);
+  return path.dirname(projectRoot());
 }
 
 /**
- * Refuses to proceed unless PROJECT_ROOT genuinely looks like this
+ * Refuses to proceed unless the project root genuinely looks like this
  * package's own checkout, not some miscomputed path. The one hard guard
  * before anything gets deleted.
  * @returns {boolean}
  */
 function looksSafeToDelete() {
-  if (PROJECT_ROOT === path.parse(PROJECT_ROOT).root) {
+  const root = projectRoot();
+  if (root === path.parse(root).root) {
     return false;
   }
-  if (PROJECT_ROOT === osHomeDir()) {
+  if (root === osHomeDir()) {
     return false;
   }
-  if (!fs.existsSync(PACKAGE_JSON_PATH)) {
+  if (!fs.existsSync(packageJsonPath())) {
     return false;
   }
   try {
-    const pkg = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'));
-    return pkg.name === 'amazon-fire-tv-fixes';
+    const pkg = JSON.parse(fs.readFileSync(packageJsonPath(), 'utf8'));
+    return pkg.name === 'fire-tv-toolkit';
   } catch {
     return false;
   }
 }
 
 function osHomeDir() {
-  return process.env.HOME || process.env.USERPROFILE || '';
+  return os.homedir();
 }
 
 /**
@@ -106,13 +126,14 @@ export async function confirmDestructive(whatWillHappen) {
  */
 export async function runDeleteRepoFlow() {
   if (!looksSafeToDelete()) {
-    print(chalk.red('\nRefusing to delete: this does not look like a genuine amazon-fire-tv-fixes checkout. Nothing was deleted.\n'));
+    print(chalk.red('\nRefusing to delete: this does not look like a genuine fire-tv-toolkit checkout. Nothing was deleted.\n'));
     markFailed();
     return;
   }
 
+  const root = projectRoot();
   const parent = repoParentDir();
-  const confirmed = await confirmDestructive(`This will permanently delete this entire repository from your machine:\n  ${PROJECT_ROOT}`);
+  const confirmed = await confirmDestructive(`This will permanently delete this entire repository from your machine:\n  ${root}`);
   if (!confirmed) {
     print(chalk.gray('\nCancelled. Nothing was deleted.\n'));
     return;
@@ -120,10 +141,10 @@ export async function runDeleteRepoFlow() {
 
   const unlinked = await unlinkCommands();
   if (!unlinked.ok) {
-    print(chalk.yellow(`Could not unlink the commands first (${unlinked.error}). Run "npm uninstall -g amazon-fire-tv-fixes" after this to clear them from your PATH.`));
+    print(chalk.yellow(`Could not unlink the commands first (${unlinked.error}). Run "npm uninstall -g fire-tv-toolkit" after this to clear them from your PATH.`));
   }
 
-  fs.rmSync(PROJECT_ROOT, { recursive: true, force: true });
+  fs.rmSync(root, { recursive: true, force: true });
 
   print(chalk.green('\nDeleted.\n'));
   print(chalk.yellow('Your shell is still sitting in the directory that was just deleted (a script cannot change your shell\'s directory for you). Run this yourself:\n'));

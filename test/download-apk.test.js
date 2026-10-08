@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { downloadApk, removeDownload, assertTrustedApkUrl, assertTrustedRedirect } from '../src/apply/screensavers.js';
+import { downloadApk, removeDownload, assertTrustedApkUrl, assertTrustedRedirect, parseSha256File } from '../src/apply/screensavers.js';
 
 const entry = { id: 'testsaver', name: 'Test Saver', repo: 'owner/repo' };
 const bytes = Buffer.from('pretend this is an apk');
@@ -131,4 +131,55 @@ test('each download gets its own private temp directory, removed by removeDownlo
   removeDownload(p2);
   assert.equal(fs.existsSync(path.dirname(p1)), false);
   assert.equal(fs.existsSync(path.dirname(p2)), false);
+});
+
+function stubFetchWithChecksumFile(fileText, sumUrl = 'https://github.com/owner/repo/releases/download/v1/app.apk.sha256') {
+  return async (url) => {
+    if (String(url).includes('/releases/latest')) {
+      return Response.json({
+        tag_name: 'v1',
+        body: 'No checksum in these notes.',
+        assets: [
+          { name: 'app.apk', browser_download_url: 'https://github.com/owner/repo/releases/download/v1/app.apk' },
+          { name: 'app.apk.sha256', browser_download_url: sumUrl },
+        ],
+      });
+    }
+    if (String(url).endsWith('.sha256')) {
+      return new Response(fileText, { status: 200 });
+    }
+    return new Response(bytes, { status: 200 });
+  };
+}
+
+test('downloadApk falls back to the release\'s own .sha256 file when the notes record no checksum', async () => {
+  const p = await withFetch(stubFetchWithChecksumFile(`${goodSum}  app.apk\n`), () => downloadApk(entry));
+  assert.deepEqual(fs.readFileSync(p), bytes);
+  removeDownload(p);
+});
+
+test('downloadApk rejects a download that does not match the .sha256 file', async () => {
+  await assert.rejects(
+    withFetch(stubFetchWithChecksumFile(`${'0'.repeat(64)}  app.apk\n`), () => downloadApk(entry)),
+    /Checksum mismatch/
+  );
+});
+
+test('downloadApk refuses a .sha256 file hosted outside the repo release path', async () => {
+  await assert.rejects(
+    withFetch(stubFetchWithChecksumFile(goodSum, 'https://evil.example.com/app.apk.sha256'), () => downloadApk(entry)),
+    /unexpected location/
+  );
+});
+
+test('downloadApk fails closed when the .sha256 file has no hash in it', async () => {
+  await assert.rejects(withFetch(stubFetchWithChecksumFile('not a hash'), () => downloadApk(entry)), /No valid SHA-256/);
+});
+
+test('parseSha256File reads the sha256sum format and nothing else', () => {
+  assert.equal(parseSha256File(`${goodSum.toUpperCase()}  app.apk`), goodSum);
+  assert.equal(parseSha256File(goodSum), goodSum);
+  assert.equal(parseSha256File('app.apk ' + goodSum), null);
+  assert.equal(parseSha256File(''), null);
+  assert.equal(parseSha256File(null), null);
 });

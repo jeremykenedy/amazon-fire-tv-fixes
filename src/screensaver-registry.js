@@ -1,9 +1,9 @@
-// The vetted screensaver forks. Each one was reviewed this way before being
-// added here: pulled its latest GitHub release APK, checked its requested
-// Android permissions, checked its actual network traffic and any hardcoded
-// endpoints in its code, and confirmed no ads, analytics, or trackers.
-// `repo` points at a fork under github.com/jeremykenedy, not the original
-// author's repo. See the Credits section in the README for the originals.
+// The vetted screensavers. Each one was reviewed this way before being added
+// here: pulled its latest GitHub release APK, checked its requested Android
+// permissions, checked its actual network traffic and any hardcoded endpoints
+// in its code, and confirmed no ads, analytics, or trackers. `repo` is always
+// under github.com/jeremykenedy: a fork for the third-party ones (see the
+// Credits section in the README for the originals), or one of Jeremy's own.
 
 export const SCREENSAVERS = [
   {
@@ -29,6 +29,22 @@ export const SCREENSAVERS = [
     dreamComponent: 'com.overdevs.snoozy/.SnoozyDreamService',
     repo: 'jeremykenedy/Snoozy',
     blurb: 'Animated Snoopy screensaver. No ads, no analytics, confirmed by its own author.',
+  },
+  {
+    id: 'aquarium-live',
+    name: 'Aquarium Live',
+    pkg: 'com.jeremykenedy.aquariumlive',
+    dreamComponent: 'com.jeremykenedy.aquariumlive/.AquariumDream',
+    repo: 'jeremykenedy/aquarium-live',
+    blurb: 'A living aquarium drawn in real time. Four scenes, six looks, day and night. No ads.',
+  },
+  {
+    id: 'aquarium-4k',
+    name: 'Aquarium 4K',
+    pkg: 'com.jeremykenedy.firetv.aquarium',
+    dreamComponent: 'com.jeremykenedy.firetv.aquarium/.AquariumDreamService',
+    repo: 'jeremykenedy/fire-tv-aquarium',
+    blurb: 'Offline 4K aquarium footage with custom fish, sea life and backgrounds. No ads.',
   },
 ];
 

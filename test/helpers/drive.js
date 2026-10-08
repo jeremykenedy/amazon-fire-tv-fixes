@@ -18,7 +18,7 @@ export const SPACE = ' ';
  * installFakeAdb().
  * @param {string} bin path like 'bin/update.js'
  * @param {string[]} args
- * @param {Array<{expect: string | RegExp, send: string}>} steps
+ * @param {Array<{expect: string | RegExp, send: string, end?: boolean}>} steps steps with end: true close stdin after sending
  * @param {{env?: object, timeoutMs?: number}} [options]
  * @returns {Promise<{code: number | null, out: string}>}
  */
@@ -39,14 +39,14 @@ export function drive(bin, args, steps, { env = {}, timeoutMs = 30000, noAdb = f
 
   const pump = () => {
     while (next < steps.length) {
-      const { expect, send } = steps[next];
+      const { expect, send, end } = steps[next];
       const rest = out.slice(cursor);
       const at = typeof expect === 'string' ? rest.indexOf(expect) : rest.search(expect);
       if (at === -1) return;
       const len = typeof expect === 'string' ? expect.length : rest.slice(at).match(expect)[0].length;
       cursor += at + len;
       next += 1;
-      setTimeout(() => child.stdin.write(send), 60);
+      setTimeout(() => (end ? child.stdin.end(send) : child.stdin.write(send)), 60);
     }
   };
   child.stdout.on('data', (d) => { out += d; pump(); });

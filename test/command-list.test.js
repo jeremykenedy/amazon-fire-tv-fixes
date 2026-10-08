@@ -18,3 +18,17 @@ test('every COMMANDS entry has a non-empty name and description', () => {
     assert.ok(desc && desc.trim().length > 0);
   }
 });
+
+test('the banner art fits the terminal: full size, then a smaller font, then plain text', async () => {
+  const { bannerArt, TAGLINE } = await import('../src/banner.js');
+  const widest = (art) => Math.max(...art.split('\n').map((line) => line.length));
+  const full = bannerArt(undefined);
+  assert.ok(widest(full) <= 200 && full.includes('\n'));
+  assert.ok(widest(bannerArt(80)) <= 80);
+  for (const columns of [75, 60]) {
+    const art = bannerArt(columns);
+    assert.ok(widest(art) <= columns && art.includes('\n'), `${columns} columns`);
+  }
+  assert.equal(bannerArt(10), 'FIRE TV TOOLKIT');
+  assert.match(TAGLINE, /Alexa deep-sleep fix/);
+});

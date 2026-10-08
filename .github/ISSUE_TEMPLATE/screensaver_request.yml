@@ -1,0 +1,24 @@
+name: Screensaver request
+description: Suggest a screensaver to add. It has to be ad-free and open source.
+labels: ["enhancement"]
+body:
+  - type: input
+    id: repo
+    attributes:
+      label: Source repository
+      description: Link to the screensaver's source code.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What it looks like
+      description: A short description, and a screenshot if you have one.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send it
+      options:
+        - label: It shows no ads and has no analytics or tracking that I know of.
+          required: true
+        - label: It works as a screensaver on Fire TV or Android TV.

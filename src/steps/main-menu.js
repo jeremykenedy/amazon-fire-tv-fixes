@@ -8,6 +8,7 @@ import { alexaFixMenu } from './alexa-fix.js';
 import { manageScreensavers } from './screensavers.js';
 import { setScreensaver } from './set-screensaver.js';
 import { reviewTimeoutsIfWanted, manageAllTimeoutsStep } from './timeout-manage.js';
+import { manageLauncher } from './launcher.js';
 import { print } from '../output.js';
 
 const MENU_CHOICES = [
@@ -16,6 +17,7 @@ const MENU_CHOICES = [
   { name: 'Install or uninstall screensavers', value: 'screensavers' },
   { name: 'Choose the active screensaver', value: 'set-screensaver' },
   { name: 'Review or adjust TV timeouts', value: 'timeouts' },
+  { name: 'Choose the home screen (AT4K or Amazon)', value: 'launcher' },
 ];
 
 const MENU_ACTIONS = {
@@ -24,6 +26,7 @@ const MENU_ACTIONS = {
   screensavers: (ip) => manageScreensavers(ip),
   'set-screensaver': (ip) => setScreensaver(ip),
   timeouts: (ip) => manageAllTimeoutsStep(ip),
+  launcher: (ip) => manageLauncher(ip),
 };
 
 function printIntro() {
@@ -33,6 +36,7 @@ function printIntro() {
   print(chalk.gray('  3. Install or remove ad-free screensavers.'));
   print(chalk.gray('  4. Choose which installed screensaver is active.'));
   print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts (optional).'));
+  print(chalk.gray('  6. Switch the home screen to AT4K, or back to the Amazon menu (optional).'));
   print(chalk.gray('\nEach standalone command is named after its step in the README.\n'));
 }
 
@@ -48,7 +52,7 @@ async function runMenuLoop(ip) {
  * The full guided flow: banner, adb check, device setup, optional timeout
  * review, then the interactive "What would you like to do?" menu loop.
  * Shared by every entry point that launches the guided experience
- * (`amazon-fire-tv-fixes`, `start`, `update`), so they can never drift
+ * (`fire-tv-toolkit`, `start`, `update`), so they can never drift
  * apart. Marks INSTALLED=true in .env the moment device setup succeeds with
  * a saved IP.
  * @returns {Promise<void>}
@@ -79,7 +83,7 @@ export async function runMainMenu({ showBanner = true } = {}) {
 export async function runStartCommand() {
   if (isInstalled()) {
     renderBanner();
-    print(chalk.yellow('Fire TV Tools is already installed. Running update...\n'));
+    print(chalk.yellow('Fire TV Toolkit is already installed. Running update...\n'));
     await runUpdateCommand({ showBanner: false });
     return;
   }
@@ -99,7 +103,7 @@ export async function runUpdateCommand({ showBanner = true } = {}) {
     renderBanner();
   }
   if (!isInstalled()) {
-    print(chalk.yellow('Fire TV Tools is not installed yet. Running setup...\n'));
+    print(chalk.yellow('Fire TV Toolkit is not installed yet. Running setup...\n'));
     await runMainMenu({ showBanner: false });
     return;
   }

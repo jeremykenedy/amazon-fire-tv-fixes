@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fire TV Home Redirect</string>
+    <string name="service_description">Opens the AT4K launcher whenever the Amazon home screen comes to the front. It is told which app\'s screen is in front, never what is on that screen, and it keeps nothing and sends nothing anywhere.</string>
+    <string name="picker_name">Screensavers</string>
+    <string name="picker_title">Screensaver</string>
+    <string name="picker_pick">Pick the screensaver the TV should use.</string>
+    <string name="picker_active">Active now: %1$s</string>
+    <string name="picker_needs_permission">This app is not allowed to change the screensaver yet. Run firetv-launcher on your computer to finish setting it up.</string>
+</resources>

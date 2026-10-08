@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Troubleshooting guide
+    url: https://github.com/jeremykenedy/fire-tv-toolkit/blob/main/docs/TROUBLESHOOTING.md
+    about: The TV cannot be reached, a setting changed back, or a screensaver will not install.
+  - name: Installation
+    url: https://github.com/jeremykenedy/fire-tv-toolkit#installation
+    about: Setting up the tool and putting the TV in developer mode.

@@ -31,7 +31,7 @@ test('every dreamComponent starts with its own package name', () => {
   }
 });
 
-test('every repo points at a jeremykenedy fork, not an upstream author repo', () => {
+test('every repo is under jeremykenedy (a fork or his own), not an upstream author repo', () => {
   for (const entry of SCREENSAVERS) {
     assert.match(entry.repo, /^jeremykenedy\//, `${entry.id}: repo "${entry.repo}" is not under jeremykenedy/`);
   }

@@ -10,4 +10,4 @@ try {
 }
 
 renderBanner();
-runDeleteRepoFlow();
+await runDeleteRepoFlow();

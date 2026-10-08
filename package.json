@@ -1,7 +1,7 @@
 {
-  "name": "amazon-fire-tv-fixes",
-  "version": "2.0.0",
-  "description": "Fix Alexa deep-sleep disconnects and remove ad screensavers on Fire TV Edition, over adb.",
+  "name": "fire-tv-toolkit",
+  "version": "3.0.0",
+  "description": "Ad-free screensavers, a better home screen, and the Alexa deep-sleep fix for your Fire TV, set up from your terminal.",
   "license": "MIT",
   "author": "Jeremy Kenedy",
   "type": "module",
@@ -9,12 +9,12 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test",
-    "coverage": "node --test --test-timeout=90000 --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info"
+    "test": "node --test test/*.test.js",
+    "coverage": "node --test --test-timeout=90000 --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info test/*.test.js"
   },
   "bin": {
-    "amazon-fire-tv-fixes": "./bin/amazon-fire-tv-fixes.js",
-    "amazon-fire-tv-fixes-uninstall": "./bin/amazon-fire-tv-fixes-uninstall.js",
+    "fire-tv-toolkit": "./bin/fire-tv-toolkit.js",
+    "firetv-revert": "./bin/firetv-revert.js",
     "enable-alexa-fix": "./bin/enable-alexa-fix.js",
     "disable-alexa-fix": "./bin/disable-alexa-fix.js",
     "firetv-install-adb": "./bin/firetv-install-adb.js",
@@ -34,7 +34,10 @@
     "firetv": "./bin/firetv.js",
     "uninstall": "./bin/uninstall.js",
     "delete": "./bin/delete.js",
-    "remove": "./bin/remove.js"
+    "remove": "./bin/remove.js",
+    "firetv-launcher": "./bin/firetv-launcher.js",
+    "launcher": "./bin/launcher.js",
+    "screensaver": "./bin/screensaver.js"
   },
   "files": [
     "bin",
@@ -47,15 +50,19 @@
   ],
   "keywords": [
     "fire-tv",
-    "amazon-fire-tv",
+    "firetv",
     "alexa",
     "adb",
     "screensaver",
-    "cli"
+    "launcher",
+    "at4k",
+    "android-tv",
+    "cli",
+    "ad-free"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeremykenedy/amazon-fire-tv-fixes.git"
+    "url": "git+https://github.com/jeremykenedy/fire-tv-toolkit.git"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.2.1",
@@ -64,5 +71,9 @@
     "dotenv": "^16.4.7",
     "figlet": "^1.8.0",
     "ora": "^8.1.1"
+  },
+  "homepage": "https://github.com/jeremykenedy/fire-tv-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/jeremykenedy/fire-tv-toolkit/issues"
   }
 }

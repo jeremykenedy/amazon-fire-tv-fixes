@@ -31,17 +31,8 @@ Thumbs.db
 ### VS Code Vendor Configs ###
 /.vscode
 
-# Verity - machine-local state. Everything in .verity/ is ignored except the
-# shared standard, which is meant to be committed. The knowledge graph under
-# .verity/memory/ is machine-local too: the service rebuilds it, and committing
-# it puts generated notes in every diff and pull request.
-.verity/*
-!.verity/standard.yaml
-
-# Local agent tooling. Never part of this repo.
-.claude/
-CLAUDE.md
-VERITY.md
-
 lcov.info
 coverage/
+
+# Android build output
+android/*/build/

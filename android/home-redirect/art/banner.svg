@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b2545"/>
+      <stop offset="1" stop-color="#13315c"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="150" cy="180" r="70" fill="#f4d35e"/>
+  <circle cx="178" cy="160" r="66" fill="#0f2b50"/>
+  <circle cx="250" cy="110" r="5" fill="#ffffff" opacity="0.9"/>
+  <circle cx="225" cy="250" r="3" fill="#ffffff" opacity="0.7"/>
+  <circle cx="90" cy="95" r="3" fill="#ffffff" opacity="0.7"/>
+  <text x="270" y="200" font-family="Helvetica, Arial, sans-serif" font-size="52" font-weight="700" fill="#ffffff">Screensavers</text>
+</svg>

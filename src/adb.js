@@ -168,6 +168,16 @@ export async function putSetting(ip, namespace, key, value) {
 /**
  * @param {string} ip
  * @param {string} namespace
+ * @param {string} key
+ * @returns {Promise<string | null>}
+ */
+export async function deleteSetting(ip, namespace, key) {
+  return run(['-s', target(ip), 'shell', 'settings', 'delete', namespace, key]);
+}
+
+/**
+ * @param {string} ip
+ * @param {string} namespace
  * @returns {Promise<string[]>} raw "key=value" lines for every setting in that namespace
  */
 export async function listSettings(ip, namespace) {
@@ -188,6 +198,49 @@ export async function listPackages(ip) {
     .split('\n')
     .map((line) => line.replace(/^package:/, '').trim())
     .filter(Boolean);
+}
+
+/**
+ * @param {string} ip
+ * @returns {Promise<string[]>} names of installed packages that are switched off on the TV
+ */
+export async function listDisabledPackages(ip) {
+  const out = await run(['-s', target(ip), 'shell', 'pm', 'list', 'packages', '-d']);
+  return (out || '')
+    .split('\n')
+    .map((line) => line.replace(/^package:/, '').trim())
+    .filter(Boolean);
+}
+
+/**
+ * Switches a disabled package back on. Does nothing to one that is already on.
+ * @param {string} ip
+ * @param {string} pkg
+ * @returns {Promise<string | null>}
+ */
+export async function enablePackage(ip, pkg) {
+  return run(['-s', target(ip), 'shell', 'pm', 'enable', pkg]);
+}
+
+/**
+ * Grants an app a permission the TV only gives out over adb.
+ * @param {string} ip
+ * @param {string} pkg
+ * @param {string} permission
+ * @returns {Promise<string | null>}
+ */
+export async function grantPermission(ip, pkg, permission) {
+  return run(['-s', target(ip), 'shell', 'pm', 'grant', pkg, permission]);
+}
+
+/**
+ * Presses the remote's Home button. Only for showing the result of a change,
+ * so a failure here is ignored.
+ * @param {string} ip
+ * @returns {Promise<string | null>}
+ */
+export async function pressHome(ip) {
+  return run(['-s', target(ip), 'shell', 'input', 'keyevent', 'KEYCODE_HOME'], { allowFail: true });
 }
 
 /**
