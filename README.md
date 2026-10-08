@@ -108,6 +108,7 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Select any scr
     <a href="docs/screenshots/cli-revert.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-revert-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-revert-tablet.jpg 2x"><img src="docs/screenshots/cli-revert.jpg" alt="Putting the TV back how it was" title="Putting the TV back how it was"></picture></a>
     <a href="docs/screenshots/cli-info.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-info-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-info-tablet.jpg 2x"><img src="docs/screenshots/cli-info.jpg" alt="Every command, from info" title="Every command, from info"></picture></a>
 </p>
+
 ## Platform support
 
 | Platform | Status |

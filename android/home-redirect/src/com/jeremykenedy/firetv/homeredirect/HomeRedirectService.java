@@ -16,19 +16,28 @@ import android.view.accessibility.AccessibilityEvent;
  * Fire OS opens Settings by showing the home screen first and putting
  * Settings on top a moment later, and Settings is opened from AT4K's own gear
  * icon. So when the home screen appears straight after AT4K or Amazon's
- * settings app, the redirect waits briefly and is called off if another Amazon launcher screen arrives.
- * Coming from any other app there is nothing to wait for, so the redirect is
- * immediate. That is what keeps Settings reachable without slowing Home down.
+ * settings app, the redirect waits briefly and is called off if another
+ * Amazon launcher screen arrives. Coming from any other app there is nothing
+ * to wait for, so the redirect is immediate. That is what keeps Settings
+ * reachable without slowing Home down.
  */
 public class HomeRedirectService extends AccessibilityService {
     private static final String TAG = "FireTvHomeRedirect";
+
     private static final String AMAZON_LAUNCHER = "com.amazon.tv.launcher";
-    private static final String AMAZON_HOME_PREFIX = "com.amazon.tv.launcher.ui.HomeActivity";
-    private static final String AMAZON_SETTINGS_PREFIX = "com.amazon.tv.settings";
+
+    private static final String AMAZON_HOME_PREFIX =
+            "com.amazon.tv.launcher.ui.HomeActivity";
+
+    private static final String AMAZON_SETTINGS_PREFIX =
+            "com.amazon.tv.settings";
+
     private static final String TARGET_LAUNCHER = "com.overdevs.at4k";
+
     private static final long SETTLE_MS = 550;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+
     private final Runnable redirect = new Runnable() {
         @Override
         public void run() {
@@ -36,22 +45,32 @@ public class HomeRedirectService extends AccessibilityService {
             openTargetLauncher();
         }
     };
+
     private boolean waiting;
+
     private boolean settingsMayFollow;
 
-    /** AT4K's gear icon hands off to Amazon's settings app, which is what brings the home screen up. */
+    /**
+     * AT4K's gear icon hands off to Amazon's settings app, which is what
+     * brings the home screen up.
+     */
     static boolean canOpenSettings(CharSequence pkg) {
-        return TARGET_LAUNCHER.contentEquals(pkg) || pkg.toString().startsWith(AMAZON_SETTINGS_PREFIX);
+        return TARGET_LAUNCHER.contentEquals(pkg)
+                || pkg.toString().startsWith(AMAZON_SETTINGS_PREFIX);
     }
 
     static boolean isAmazonHome(CharSequence pkg, CharSequence cls) {
-        return AMAZON_LAUNCHER.contentEquals(pkg) && cls != null && cls.toString().startsWith(AMAZON_HOME_PREFIX);
+        return AMAZON_LAUNCHER.contentEquals(pkg)
+                && cls != null
+                && cls.toString().startsWith(AMAZON_HOME_PREFIX);
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         CharSequence pkg = event.getPackageName();
-        if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || pkg == null) {
+        int type = event.getEventType();
+        if (type != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+                || pkg == null) {
             return;
         }
         if (!isAmazonHome(pkg, event.getClassName())) {
@@ -76,12 +95,16 @@ public class HomeRedirectService extends AccessibilityService {
     }
 
     private void openTargetLauncher() {
-        Intent launch = getPackageManager().getLaunchIntentForPackage(TARGET_LAUNCHER);
+        Intent launch =
+                getPackageManager().getLaunchIntentForPackage(TARGET_LAUNCHER);
         if (launch == null) {
-            Log.w(TAG, TARGET_LAUNCHER + " is not installed, leaving the Amazon home screen up");
+            Log.w(TAG, TARGET_LAUNCHER
+                    + " is not installed, leaving the Amazon home screen up");
             return;
         }
-        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(launch);
     }
 

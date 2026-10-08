@@ -27,10 +27,13 @@ import java.util.List;
  */
 public class ScreensaverPickerActivity extends Activity {
     static final String ACTIVE_SETTING = "screensaver_components";
+
     static final String ENABLED_SETTING = "screensaver_enabled";
 
     private List<Screensavers.Choice> choices = new ArrayList<>();
+
     private ListView list;
+
     private TextView status;
 
     @Override
@@ -56,11 +59,13 @@ public class ScreensaverPickerActivity extends Activity {
         list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
                 choose(position);
             }
         });
-        root.addView(list, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
+        root.addView(list, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
 
         setContentView(root);
     }
@@ -74,9 +79,9 @@ public class ScreensaverPickerActivity extends Activity {
     private void load() {
         PackageManager pm = getPackageManager();
         List<Screensavers.Choice> found = new ArrayList<>();
-        // Some screensavers keep their service unexported so only the system can
-        // start it, which hides them from an intent query. Reading each app's
-        // declared services finds those too.
+        // Some screensavers keep their service unexported so only the system
+        // can start it, which hides them from an intent query. Reading each
+        // app's declared services finds those too.
         for (PackageInfo pkg : pm.getInstalledPackages(0)) {
             if (Screensavers.isHidden(pkg.packageName)) {
                 continue;
@@ -89,20 +94,25 @@ public class ScreensaverPickerActivity extends Activity {
         for (Screensavers.Choice choice : choices) {
             labels.add(choice.label);
         }
-        list.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, labels));
+        list.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_single_choice, labels));
 
-        int active = Screensavers.indexOfActive(choices, Settings.Secure.getString(getContentResolver(), ACTIVE_SETTING));
+        String current = Settings.Secure.getString(getContentResolver(),
+                ACTIVE_SETTING);
+        int active = Screensavers.indexOfActive(choices, current);
         if (active >= 0) {
             list.setItemChecked(active, true);
             list.setSelection(active);
-            status.setText(getString(R.string.picker_active, choices.get(active).label));
+            status.setText(getString(R.string.picker_active,
+                    choices.get(active).label));
         } else {
             status.setText(R.string.picker_pick);
         }
         status.setGravity(Gravity.START);
     }
 
-    private static void addScreensavers(PackageManager pm, String packageName, List<Screensavers.Choice> found) {
+    private static void addScreensavers(PackageManager pm,
+            String packageName, List<Screensavers.Choice> found) {
         PackageInfo info;
         try {
             info = pm.getPackageInfo(packageName, PackageManager.GET_SERVICES);
@@ -114,8 +124,10 @@ public class ScreensaverPickerActivity extends Activity {
         }
         for (ServiceInfo service : info.services) {
             if (Screensavers.isScreensaver(service.permission)) {
-                String component = new ComponentName(service.packageName, service.name).flattenToShortString();
-                String label = Screensavers.displayName(service.packageName, service.loadLabel(pm).toString());
+                String component = new ComponentName(service.packageName,
+                        service.name).flattenToShortString();
+                String label = Screensavers.displayName(service.packageName,
+                        service.loadLabel(pm).toString());
                 found.add(new Screensavers.Choice(component, label));
             }
         }
@@ -125,7 +137,8 @@ public class ScreensaverPickerActivity extends Activity {
         Screensavers.Choice choice = choices.get(position);
         ContentResolver resolver = getContentResolver();
         try {
-            Settings.Secure.putString(resolver, ACTIVE_SETTING, choice.component);
+            Settings.Secure.putString(resolver, ACTIVE_SETTING,
+                    choice.component);
             Settings.Secure.putInt(resolver, ENABLED_SETTING, 1);
             status.setText(getString(R.string.picker_active, choice.label));
         } catch (SecurityException e) {

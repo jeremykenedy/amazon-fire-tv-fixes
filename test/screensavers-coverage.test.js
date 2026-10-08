@@ -42,7 +42,8 @@ after(() => {
  * A GitHub stand-in for one repo: the releases API plus the download URLs it
  * hands out. Anything else it is asked for is a test bug.
  */
-function releaseFetch({ repo, bytes, notes, apiStatus = 200, apkStatus = 200, sumStatus = 200, assets, redirectNoLocation = false, seen = [] }) {
+function releaseFetch(options) {
+  const { repo, bytes, notes, apiStatus = 200, apkStatus = 200, sumStatus = 200, assets, redirectNoLocation = false, seen = [] } = options;
   const apkUrl = `https://github.com/${repo}/releases/download/v1/app.apk`;
   const list = assets === undefined ? [{ name: 'app.apk', browser_download_url: apkUrl }] : assets;
   return async (url) => {

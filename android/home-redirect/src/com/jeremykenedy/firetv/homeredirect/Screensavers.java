@@ -11,12 +11,30 @@ import java.util.Locale;
  * so they can be tested on a normal JVM.
  */
 final class Screensavers {
+    static final String BIND_DREAM_SERVICE =
+            "android.permission.BIND_DREAM_SERVICE";
+
+    static final String AMAZON_PACKAGE = "com.amazon.ftv.screensaver";
+
+    /**
+     * Amazon's store-demo modes and Android's dessert easter egg are
+     * screensavers in name only.
+     */
+    private static final String[] HIDDEN_PACKAGES = {
+        "com.amazon.tv.quicksettings",
+        "com.android.systemui",
+    };
+
     private Screensavers() {
     }
 
-    /** One installed screensaver: its "package/class" component and its display name. */
+    /**
+     * One installed screensaver: its "package/class" component and its
+     * display name.
+     */
     static final class Choice {
         final String component;
+
         final String label;
 
         Choice(String component, String label) {
@@ -42,13 +60,10 @@ final class Screensavers {
         return cls.startsWith(".") ? pkg + "/" + pkg + cls : component;
     }
 
-    static final String BIND_DREAM_SERVICE = "android.permission.BIND_DREAM_SERVICE";
-    static final String AMAZON_PACKAGE = "com.amazon.ftv.screensaver";
-
-    /** Amazon's store-demo modes and Android's dessert easter egg are screensavers in name only. */
-    private static final String[] HIDDEN_PACKAGES = {"com.amazon.tv.quicksettings", "com.android.systemui"};
-
-    /** Whether a service is a screensaver: the system only binds screensavers through this permission. */
+    /**
+     * Whether a service is a screensaver: the system only binds screensavers
+     * through this permission.
+     */
     static boolean isScreensaver(String permission) {
         return BIND_DREAM_SERVICE.equals(permission);
     }
@@ -62,7 +77,10 @@ final class Screensavers {
         return false;
     }
 
-    /** Amazon's own screensaver only calls itself "Screensaver", which reads like a heading. */
+    /**
+     * Amazon's own screensaver only calls itself "Screensaver", which reads
+     * like a heading.
+     */
     static String displayName(String pkg, String label) {
         return AMAZON_PACKAGE.equals(pkg) ? "Amazon (factory default)" : label;
     }
@@ -73,13 +91,18 @@ final class Screensavers {
         Collections.sort(copy, new Comparator<Choice>() {
             @Override
             public int compare(Choice a, Choice b) {
-                return a.label.toLowerCase(Locale.ROOT).compareTo(b.label.toLowerCase(Locale.ROOT));
+                String left = a.label.toLowerCase(Locale.ROOT);
+                String right = b.label.toLowerCase(Locale.ROOT);
+                return left.compareTo(right);
             }
         });
         return copy;
     }
 
-    /** Position of the active screensaver in the list, or -1 if it is not one of them. */
+    /**
+     * Position of the active screensaver in the list, or -1 if it is not one
+     * of them.
+     */
     static int indexOfActive(List<Choice> choices, String active) {
         String wanted = fullComponent(active);
         for (int i = 0; i < choices.size(); i++) {
