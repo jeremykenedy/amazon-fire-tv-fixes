@@ -9,9 +9,6 @@
 <p align="center">A guided command-line tool that fixes the Alexa deep-sleep bug on Fire TV Edition and replaces the ad-serving screensaver with ad-free alternatives.</p>
 
 <p align="center">
-    
-    
-    
     <a href="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
     <a href="https://dashboard.gitguardian.com/"><img src="https://github.com/jeremykenedy/amazon-fire-tv-fixes/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_amazon-fire-tv-fixes"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_amazon-fire-tv-fixes&metric=alert_status" alt="Quality Gate Status"></a>
