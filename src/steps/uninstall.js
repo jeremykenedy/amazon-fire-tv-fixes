@@ -76,8 +76,7 @@ async function findOptions(ip) {
   for (const s of installedScreensavers) {
     options.push({ name: `Remove ${s.name} from the TV`, value: `pkg:${s.id}` });
   }
-  options.push(...buildTimeoutRevertOptions(probedTimeouts));
-  options.push(...buildLauncherRevertOptions(await launcherState(ip)));
+  options.push(...buildTimeoutRevertOptions(probedTimeouts), ...buildLauncherRevertOptions(await launcherState(ip)));
   if (localClones) {
     options.push({ name: 'Delete locally cloned screensaver source (./screensavers)', value: 'local' });
   }

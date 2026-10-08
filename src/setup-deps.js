@@ -49,7 +49,7 @@ export async function ensureDependencies(root, { input = process.stdin, output =
     exit(code);
   };
   rl.input.on('keypress', (_chunk, key) => {
-    if (key && key.name === 'escape') {
+    if (key?.name === 'escape') {
       cancel(0);
     }
   });
