@@ -234,6 +234,31 @@ export async function grantPermission(ip, pkg, permission) {
 }
 
 /**
+ * Reads an app's mode for one app op, such as SYSTEM_ALERT_WINDOW. Fire OS has
+ * no screen for these, so adb is the only way to see or change them.
+ * @param {string} ip
+ * @param {string} pkg
+ * @param {string} op
+ * @returns {Promise<string>} the mode (allow, ignore, deny), or "default" when never set
+ */
+export async function getAppOp(ip, pkg, op) {
+  const out = await run(['-s', target(ip), 'shell', 'appops', 'get', pkg, op]);
+  const match = new RegExp(`^${op}: (\\w+)`, 'm').exec(out);
+  return match ? match[1] : 'default';
+}
+
+/**
+ * @param {string} ip
+ * @param {string} pkg
+ * @param {string} op
+ * @param {string} mode allow, ignore, deny or default
+ * @returns {Promise<string | null>}
+ */
+export async function setAppOp(ip, pkg, op, mode) {
+  return run(['-s', target(ip), 'shell', 'appops', 'set', pkg, op, mode]);
+}
+
+/**
  * Presses the remote's Home button. Only for showing the result of a change,
  * so a failure here is ignored.
  * @param {string} ip

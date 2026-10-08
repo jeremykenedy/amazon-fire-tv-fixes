@@ -2,7 +2,7 @@
 
 | Id | Name | Package | Source | What it is |
 |----|------|---------|--------|------------|
-| `aerial` | Aerial Views | `com.neilturner.aerialviews` | [jeremykenedy/AerialViews](https://github.com/jeremykenedy/AerialViews) | Aerial drone footage, the Apple TV screensaver look |
+| `aerial` | Aerial Views (the default) | `com.neilturner.aerialviews` | [jeremykenedy/AerialViews](https://github.com/jeremykenedy/AerialViews) | Aerial drone footage, the Apple TV screensaver look |
 | `androsaver` | AndroSaver | `com.androsaver` | [jeremykenedy/androsaver](https://github.com/jeremykenedy/androsaver) | Photo slideshow or music visualizer |
 | `snoozy` | Snoozy | `com.overdevs.snoozy` | [jeremykenedy/Snoozy](https://github.com/jeremykenedy/Snoozy) | Animated Snoopy screensaver |
 | `aquarium-live` | Aquarium Live | `com.jeremykenedy.aquariumlive` | [jeremykenedy/aquarium-live](https://github.com/jeremykenedy/aquarium-live) | A living aquarium drawn in real time: four scenes, six looks, day and night |
@@ -10,6 +10,20 @@
 
 The first three are forks of third-party projects (see Credits in the
 README). Aquarium Live and Aquarium 4K are original projects.
+
+Aerial Views is the default: on a TV with none of these installed it starts
+checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
+is installed.
+
+## Built in
+
+These come with the TV. There is nothing to install; they can only be made
+active with `screensaver --set=<id>` or the Screensavers tile on the TV.
+
+| Id | Name | Component | What it is |
+|----|------|-----------|------------|
+| `colors` | Colors | `com.android.dreams.basic/.Colors` | Android's built-in slow color wash |
+| `amazon` | Amazon with Ads | `com.amazon.ftv.screensaver/.app.services.ScreensaverService` | Amazon's own screensaver, which shows ads |
 
 ## How each one was vetted
 
@@ -33,8 +47,6 @@ its own private temporary folder that is deleted afterwards.
 
 ## Notes
 
-- Aerial Views plays its video on a hardware layer that screenshots cannot
-  capture, so its screenshot shows its on-TV menu instead.
 - Installing again updates in place with `adb install -r`, keeping each
   screensaver's own settings.
 - Fire OS Settings only lists Amazon's screensaver. Use `screensaver` on your

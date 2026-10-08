@@ -5,15 +5,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { installFakeAdb, captured, AERIAL } from './helpers/fake-adb.js';
 import { installFakeGit } from './helpers/ss-fake-git.js';
-import { drive, ENTER, SPACE } from './helpers/drive.js';
+import { drive, DOWN, ENTER, SPACE } from './helpers/drive.js';
 import * as sv from '../src/apply/screensavers.js';
 import { manageScreensavers } from '../src/steps/screensavers.js';
 import { setScreensaver } from '../src/steps/set-screensaver.js';
-import { SCREENSAVERS, AMAZON_DEFAULT } from '../src/screensaver-registry.js';
+import { SCREENSAVERS, BUILT_IN_SCREENSAVERS, AMAZON_DEFAULT } from '../src/screensaver-registry.js';
 
 const IP = '10.0.0.5';
 const ANDRO = SCREENSAVERS.find((s) => s.id === 'androsaver');
 const SNOOZY = SCREENSAVERS.find((s) => s.id === 'snoozy');
+const ANDROSAVER = SCREENSAVERS.find((s) => s.id === 'androsaver');
+const COLORS = BUILT_IN_SCREENSAVERS.find((s) => s.id === 'colors');
 const AERIAL_ENTRY = SCREENSAVERS.find((s) => s.id === 'aerial');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
@@ -202,13 +204,13 @@ test('set-screensaver --set on the screensaver already active changes nothing', 
   assert.notEqual(process.exitCode, 1);
 });
 
-test('set-screensaver --yes refuses to guess with no forks or several forks installed', async () => {
+test('set-screensaver --yes refuses to guess with no forks, or several forks and no Aerial Views', async () => {
   fake.setState({ installed: [] });
   const none = await captured(() => setScreensaver(IP, { yes: true }));
   assert.match(none.out, /No screensaver forks are installed/);
   assert.equal(process.exitCode, 1);
   process.exitCode = undefined;
-  fake.setState({ installed: [AERIAL, SNOOZY.pkg] });
+  fake.setState({ installed: [ANDROSAVER.pkg, SNOOZY.pkg] });
   const many = await captured(() => setScreensaver(IP, { yes: true }));
   assert.match(many.out, /More than one screensaver is installed/);
   assert.equal(process.exitCode, 1);
@@ -235,12 +237,39 @@ test('screensaver --set=amazon switches the active screensaver end to end', asyn
   assert.equal(fake.readState().secure.screensaver_components, AMAZON_DEFAULT.dreamComponent);
 });
 
+test('the built-in Colors screensaver is offered when the TV has it, and --set=colors makes it active', async () => {
+  installedEnv();
+  fake.setState({ installed: [AERIAL, COLORS.pkg] });
+  const r = await drive('bin/firetv-set-screensaver.js', [], [{ expect: 'Set the active screensaver to:', send: `${DOWN}${ENTER}` }, { expect: 'Nothing has been changed yet. Continue?', send: ENTER }]);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /Colors[\s\S]*Amazon with Ads/);
+  assert.equal(fake.readState().secure.screensaver_components, COLORS.dreamComponent);
+
+  fake.setState({ installed: [AERIAL] });
+  const missing = await captured(() => setScreensaver(IP, { set: 'colors' }));
+  assert.match(missing.out, /Colors is not installed/);
+  assert.equal(process.exitCode, 1);
+});
+
+test('on a TV with no screensavers yet, Aerial Views starts checked as the default', async () => {
+  installedEnv();
+  fake.setState({ installed: [] });
+  const r = await drive('bin/firetv-screensavers.js', [], [
+    { expect: 'Which screensavers do you want installed?', send: ENTER },
+    { expect: 'Nothing has been changed yet. Continue?', send: `${DOWN}${DOWN}${ENTER}` },
+  ]);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /Install Aerial Views/, r.out);
+  assert.deepEqual(fake.readState().installed, []);
+  assert.doesNotMatch(r.out, /Install Snoozy/);
+});
+
 test('choosing the current screensaver in the picker skips the summary and changes nothing', async () => {
   installedEnv();
   fake.setState({ secure: { ...fake.readState().secure, screensaver_components: AMAZON_DEFAULT.dreamComponent } });
-  const r = await drive('bin/firetv-set-screensaver.js', [], [{ expect: 'Set the active screensaver to:', send: ENTER }]);
+  const r = await drive('bin/firetv-set-screensaver.js', [], [{ expect: 'Set the active screensaver to:', send: `${DOWN}${ENTER}` }]);
   assert.equal(r.code, 0, r.out);
-  assert.match(r.out, /\(current\)/);
+  assert.match(r.out, /Amazon with Ads \(current\)/);
   assert.match(r.out, /already the active screensaver/);
   assert.doesNotMatch(r.out, /This is exactly what will happen/);
 });

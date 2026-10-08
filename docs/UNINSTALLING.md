@@ -14,6 +14,7 @@ checked by default; uncheck anything you want to keep:
 - each installed screensaver
 - each timeout that differs from its baseline
 - the Home button (back to the Amazon menu) and the launcher apps
+- the screensaver optimizations, each put back to the value it had before `optimize` changed it
 - the local screensaver source in `./screensavers`
 
 Reverting is a risky change, so it asks you to type `yes`. In scripts, use

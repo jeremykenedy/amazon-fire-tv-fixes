@@ -31,10 +31,17 @@ and `remove` refuses to run and points you at `start`.
 | Command | What it does | Flags |
 |---------|--------------|-------|
 | `firetv-screensavers` | Installs or removes screensavers with a checklist. | `--install=<ids>`, `--uninstall=<ids>` (needs `--force`), `--yes`, `--force` |
-| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<amazon\|aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k>`, `--yes` picks the only installed one |
+| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
 
-Screensaver ids: `aerial`, `androsaver`, `snoozy`, `aquarium-live`,
-`aquarium-4k`. `amazon` is the factory screensaver, for `--set` only.
+Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
+`aquarium-live`, `aquarium-4k`. `colors` (Android's built-in Colors) and
+`amazon` (Amazon with Ads) come with the TV, for `--set` only.
+
+## Optimizing for screensavers
+
+| Command | What it does | Flags |
+|---------|--------------|-------|
+| `optimize`, `firetv-optimize` | Lists the settings this TV has that stop or spoil a screensaver, then fixes the ones you keep checked. See [Optimizing](OPTIMIZE.md). | `--yes` makes every change without asking |
 
 ## Home screen
 
@@ -57,7 +64,7 @@ Screensaver ids: `aerial`, `androsaver`, `snoozy`, `aquarium-live`,
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button and the launcher apps. | `--all` reverts everything, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
+| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button, the launcher apps and the screensaver optimizations. | `--all` reverts everything, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
 | `uninstall` | Runs `firetv-revert` first, then removes the commands and resets `.env`, then offers to delete the repo. | none |
 | `delete`, `remove` | Deletes this repo from your computer after you type `confirm`. Does not touch the TV. | none |
 
@@ -67,6 +74,7 @@ Screensaver ids: `aerial`, `androsaver`, `snoozy`, `aquarium-live`,
 enable-alexa-fix --yes
 firetv-screensavers --install=aquarium-4k,aquarium-live --yes
 screensaver --set=aquarium-4k
+optimize --yes
 launcher --install --use=at4k
 firetv-timeout-sleep --minutes=30 --yes
 firetv-revert --all --force

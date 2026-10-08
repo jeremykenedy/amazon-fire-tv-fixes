@@ -6,7 +6,7 @@ import { runWizard } from '../wizard.js';
 import { enforceGuardrail } from '../guardrail.js';
 import { listPackages } from '../adb.js';
 import { installScreensaver, uninstallScreensaver } from '../apply/screensavers.js';
-import { SCREENSAVERS } from '../screensaver-registry.js';
+import { SCREENSAVERS, DEFAULT_SCREENSAVER_ID } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
 import { print } from '../output.js';
 
@@ -77,6 +77,8 @@ async function applyChanges(ip, toInstall, toUninstall) {
 export async function manageScreensavers(ip, flags = {}) {
   const installedPkgs = await listPackages(ip);
   const alreadyInstalledIds = new Set(SCREENSAVERS.filter((s) => installedPkgs.includes(s.pkg)).map((s) => s.id));
+  // On a TV with none installed yet, the default starts checked.
+  const preselected = alreadyInstalledIds.size === 0 ? new Set([DEFAULT_SCREENSAVER_ID]) : alreadyInstalledIds;
 
   const flagDriven = flags.install !== undefined || flags.uninstall !== undefined || flags.yes;
 
@@ -110,7 +112,8 @@ export async function manageScreensavers(ip, flags = {}) {
       'Every screensaver here was reviewed for ads, tracking, and',
       'unnecessary permissions before being added, and each download is',
       'checked against its published SHA-256. Checked items below are',
-      'already on your TV.',
+      'already on your TV. On a TV with none of them yet, Aerial Views,',
+      'the default, starts checked.',
       '',
       'Check a box to install it. Uncheck one to remove it.',
     ],
@@ -126,7 +129,7 @@ export async function manageScreensavers(ip, flags = {}) {
             choices: SCREENSAVERS.map((s) => ({
               name: `${s.name} (${s.blurb})`,
               value: s.id,
-              checked: alreadyInstalledIds.has(s.id),
+              checked: preselected.has(s.id),
             })),
           }),
       },

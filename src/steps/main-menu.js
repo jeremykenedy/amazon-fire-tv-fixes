@@ -9,6 +9,7 @@ import { manageScreensavers } from './screensavers.js';
 import { setScreensaver } from './set-screensaver.js';
 import { reviewTimeoutsIfWanted, manageAllTimeoutsStep } from './timeout-manage.js';
 import { manageLauncher } from './launcher.js';
+import { optimizeIfWanted } from './optimize.js';
 import { print } from '../output.js';
 
 const MENU_CHOICES = [
@@ -35,7 +36,7 @@ function printIntro() {
   print(chalk.gray('  2. Turn the Alexa deep-sleep fix on or off.'));
   print(chalk.gray('  3. Install or remove ad-free screensavers.'));
   print(chalk.gray('  4. Choose which installed screensaver is active.'));
-  print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts (optional).'));
+  print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts, and optimize the TV for screensavers (optional).'));
   print(chalk.gray('  6. Switch the home screen to AT4K, or back to the Amazon menu (optional).'));
   print(chalk.gray('\nEach standalone command is named after its step in the README.\n'));
 }
@@ -50,7 +51,7 @@ async function runMenuLoop(ip) {
 
 /**
  * The full guided flow: banner, adb check, device setup, optional timeout
- * review, then the interactive "What would you like to do?" menu loop.
+ * review, optional screensaver optimizing, then the interactive "What would you like to do?" menu loop.
  * Shared by every entry point that launches the guided experience
  * (`fire-tv-toolkit`, `start`, `update`), so they can never drift
  * apart. Marks INSTALLED=true in .env the moment device setup succeeds with
@@ -70,6 +71,7 @@ export async function runMainMenu({ showBanner = true } = {}) {
   }
   setInstalled(true);
   await reviewTimeoutsIfWanted(ip);
+  await optimizeIfWanted(ip);
   await runMenuLoop(ip);
 }
 

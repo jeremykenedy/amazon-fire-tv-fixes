@@ -4,11 +4,12 @@ import { explainStep } from '../ui.js';
 import { runWizard } from '../wizard.js';
 import { listPackages } from '../adb.js';
 import { getActiveScreensaver, setActiveScreensaver } from '../apply/set-screensaver.js';
-import { SCREENSAVERS, AMAZON_DEFAULT } from '../screensaver-registry.js';
+import { SCREENSAVERS, BUILT_IN_SCREENSAVERS, AMAZON_DEFAULT, DEFAULT_SCREENSAVER_ID, sameComponent } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
 import { print } from '../output.js';
 
-const VALID_IDS = [AMAZON_DEFAULT.id, ...SCREENSAVERS.map((s) => s.id)];
+const ALL = [...SCREENSAVERS, ...BUILT_IN_SCREENSAVERS, AMAZON_DEFAULT];
+const VALID_IDS = ALL.map((s) => s.id);
 
 export const FLAG_SPEC = {
   set: {
@@ -16,20 +17,24 @@ export const FLAG_SPEC = {
     choices: VALID_IDS,
     desc: 'Which installed screensaver to make active.',
   },
-  yes: { type: 'boolean', desc: 'Skip prompts; picks the only installed screensaver if there is exactly one.' },
+  yes: { type: 'boolean', desc: 'Skip prompts; picks Aerial Views, or the only installed screensaver if Aerial Views is not installed.' },
 };
 
 function findById(id) {
-  return [AMAZON_DEFAULT, ...SCREENSAVERS].find((s) => s.id === id);
+  return ALL.find((s) => s.id === id);
 }
 
 /**
- * Pure decision for `--yes` with no `--set`: default to the one installed
- * fork if exactly one is installed, otherwise refuse rather than guess.
+ * Pure decision for `--yes` with no `--set`: Aerial Views when it is
+ * installed, else the one installed fork, otherwise refuse rather than guess.
  * @param {Array<{id: string}>} installedForks
  * @returns {{ok: true, choice: object} | {ok: false, reason: 'none' | 'multiple'}}
  */
 export function resolveYesDefault(installedForks) {
+  const preferred = installedForks.find((s) => s.id === DEFAULT_SCREENSAVER_ID);
+  if (preferred) {
+    return { ok: true, choice: preferred };
+  }
   if (installedForks.length === 1) {
     return { ok: true, choice: installedForks[0] };
   }
@@ -43,7 +48,7 @@ export function resolveYesDefault(installedForks) {
  */
 export async function setScreensaver(ip, flags = {}) {
   const installedPkgs = await listPackages(ip);
-  const available = [AMAZON_DEFAULT, ...SCREENSAVERS.filter((s) => installedPkgs.includes(s.pkg))];
+  const available = ALL.filter((s) => s === AMAZON_DEFAULT || installedPkgs.includes(s.pkg));
   const current = await getActiveScreensaver(ip);
 
   if (flags.set !== undefined) {
@@ -53,7 +58,7 @@ export async function setScreensaver(ip, flags = {}) {
       markFailed();
       return;
     }
-    if (choice.dreamComponent === current) {
+    if (sameComponent(choice.dreamComponent, current)) {
       print(chalk.gray(`\n${choice.name} is already the active screensaver.\n`));
       return;
     }
@@ -77,7 +82,7 @@ export async function setScreensaver(ip, flags = {}) {
       markFailed();
       return;
     }
-    if (resolved.choice.dreamComponent === current) {
+    if (sameComponent(resolved.choice.dreamComponent, current)) {
       print(chalk.gray(`\n${resolved.choice.name} is already the active screensaver.\n`));
       return;
     }
@@ -105,18 +110,18 @@ export async function setScreensaver(ip, flags = {}) {
           select({
             message: 'Set the active screensaver to:',
             choices: available.map((s) => ({
-              name: s.dreamComponent === current ? `${s.name} (current)` : s.name,
+              name: sameComponent(s.dreamComponent, current) ? `${s.name} (current)` : s.name,
               value: s,
             })),
           }),
       },
     ],
     buildSummary: (state) =>
-      state.choice.dreamComponent === current
+      sameComponent(state.choice.dreamComponent, current)
         ? []
         : [{ label: `Set active screensaver to ${state.choice.name}`, detail: state.choice.dreamComponent }],
     onConfirm: async (state) => {
-      if (state.choice.dreamComponent === current) {
+      if (sameComponent(state.choice.dreamComponent, current)) {
         print(chalk.gray(`\n${state.choice.name} is already the active screensaver.\n`));
         return;
       }

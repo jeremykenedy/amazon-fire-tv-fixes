@@ -48,9 +48,37 @@ export const SCREENSAVERS = [
   },
 ];
 
+/**
+ * Pure: whether two "package/class" components name the same screensaver.
+ * Apps write either the short form ("pkg/.Cls") or the full one
+ * ("pkg/pkg.Cls"), so both are expanded before comparing.
+ * @param {string | null} a
+ * @param {string | null} b
+ * @returns {boolean}
+ */
+export function sameComponent(a, b) {
+  const full = (c) => (c || '').replace(/^([^/]+)\/\./, '$1/$1.');
+  return full(a) === full(b);
+}
+
+/** Aerial Views is what the installer suggests and what --yes picks. */
+export const DEFAULT_SCREENSAVER_ID = 'aerial';
+
+// Screensavers that ship with the TV. Nothing to install or vet; they can
+// only be made active.
+export const BUILT_IN_SCREENSAVERS = [
+  {
+    id: 'colors',
+    name: 'Colors',
+    pkg: 'com.android.dreams.basic',
+    dreamComponent: 'com.android.dreams.basic/.Colors',
+    blurb: "Android's built-in slow color wash. Comes with the TV.",
+  },
+];
+
 export const AMAZON_DEFAULT = {
   id: 'amazon',
-  name: 'Amazon (factory default)',
+  name: 'Amazon with Ads',
   pkg: 'com.amazon.ftv.screensaver',
   dreamComponent: 'com.amazon.ftv.screensaver/.app.services.ScreensaverService',
 };

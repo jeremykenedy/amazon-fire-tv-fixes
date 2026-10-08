@@ -44,6 +44,16 @@ else if (cmd === 'shell' && a === 'pm' && b === 'enable') {
 else if (cmd === 'shell' && a === 'pm' && b === 'grant') {
   state.grants = state.grants || {}; state.grants[c] = [...(state.grants[c] || []), d]; save();
 }
+else if (cmd === 'shell' && a === 'appops' && b === 'get') {
+  const mode = ((state.appops || {})[c] || {})[d];
+  console.log(mode ? d + ': ' + mode + '; time=+1d' : 'No operations.');
+}
+else if (cmd === 'shell' && a === 'appops' && b === 'set') {
+  if ((state.lockedKeys || []).includes(d)) { process.exit(0); }
+  state.appops = state.appops || {}; state.appops[c] = { ...(state.appops[c] || {}), [d]: process.argv.slice(-1)[0] };
+  if (process.argv.slice(-1)[0] === 'default') delete state.appops[c][d];
+  save();
+}
 else if (cmd === 'shell' && a === 'echo') { console.log(state.echoReply === undefined ? b : state.echoReply); }
 else if (cmd === 'shell' && a === 'settings' && b === 'get') {
   const v = (state[c] || {})[d];
