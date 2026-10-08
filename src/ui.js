@@ -7,7 +7,7 @@ export const BACK = '__back__';
 export const EXIT = '__exit__';
 
 export function banner() {
-  const title = chalk.bold.cyan('amazon-fire-tv-fixes');
+  const title = chalk.bold.cyan('fire-tv-toolkit');
   const subtitle = chalk.gray('Alexa deep-sleep fix + ad-free screensavers for Fire TV Edition');
   print(
     boxen(`${title}\n${subtitle}`, {

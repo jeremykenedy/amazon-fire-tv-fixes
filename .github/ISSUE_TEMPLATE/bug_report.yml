@@ -1,0 +1,34 @@
+name: Bug report
+description: Something did not work the way it should.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Command output
+      description: Paste the full output. Run the command again with DEBUG=1 in front of it for more detail.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Fire TV Toolkit version
+      description: The version in package.json, or the release you installed.
+    validations:
+      required: true
+  - type: input
+    id: tv
+    attributes:
+      label: TV model and Fire OS version
+      description: "Settings > Device & Software > About."
+  - type: input
+    id: system
+    attributes:
+      label: Computer
+      description: Operating system and Node.js version (node --version).

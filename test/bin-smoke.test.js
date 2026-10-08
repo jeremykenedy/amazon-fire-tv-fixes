@@ -52,7 +52,7 @@ test('every command rejects an unknown flag with a non-zero exit', () => {
 });
 
 test('device commands refuse to run before setup, and say how to start', () => {
-  const gated = bins.filter((b) => !/(amazon-fire-tv-fixes|start|update|info|information|guide|firetv|uninstall|delete|remove|firetv-install-adb)\.js$/.test(b));
+  const gated = bins.filter((b) => !/(fire-tv-toolkit|start|update|info|information|guide|firetv|uninstall|delete|remove|firetv-install-adb)\.js$/.test(b));
   assert.ok(gated.length >= 10);
   for (const bin of gated) {
     const r = run(bin, []);
@@ -99,7 +99,7 @@ test('setup.js runs with only Node built-ins on PATH and declines cleanly with n
 });
 
 test('environment variables cannot redirect where .env or the clones are written', () => {
-  const script = `Promise.all([import('${path.join(ROOT, 'src/device-config.js')}'), import('${path.join(ROOT, 'src/apply/screensavers.js')}')]).then(([d, s]) => console.log(JSON.stringify([d.ENV_PATH, s.SCREENSAVERS_DIR])));`;
+  const script = `Promise.all([import('${path.join(ROOT, 'src/device-config.js')}'), import('${path.join(ROOT, 'src/apply/screensavers.js')}')]).then(([d, s]) => console.log(JSON.stringify([d.getEnvPath(), s.getScreensaversDir()])));`;
   const r = spawnSync(process.execPath, ['-e', script], {
     env: { ...process.env, FIRE_TV_ENV_FILE: '/tmp/elsewhere/.env', FIRE_TV_SCREENSAVERS_DIR: '/tmp/elsewhere/clones', FIRE_TV_TEST_ENV_FILE: '/tmp/elsewhere/.env' },
     encoding: 'utf8',

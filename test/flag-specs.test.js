@@ -59,7 +59,7 @@ test('firetv-set-screensaver rejects an id that is not amazon or a known fork', 
   });
 });
 
-test('amazon-fire-tv-fixes-uninstall accepts --all, --yes, and --force in any combination', () => {
+test('firetv-revert accepts --all, --yes, and --force in any combination', () => {
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, ['--all', '--force']) }, { all: true, force: true });
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, ['--yes']) }, { yes: true });
   assert.deepEqual({ ...parseFlags(UNINSTALL_SPEC, []) }, {});

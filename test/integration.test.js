@@ -201,7 +201,7 @@ test('app teardown wipes .env to its template', async () => {
 test('local screensaver clones are detected and removed', async () => {
   const sv = await import('../src/apply/screensavers.js');
   assert.equal(sv.hasLocalClones(), false);
-  fs.mkdirSync(`${sv.SCREENSAVERS_DIR}/aerial`, { recursive: true });
+  fs.mkdirSync(`${sv.getScreensaversDir()}/aerial`, { recursive: true });
   assert.equal(sv.hasLocalClones(), true);
   const un = await import('../src/apply/uninstall.js');
   un.removeLocalClones();

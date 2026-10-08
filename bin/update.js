@@ -8,4 +8,4 @@ try {
   exitOnFlagError(err, 'update');
 }
 
-runUpdateCommand();
+await runUpdateCommand();

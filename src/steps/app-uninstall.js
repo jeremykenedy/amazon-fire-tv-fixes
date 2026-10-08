@@ -12,7 +12,7 @@ const WIPE_WARNING = 'Removing the commands also deletes the saved IP and the re
 /**
  * The TV half of `uninstall`, which has to run before .env is wiped because
  * the IP and the timeout baselines it needs live there. Offers the same
- * checklist as `amazon-fire-tv-fixes-uninstall`. If the TV can't be reached,
+ * checklist as `firetv-revert`. If the TV can't be reached,
  * or the revert was cancelled, it asks before letting the wipe go ahead.
  * @returns {Promise<boolean>} whether to continue with removing the commands
  */
@@ -54,7 +54,7 @@ async function removeCommandsAndConfig() {
   if (unlinked.ok) {
     print(chalk.green('Commands unlinked from your PATH.'));
   } else {
-    print(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g amazon-fire-tv-fixes" yourself.`));
+    print(chalk.red(`Could not unlink the commands (${unlinked.error}). They are still on your PATH. Run "npm uninstall -g fire-tv-toolkit" yourself.`));
     markFailed();
   }
 
@@ -62,8 +62,8 @@ async function removeCommandsAndConfig() {
   print(chalk.green('.env reset to its template.'));
   print(
     unlinked.ok
-      ? chalk.green('\nFire TV Tools was successfully uninstalled.\n')
-      : chalk.yellow('\nFire TV Tools was only partly uninstalled: the commands are still linked.\n')
+      ? chalk.green('\nFire TV Toolkit was successfully uninstalled.\n')
+      : chalk.yellow('\nFire TV Toolkit was only partly uninstalled: the commands are still linked.\n')
   );
 }
 
@@ -76,8 +76,8 @@ async function removeLeftoverCommands() {
   const unlinked = await unlinkCommands();
   print(
     unlinked.ok
-      ? chalk.yellow('\nFire TV Tools is not installed, so there was nothing to revert. Any leftover commands were removed from your PATH.\n')
-      : chalk.yellow('\nFire TV Tools is not installed, so there is nothing to uninstall.\n')
+      ? chalk.yellow('\nFire TV Toolkit is not installed, so there was nothing to revert. Any leftover commands were removed from your PATH.\n')
+      : chalk.yellow('\nFire TV Toolkit is not installed, so there is nothing to uninstall.\n')
   );
 }
 
@@ -86,7 +86,7 @@ async function removeLeftoverCommands() {
  * @returns {Promise<boolean>} false if the user chose to stop before anything was removed
  */
 async function uninstallInstalled() {
-  print(chalk.bold.white('\nUninstalling Fire TV Tools...\n'));
+  print(chalk.bold.white('\nUninstalling Fire TV Toolkit...\n'));
   if (!(await revertTvFirst())) {
     print(chalk.gray('\nNo changes were made to this computer.\n'));
     return false;
@@ -97,7 +97,7 @@ async function uninstallInstalled() {
 }
 
 /**
- * `uninstall`. If Fire TV Tools is installed, first offers to put the TV
+ * `uninstall`. If Fire TV Toolkit is installed, first offers to put the TV
  * back how it was, then unlinks the global commands and wipes .env back to
  * its template. Either way, then offers to also delete the repo code, using
  * the same destructive confirm flow as the standalone `delete`/`remove`.

@@ -8,4 +8,4 @@ try {
   exitOnFlagError(err, 'start');
 }
 
-runStartCommand();
+await runStartCommand();

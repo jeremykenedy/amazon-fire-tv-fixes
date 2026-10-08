@@ -9,13 +9,16 @@ import { print } from './output.js';
  * two, so this can never silently drift out of date.
  */
 export const COMMANDS = [
-  { name: 'amazon-fire-tv-fixes', desc: 'Runs the full guided installer: adb, device setup, Alexa fix, screensavers, and an optional timeout review.' },
-  { name: 'amazon-fire-tv-fixes-uninstall', desc: 'Reverts what this tool changed on the TV (Alexa fix, active screensaver, installed screensavers, changed timeouts). Does not remove these commands; see uninstall.' },
+  { name: 'fire-tv-toolkit', desc: 'Runs the full guided installer: adb, device setup, Alexa fix, screensavers, and an optional timeout review.' },
+  { name: 'firetv-revert', desc: 'Reverts what this tool changed on the TV (Alexa fix, active screensaver, installed screensavers, changed timeouts). Does not remove these commands; see uninstall.' },
   { name: 'firetv-install-adb', desc: 'Installs adb (Android SDK Platform Tools) if it is not already on your machine.' },
   { name: 'enable-alexa-fix', desc: 'Turns on the Alexa deep-sleep fix by itself.' },
   { name: 'disable-alexa-fix', desc: 'Reverts the Alexa deep-sleep fix back to the factory default.' },
   { name: 'firetv-screensavers', desc: 'Installs or removes the ad-free screensavers, by itself.' },
   { name: 'firetv-set-screensaver', desc: 'Chooses which installed screensaver is active, by itself.' },
+  { name: 'screensaver', desc: 'Short for firetv-set-screensaver: chooses which installed screensaver is active.' },
+  { name: 'firetv-launcher', desc: 'Installs the optional AT4K home screen and switches the Home button between it and the Amazon menu.' },
+  { name: 'launcher', desc: 'Short for firetv-launcher: installs AT4K or switches the Home button.' },
   { name: 'firetv-timeouts', desc: 'Review, edit, and/or reset any of the TV timeouts, all in one guided flow.' },
   { name: 'firetv-timeout-sleep', desc: 'Changes the sleep (deep-sleep/standby) timeout by itself.' },
   { name: 'firetv-timeout-screensaver', desc: 'Changes the screensaver timeout by itself.' },
@@ -55,7 +58,7 @@ export function printInfoScreen() {
   renderBanner();
 
   if (!isInstalled()) {
-    print(chalk.yellow('Fire TV Tools is not installed yet. Nothing else will work until you run:\n'));
+    print(chalk.yellow('Fire TV Toolkit is not installed yet. Nothing else will work until you run:\n'));
     const start = COMMANDS.find((c) => c.name === 'start');
     print(`  ${chalk.green(start.name)}  ${chalk.gray(start.desc)}\n`);
     print(chalk.gray('Once installed, this command will change to list every app command instead.\n'));

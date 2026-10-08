@@ -12,7 +12,12 @@ import { print } from './output.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..');
 const DEFAULT_ENV_PATH = path.join(PROJECT_ROOT, '.env');
-export let ENV_PATH = DEFAULT_ENV_PATH;
+let envPath = DEFAULT_ENV_PATH;
+
+/** @returns {string} the .env file this tool reads and writes */
+export function getEnvPath() {
+  return envPath;
+}
 
 /**
  * Test-only: points .env reads and writes at a throwaway file. Never read
@@ -20,9 +25,8 @@ export let ENV_PATH = DEFAULT_ENV_PATH;
  * @param {string | null} filePath null restores the project's own .env
  */
 export function setEnvPathForTesting(filePath) {
-  ENV_PATH = filePath || DEFAULT_ENV_PATH;
+  envPath = filePath || DEFAULT_ENV_PATH;
 }
-const ENV_EXAMPLE_PATH = path.join(PROJECT_ROOT, '.env.example');
 
 const IP_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 
@@ -90,20 +94,20 @@ export function mergeInstalledIntoEnv(raw, installed) {
 
 export function readEnvFile() {
   try {
-    return fs.readFileSync(ENV_PATH, 'utf8');
+    return fs.readFileSync(envPath, 'utf8');
   } catch (err) {
     if (err.code === 'ENOENT') {
       return null;
     }
-    throw new Error(`Could not read ${ENV_PATH} (${err.code || err.message}). Check that the file is readable.`);
+    throw new Error(`Could not read ${envPath} (${err.code || err.message}). Check that the file is readable.`);
   }
 }
 
 export function writeEnvFile(contents) {
   try {
-    fs.writeFileSync(ENV_PATH, contents);
+    fs.writeFileSync(envPath, contents);
   } catch (err) {
-    throw new Error(`Could not save ${ENV_PATH} (${err.code || err.message}), so your settings were not saved. Check that this folder is writable.`);
+    throw new Error(`Could not save ${envPath} (${err.code || err.message}), so your settings were not saved. Check that this folder is writable.`);
   }
 }
 
@@ -118,7 +122,9 @@ export function getSavedIp() {
 
 export function saveIp(ip) {
   const raw = readEnvFile();
-  const template = fs.existsSync(ENV_EXAMPLE_PATH) ? fs.readFileSync(ENV_EXAMPLE_PATH, 'utf8') : undefined;
+  // The template sits next to the .env it seeds.
+  const examplePath = path.join(path.dirname(envPath), '.env.example');
+  const template = fs.existsSync(examplePath) ? fs.readFileSync(examplePath, 'utf8') : undefined;
   const updated = mergeIpIntoEnv(raw, ip, template);
   writeEnvFile(updated);
 }
@@ -151,7 +157,7 @@ export function setInstalled(installed) {
 }
 
 /**
- * Every command except the installer entry points (amazon-fire-tv-fixes,
+ * Every command except the installer entry points (fire-tv-toolkit,
  * start, update, firetv, info) calls this first. Prints a clear refusal and
  * exits if setup has never completed, so nothing can act on a device that
  * was never connected.
@@ -160,7 +166,7 @@ export function requireInstalled() {
   if (isInstalled()) {
     return;
   }
-  print(chalk.red('\nFire TV Tools is not installed yet.'));
+  print(chalk.red('\nFire TV Toolkit is not installed yet.'));
   print(chalk.gray('Run ') + chalk.green('start') + chalk.gray(' to set it up first, or ') + chalk.green('info') + chalk.gray(' to see what is available.\n'));
   process.exit(1);
 }

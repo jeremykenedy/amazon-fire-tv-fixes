@@ -10,14 +10,6 @@ export const FLAG_SPEC = {
   yes: { type: 'boolean', desc: 'Install without asking first.' },
 };
 
-/**
- * Standalone step: install adb (Android SDK Platform Tools) if it isn't
- * already on PATH. Used by both the main menu and `firetv-install-adb`.
- * flags.yes skips the confirmation prompt; there is no other choice to make
- * for this command, so --yes is the whole non-interactive path.
- * @param {{yes?: boolean}} [flags]
- * @returns {Promise<boolean>} whether adb is installed when this returns
- */
 function explainInstallStep(platform) {
   explainStep({
     title: 'Step: Install Android SDK Platform Tools (adb)',
@@ -51,6 +43,14 @@ async function runInstall(platform) {
   }
 }
 
+/**
+ * Standalone step: install adb (Android SDK Platform Tools) if it isn't
+ * already on PATH. Used by both the main menu and `firetv-install-adb`.
+ * flags.yes skips the confirmation prompt; there is no other choice to make
+ * for this command, so --yes is the whole non-interactive path.
+ * @param {{yes?: boolean}} [flags]
+ * @returns {Promise<boolean>} whether adb is installed when this returns
+ */
 export async function installAdbStep(flags = {}) {
   if (await isAdbInstalled()) {
     print(chalk.green('\nadb is already installed. Nothing to do.\n'));

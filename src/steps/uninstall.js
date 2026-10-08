@@ -13,6 +13,8 @@ import { SCREENSAVERS, AMAZON_DEFAULT } from '../screensaver-registry.js';
 import { markFailed } from '../exit-status.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, msToLabel } from './timeouts-shared.js';
+import { launcherState, useHome, removeLauncherApp } from '../apply/launcher.js';
+import { LAUNCHER_APPS } from '../launcher-registry.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
@@ -37,6 +39,22 @@ export function buildTimeoutRevertOptions(probed) {
 }
 
 /**
+ * Pure: revert options for the optional AT4K home screen.
+ * @param {{home: 'at4k' | 'amazon', installed: string[]}} state
+ * @returns {Array<{name: string, value: string}>}
+ */
+export function buildLauncherRevertOptions(state) {
+  const options = [];
+  if (state.home === 'at4k') {
+    options.push({ name: 'Send the Home button back to the Amazon menu', value: 'home' });
+  }
+  for (const app of LAUNCHER_APPS.filter((a) => state.installed.includes(a.id))) {
+    options.push({ name: `Remove ${app.name} from the TV`, value: `launcher:${app.id}` });
+  }
+  return options;
+}
+
+/**
  * @param {string} ip
  * @returns {Promise<{options: Array<{name: string, value: string}>, installedScreensavers: import('../apply/screensavers.js').ScreensaverEntry[], probedTimeouts: Array<object>}>}
  */
@@ -58,7 +76,7 @@ async function findOptions(ip) {
   for (const s of installedScreensavers) {
     options.push({ name: `Remove ${s.name} from the TV`, value: `pkg:${s.id}` });
   }
-  options.push(...buildTimeoutRevertOptions(probedTimeouts));
+  options.push(...buildTimeoutRevertOptions(probedTimeouts), ...buildLauncherRevertOptions(await launcherState(ip)));
   if (localClones) {
     options.push({ name: 'Delete locally cloned screensaver source (./screensavers)', value: 'local' });
   }
@@ -84,6 +102,12 @@ async function applySelection(ip, selected, installedScreensavers, probedTimeout
   }
   for (const s of installedScreensavers.filter((x) => selected.includes(`pkg:${x.id}`))) {
     results.push(await applyScreensaverRemoval(ip, s));
+  }
+  if (selected.includes('home')) {
+    results.push(await applyHomeRevert(ip));
+  }
+  for (const app of LAUNCHER_APPS.filter((a) => selected.includes(`launcher:${a.id}`))) {
+    results.push(await applyLauncherRemoval(ip, app));
   }
   for (const r of probedTimeouts.filter((x) => selected.includes(`timeout:${x.def.id}`))) {
     results.push(await applyTimeoutRevert(ip, r));
@@ -137,6 +161,22 @@ async function applyScreensaverRemoval(ip, s) {
   return false;
 }
 
+async function applyHomeRevert(ip) {
+  if (!(await useHome(ip, 'amazon'))) {
+    return reportFailure('The Home button did not switch back to the Amazon menu.');
+  }
+  print(chalk.green('Home button sent back to the Amazon menu.'));
+  return true;
+}
+
+async function applyLauncherRemoval(ip, app) {
+  if (!(await removeLauncherApp(ip, app))) {
+    return reportFailure(`${app.name} could not be removed. It may still be installed.`);
+  }
+  print(chalk.green(`${app.name} removed.`));
+  return true;
+}
+
 async function applyTimeoutRevert(ip, r) {
   const { applied, readBackMs } = await setTimeoutMs(ip, r.def, r.baselineMs);
   if (!applied) {
@@ -177,7 +217,7 @@ export async function uninstallEverything(ip, flags = {}) {
     const allowed = await enforceGuardrail({
       risky: true,
       warning: 'This reverts every fix and removes every screensaver this tool installed.',
-      saferCommand: 'amazon-fire-tv-fixes-uninstall (interactive, pick what to keep)',
+      saferCommand: 'firetv-revert (interactive, pick what to keep)',
       force: Boolean(flags.force),
       interactive: false,
     });

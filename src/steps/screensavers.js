@@ -26,7 +26,7 @@ export function validateIdList(value) {
 }
 
 export const FLAG_SPEC = {
-  install: { type: 'string', validate: validateIdList, desc: 'Comma-separated screensaver ids to install (aerial, androsaver, snoozy).' },
+  install: { type: 'string', validate: validateIdList, desc: `Comma-separated screensaver ids to install (${SCREENSAVERS.map((s) => s.id).join(', ')}).` },
   uninstall: { type: 'string', validate: validateIdList, desc: 'Comma-separated screensaver ids to remove (needs --force).' },
   yes: { type: 'boolean', desc: 'Skip prompts.' },
   force: { type: 'boolean', desc: 'Allow removing screensavers without the typed confirmation.' },
@@ -107,9 +107,10 @@ export async function manageScreensavers(ip, flags = {}) {
   explainStep({
     title: 'Step: Install or remove screensavers',
     body: [
-      'Each of these is a fork of a real third-party screensaver, reviewed',
-      'for ads, tracking, and unnecessary permissions before being added',
-      'here. Checked items below are already on your TV.',
+      'Every screensaver here was reviewed for ads, tracking, and',
+      'unnecessary permissions before being added, and each download is',
+      'checked against its published SHA-256. Checked items below are',
+      'already on your TV.',
       '',
       'Check a box to install it. Uncheck one to remove it.',
     ],

@@ -10,4 +10,4 @@ try {
 }
 
 renderBanner();
-runUninstallCommand();
+await runUninstallCommand();

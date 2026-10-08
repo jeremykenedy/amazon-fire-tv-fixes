@@ -1,0 +1,31 @@
+name: Device report
+description: Tell us how the tool worked on a Fire TV model we have not tested.
+labels: ["question"]
+body:
+  - type: input
+    id: model
+    attributes:
+      label: TV or device model
+      description: "Settings > Device & Software > About, or adb shell getprop ro.product.model"
+    validations:
+      required: true
+  - type: input
+    id: fireos
+    attributes:
+      label: Fire OS version
+    validations:
+      required: true
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked
+      options:
+        - label: Connecting over adb
+        - label: The Alexa deep-sleep fix
+        - label: Installing and choosing screensavers
+        - label: The timeouts
+        - label: The AT4K home screen and the Screensavers tile
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything that did not work

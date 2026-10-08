@@ -82,7 +82,7 @@ export async function runSetup() {
   renderBanner();
 
   explainStep({
-    title: 'Set up Fire TV Tools',
+    title: 'Set up Fire TV Toolkit',
     body: [
       'This can install this tool\'s dependencies and link its commands onto',
       'your PATH (firetv, firetv-timeouts, enable-alexa-fix, and the rest),',
@@ -91,7 +91,7 @@ export async function runSetup() {
     ],
   });
 
-  const wantsSetup = await promptYN('Start setting up Fire TV Tools?');
+  const wantsSetup = await promptYN('Start setting up Fire TV Toolkit?');
   if (!wantsSetup) {
     print(chalk.gray('\nNo changes were made.\n'));
     return;
