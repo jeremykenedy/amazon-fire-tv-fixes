@@ -70,6 +70,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/neon-corridor',
     blurb: 'A procedural neon tunnel with adjustable density, speed, color, brightness and geometry. No ads, analytics or tracking.',
   },
+  {
+    id: 'starfield-drift',
+    name: 'Starfield Drift',
+    pkg: 'com.jeremykenedy.starfielddrift',
+    dreamComponent: 'com.jeremykenedy.starfielddrift/.StarfieldDreamService',
+    repo: 'jeremykenedy/starfield-drift',
+    blurb: 'A procedural animated starfield with adjustable density, speed, color, luminance and meteors. No ads, analytics or tracking.',
+  },
 ];
 
 /**
