@@ -29,11 +29,14 @@ for each change.
 
 ## Releasing
 
-1. Bump `version` in `package.json` (the tool installs Home Redirect from the
-   release tagged with its own version).
+1. Bump `version` in `package.json`.
 2. Build Home Redirect and note its SHA-256.
 3. Tag `v<version>`, publish the release, attach `firetv-home-redirect.apk`,
    and add `SHA-256 (firetv-home-redirect.apk): <hash>` to the notes.
+4. The tool installs Home Redirect from the release named in
+   `HOME_REDIRECT_RELEASE` in `src/launcher-registry.js`. Set it to the new tag
+   once that release has the APK attached, so the code never points at a
+   release that does not exist yet.
 
 ## Project site
 
