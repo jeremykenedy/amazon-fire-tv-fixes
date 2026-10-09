@@ -190,6 +190,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/split-flap-drift',
     blurb: 'An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion.',
   },
+  {
+    id: 'canopy-drift',
+    name: 'Canopy Drift',
+    pkg: 'com.jeremykenedy.canopydrift',
+    dreamComponent: 'com.jeremykenedy.canopydrift/.CanopyDreamService',
+    repo: 'jeremykenedy/canopy-drift',
+    blurb: 'An animated autumn canopy with falling leaves, adjustable tree style, leaf density, wind and lighting.',
+  },
 ];
 
 /**
