@@ -14,7 +14,7 @@ export const FLAG_SPEC = {
   yes: { type: 'boolean', desc: 'For scripts; --install or --use is still required.' },
 };
 
-const HOME_NAMES = { at4k: 'AT4K', amazon: 'the Amazon menu' };
+const HOME_NAMES = { at4k: 'AT4K', amazon: 'the Amazon menu', 'fire-tv-ui': 'Fire TV UI' };
 
 /**
  * Installs both launcher apps, reporting each one.
@@ -40,7 +40,7 @@ async function installAll(ip) {
   if (homeBefore === 'at4k' && state.home !== 'at4k') {
     await useHome(ip, 'at4k');
   }
-  return ok || state.installed.length === LAUNCHER_APPS.length;
+  return ok || LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
 }
 
 /**
@@ -50,7 +50,7 @@ async function installAll(ip) {
  */
 async function switchHome(ip, mode) {
   const state = await launcherState(ip);
-  if (mode === 'at4k' && state.installed.length < LAUNCHER_APPS.length) {
+  if (mode === 'at4k' && !LAUNCHER_APPS.every((app) => state.installed.includes(app.id))) {
     print(chalk.red('\nAT4K and the Home Redirect app both need to be installed first. Run firetv-launcher --install.\n'));
     markFailed();
     return;
@@ -84,7 +84,7 @@ async function runFromFlags(ip, flags) {
 }
 
 function menuChoices(state) {
-  const installed = state.installed.length === LAUNCHER_APPS.length;
+  const installed = LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
   const choices = [{ name: installed ? 'Update AT4K and the Home Redirect app' : 'Install AT4K and the Home Redirect app', value: 'install' }];
   if (state.home === 'amazon') {
     choices.push({ name: 'Use AT4K as the home screen', value: 'at4k' });

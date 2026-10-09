@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.3.0] - 2026-10-08
+
+### Added in 3.3.0
+
+- `firetv-ui`: guided installation, update, removal, and backup transfer for Fire TV UI. Choose the saved simple layout, keep current settings, restore the TV backup, or import a file, then review Home, screensaver, protection, and backup choices before execution.
+- Fire TV UI in the main menu, launcher selection, and full revert options.
+- Persistent TV Downloads backups with validated computer import/export and private computer files. Uninstall keeps the TV backup unless deletion is explicitly selected.
+
+### Fixed in 3.3.0
+
+- Home routing is rebound after Fire TV UI updates. Opening the launcher no longer force-stops its accessibility services.
+- Intentional CLI timer and screensaver changes update Fire TV UI's desired settings so its protection service does not revert them.
+- Home Redirect 1.2.2 delegates shared settings to Fire TV UI and retires stale snapshots, preserving the GUI's Home and timer choices. Guard enable, disable, and screensaver unlock commands also control the native protector.
+
+### Changed in 3.3.0
+
+- Scrutinizer integration and badges removed.
+- Existing commands, AT4K installation, saved IP, and first-observed timeout baselines remain supported. Upgrade with `git pull`, then `node setup.js` to link the new command. Fire TV UI is optional; run `firetv-ui` to install it.
+
 ## [3.2.1] - 2026-10-08
 
 ### Added in 3.2.1
@@ -79,6 +98,7 @@ more than fixes.
 
 - The Alexa deep-sleep fix and ad-free screensavers, each with a guided installer and a standalone command.
 
+[3.3.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.3.0
 [3.2.1]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.1
 [3.2.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.1.0

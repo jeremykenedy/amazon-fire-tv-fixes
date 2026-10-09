@@ -164,6 +164,20 @@ export async function getSetting(ip, namespace, key) {
  */
 export async function putSetting(ip, namespace, key, value) {
   await rememberIfGuarded(ip, namespace, key, String(value));
+  const protectedSetting = namespace === 'secure'
+    ? ['sleep_timeout', 'screensaver_components', 'screensaver_enabled', 'str.auto_wake_up_enabled'].includes(key)
+    : namespace === 'system' && key === 'screen_off_timeout';
+  const pkg = 'com.jeremykenedy.firetv.ui';
+  if (protectedSetting && (await listPackages(ip)).includes(pkg)) {
+    const out = await run(['-s', target(ip), 'shell', 'am', 'broadcast', '--include-stopped-packages',
+      '-n', `${pkg}/.BackupReceiver`, '-a', `${pkg}.BACKUP`, '--es', 'operation', 'setting',
+      '--es', 'namespace', namespace, '--es', 'key', key, '--es', 'value', String(value)]);
+    if (!/Broadcast completed: result=0, data="ok"/.test(out)) {
+      throw new Error(out.split('\n').find((line) => line.startsWith('Broadcast completed:'))
+        || 'The TV did not save the setting.');
+    }
+    return out;
+  }
   return run(['-s', target(ip), 'shell', 'settings', 'put', namespace, key, String(value)]);
 }
 
@@ -246,7 +260,7 @@ export async function grantPermission(ip, pkg, permission) {
  */
 export async function getAppOp(ip, pkg, op) {
   const out = await run(['-s', target(ip), 'shell', 'appops', 'get', pkg, op]);
-  const match = new RegExp(String.raw`^${op}: (\w+)`, 'm').exec(out);
+  const match = new RegExp(String.raw`(?:^|\s)${op}: (\w+)`, 'm').exec(out);
   return match ? match[1] : 'default';
 }
 
@@ -257,8 +271,8 @@ export async function getAppOp(ip, pkg, op) {
  * @param {string} mode allow, ignore, deny or default
  * @returns {Promise<string | null>}
  */
-export async function setAppOp(ip, pkg, op, mode) {
-  return run(['-s', target(ip), 'shell', 'appops', 'set', pkg, op, mode]);
+export async function setAppOp(ip, pkg, op, mode, { uid = false } = {}) {
+  return run(['-s', target(ip), 'shell', 'appops', 'set', ...(uid ? ['--uid'] : []), pkg, op, mode]);
 }
 
 const GUARD_PKG = 'com.jeremykenedy.firetv.homeredirect';
@@ -354,4 +368,41 @@ export function isPmSuccess(output) {
  */
 export async function uninstallPackage(ip, pkg) {
   return isPmSuccess(await run(['-s', target(ip), 'shell', 'pm', 'uninstall', pkg], { allowFail: true }));
+}
+
+export async function getAndroidVersion(ip) {
+  const value = await run(['-s', target(ip), 'shell', 'getprop', 'ro.build.version.sdk']);
+  if (!/^\d+$/.test(value)) {
+    throw new Error('The TV did not report its Android version.');
+  }
+  return Number(value);
+}
+
+export async function pullFile(ip, remote, local) {
+  return run(['-s', target(ip), 'pull', remote, local], { timeout: 60000 });
+}
+
+export async function pushFile(ip, local, remote) {
+  return run(['-s', target(ip), 'push', local, remote], { timeout: 60000 });
+}
+
+export async function remoteFileExists(ip, remote) {
+  return (await run(['-s', target(ip), 'shell', 'test', '-f', remote], { allowFail: true })) !== null;
+}
+
+export async function removeRemoteFile(ip, remote) {
+  return run(['-s', target(ip), 'shell', 'rm', '-f', remote]);
+}
+
+export async function backupOperation(ip, pkg, operation, source = 'saved') {
+  const out = await run(['-s', target(ip), 'shell', 'am', 'broadcast', '--include-stopped-packages',
+    '-n', `${pkg}/.BackupReceiver`, '-a', `${pkg}.BACKUP`, '--es', 'operation', operation, '--es', 'source', source]);
+  if (!/Broadcast completed: result=0, data="ok"/.test(out)) {
+    throw new Error(out.split('\n').find((line) => line.startsWith('Broadcast completed:')) || 'The TV did not complete the backup operation.');
+  }
+}
+
+export async function openLauncher(ip, pkg) {
+  return run(['-s', target(ip), 'shell', 'am', 'start', '-f', '0x10008000',
+    '-n', `${pkg}/.MainActivity`]);
 }

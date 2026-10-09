@@ -1,6 +1,6 @@
-import { sendGuard, packageVersion, disablePackage, enablePackage, listPackages, listDisabledPackages, getAppOp, setAppOp, grantPermission, describeAdbError } from '../adb.js';
+import { sendGuard, packageVersion, disablePackage, enablePackage, listPackages, listDisabledPackages, getAppOp, setAppOp, grantPermission, describeAdbError, backupOperation } from '../adb.js';
 import { installLauncherApp } from './launcher.js';
-import { HOME_REDIRECT } from '../launcher-registry.js';
+import { HOME_REDIRECT, FIRE_TV_UI } from '../launcher-registry.js';
 import { guardState, saveGuardState, GUARD_GROUPS } from '../guard-config.js';
 
 /** Amazon's update apps that Fire OS lets adb disable. */
@@ -16,6 +16,7 @@ const BACKGROUND_OP = 'RUN_ANY_IN_BACKGROUND';
 
 /** The first Home Redirect with the guard in it. */
 export const GUARD_MIN_VERSION = '1.2.0';
+export const NATIVE_UI_GUARD_MIN_VERSION = '1.2.3';
 
 /**
  * Pure: whether version a is at least version b ("1.10.0" >= "1.2.0").
@@ -52,7 +53,8 @@ export function parseCheck(reply) {
 
 async function ensureHomeRedirect(ip) {
   const version = await packageVersion(ip, HOME_REDIRECT.pkg);
-  if (versionAtLeast(version, GUARD_MIN_VERSION)) {
+  const minimum = (await listPackages(ip)).includes(FIRE_TV_UI.pkg) ? NATIVE_UI_GUARD_MIN_VERSION : GUARD_MIN_VERSION;
+  if (versionAtLeast(version, minimum)) {
     await grantPermission(ip, HOME_REDIRECT.pkg, 'android.permission.WRITE_SECURE_SETTINGS');
     return { label: `Home Redirect ${version} is installed`, ok: true };
   }
@@ -106,6 +108,10 @@ export async function turnGuardOn(ip) {
   }
   const locked = (await sendGuard(ip, 'lock')) === 'locked';
   results.push({ label: 'Locked the screensaver, Alexa fix, Home and timeout settings on the TV', ok: locked });
+  if ((await listPackages(ip)).includes(FIRE_TV_UI.pkg)) {
+    await backupOperation(ip, FIRE_TV_UI.pkg, 'protection-on');
+    results.push({ label: 'Fire TV UI protects its Home, screensaver and timers', ok: true });
+  }
   for (const group of state.unlocked) {
     results.push(await forgetGroup(ip, group));
   }
@@ -118,6 +124,9 @@ async function forgetGroup(ip, group) {
   let ok = true;
   for (const setting of GUARD_GROUPS[group]) {
     ok = (await sendGuard(ip, 'forget', { setting })) === 'forgotten' && ok;
+  }
+  if ((await listPackages(ip)).includes(FIRE_TV_UI.pkg)) {
+    await backupOperation(ip, FIRE_TV_UI.pkg, 'dream-unlock');
   }
   return { label: `Left the ${group} unlocked`, ok };
 }
@@ -175,6 +184,10 @@ export async function turnGuardOff(ip) {
   // With Home Redirect gone there is nothing left on the TV to unlock.
   const unlocked = reply === 'unlocked' || (reply === null && !(await listPackages(ip)).includes(HOME_REDIRECT.pkg));
   const results = [{ label: 'Unlocked the settings on the TV', ok: unlocked }];
+  if ((await listPackages(ip)).includes(FIRE_TV_UI.pkg)) {
+    await backupOperation(ip, FIRE_TV_UI.pkg, 'protection-off');
+    results.push({ label: 'Fire TV UI settings protection turned off', ok: true });
+  }
   for (const pkg of state.disabled) {
     await enablePackage(ip, pkg);
     results.push({ label: `Re-enabled ${pkg}`, ok: !(await listDisabledPackages(ip)).includes(pkg) });

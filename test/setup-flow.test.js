@@ -63,7 +63,7 @@ test('setup still launches the app after a failed install, and says so', async (
       { expect: 'review or adjust TV timeout', send: 'n' },
       { expect: 'optimize the TV for screensavers', send: 'n' },
       { expect: 'guard these settings', send: 'n' },
-      { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
+      { expect: 'What would you like to do?', send: `${DOWN.repeat(7)}${ENTER}` },
     ],
     { env: withNpm({ install: 1 }) }
   );

@@ -18,6 +18,7 @@ export const COMMANDS = [
   { name: 'firetv-set-screensaver', desc: 'Chooses which installed screensaver is active, by itself.' },
   { name: 'screensaver', desc: 'Short for firetv-set-screensaver: chooses which installed screensaver is active.' },
   { name: 'firetv-launcher', desc: 'Installs the optional AT4K home screen and switches the Home button between it and the Amazon menu.' },
+  { name: 'firetv-ui', desc: 'Guided Fire TV UI install, update, uninstall, Home button setup, and TV backup import/export.' },
   { name: 'launcher', desc: 'Short for firetv-launcher: installs AT4K or switches the Home button.' },
   { name: 'firetv-optimize', desc: 'Checks the TV for settings that stop or spoil screensavers and fixes only those it has. firetv-revert puts them back.' },
   { name: 'optimize', desc: 'Short for firetv-optimize: sets the TV up for screensavers.' },

@@ -1,6 +1,6 @@
-import { getSetting, putSetting, deleteSetting, listPackages, listDisabledPackages, enablePackage, grantPermission, installApk, uninstallPackage, pressHome, describeAdbError } from '../adb.js';
+import { getSetting, putSetting, deleteSetting, listPackages, listDisabledPackages, enablePackage, grantPermission, installApk, uninstallPackage, pressHome, describeAdbError, backupOperation } from '../adb.js';
 import { downloadApk, removeDownload } from './screensavers.js';
-import { AT4K, HOME_REDIRECT, LAUNCHER_APPS } from '../launcher-registry.js';
+import { AT4K, HOME_REDIRECT, LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
 
 const SERVICES_KEY = 'enabled_accessibility_services';
 const ENABLED_KEY = 'accessibility_enabled';
@@ -28,9 +28,15 @@ export function parseServices(raw) {
  * @returns {string[]}
  */
 export function servicesFor(current, mode) {
-  const others = current.filter((s) => s !== HOME_REDIRECT.service);
+  const replaced = [HOME_REDIRECT.service, FIRE_TV_UI.service, FIRE_TV_UI.controls,
+    'com.overdevs.at4khelper/com.overdevs.at4khelper.HomeRedirectAccessibilityService'];
+  const others = current.filter((s) => !replaced.includes(s)
+    && (mode !== 'fire-tv-ui' || s !== AT4K.service));
   if (mode === 'amazon') {
     return others;
+  }
+  if (mode === 'fire-tv-ui') {
+    return [...others, FIRE_TV_UI.controls, FIRE_TV_UI.service];
   }
   const withAt4k = others.includes(AT4K.service) ? others : [...others, AT4K.service];
   return [...withAt4k, HOME_REDIRECT.service];
@@ -45,10 +51,10 @@ export async function launcherState(ip) {
   const disabled = await listDisabledPackages(ip);
   const services = parseServices(await getSetting(ip, 'secure', SERVICES_KEY));
   return {
-    installed: LAUNCHER_APPS.filter((app) => packages.includes(app.pkg)).map((app) => app.id),
-    disabled: LAUNCHER_APPS.filter((app) => disabled.includes(app.pkg)).map((app) => app.id),
+    installed: [...LAUNCHER_APPS, FIRE_TV_UI].filter((app) => packages.includes(app.pkg)).map((app) => app.id),
+    disabled: [...LAUNCHER_APPS, FIRE_TV_UI].filter((app) => disabled.includes(app.pkg)).map((app) => app.id),
     services,
-    home: services.includes(HOME_REDIRECT.service) ? 'at4k' : 'amazon',
+    home: services.includes(FIRE_TV_UI.service) ? 'fire-tv-ui' : services.includes(HOME_REDIRECT.service) ? 'at4k' : 'amazon',
   };
 }
 
@@ -121,7 +127,39 @@ export async function useHome(ip, mode) {
       await enablePackage(ip, app.pkg);
     }
   }
-  await writeServices(ip, servicesFor(before.services, mode));
+  if (mode === 'fire-tv-ui') {
+    if (!before.installed.includes(FIRE_TV_UI.id)) {
+      return false;
+    }
+    await enablePackage(ip, FIRE_TV_UI.pkg);
+  }
+  const enabledBefore = await getSetting(ip, 'secure', ENABLED_KEY);
+  const requested = servicesFor(before.services, mode);
+  try {
+    if (before.installed.includes(FIRE_TV_UI.id)) {
+      await backupOperation(ip, FIRE_TV_UI.pkg, mode === FIRE_TV_UI.id ? 'home-preference-on' : 'home-preference-off');
+    }
+    if (mode === FIRE_TV_UI.id) {
+      await writeServices(ip, servicesFor(before.services, 'amazon').filter((service) => service !== AT4K.service));
+    }
+    await writeServices(ip, requested);
+    const readBack = parseServices(await getSetting(ip, 'secure', SERVICES_KEY));
+    const enabled = await getSetting(ip, 'secure', ENABLED_KEY);
+    if (readBack.join(':') !== requested.join(':') || enabled !== (requested.length ? '1' : '0')) {
+      throw new Error('The TV did not save the Home button setting.');
+    }
+  } catch {
+    if (before.installed.includes(FIRE_TV_UI.id)) {
+      await backupOperation(ip, FIRE_TV_UI.pkg, before.home === FIRE_TV_UI.id ? 'home-preference-on' : 'home-preference-off').catch(() => {});
+    }
+    await writeServices(ip, before.services);
+    if (!enabledBefore || enabledBefore === 'null') {
+      await deleteSetting(ip, 'secure', ENABLED_KEY);
+    } else {
+      await putSetting(ip, 'secure', ENABLED_KEY, enabledBefore);
+    }
+    return false;
+  }
   await pressHome(ip);
   return (await launcherState(ip)).home === mode;
 }
