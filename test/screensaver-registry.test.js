@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SCREENSAVERS, AMAZON_DEFAULT } from '../src/screensaver-registry.js';
+import { SCREENSAVERS, AMAZON_DEFAULT, sameComponent } from '../src/screensaver-registry.js';
 
 const REQUIRED_FIELDS = ['id', 'name', 'pkg', 'dreamComponent', 'repo', 'blurb'];
 
@@ -60,4 +60,12 @@ test('parseSha256FromNotes returns null when the notes record no valid checksum'
   assert.equal(parseSha256FromNotes('SHA-256: tooshort'), null);
   assert.equal(parseSha256FromNotes(null), null);
   assert.equal(parseSha256FromNotes(undefined), null);
+});
+
+test('sameComponent matches the short and long forms of a component, and nothing else', () => {
+  assert.ok(sameComponent('com.overdevs.snoozy/.SnoozyDreamService', 'com.overdevs.snoozy/com.overdevs.snoozy.SnoozyDreamService'));
+  assert.ok(sameComponent('a.b/.C', 'a.b/.C'));
+  assert.ok(!sameComponent('a.b/.C', 'a.b/.D'));
+  assert.ok(!sameComponent(null, 'a.b/.C'));
+  assert.ok(sameComponent(null, null));
 });

@@ -79,10 +79,10 @@ final class Screensavers {
 
     /**
      * Amazon's own screensaver only calls itself "Screensaver", which reads
-     * like a heading.
+     * like a heading, and it is the one that shows ads.
      */
     static String displayName(String pkg, String label) {
-        return AMAZON_PACKAGE.equals(pkg) ? "Amazon (factory default)" : label;
+        return AMAZON_PACKAGE.equals(pkg) ? "Amazon with Ads" : label;
     }
 
     /** Sorted by name, ignoring case, so the list reads the same every time. */

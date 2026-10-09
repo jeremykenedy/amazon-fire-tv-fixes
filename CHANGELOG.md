@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.1.0] - 2026-10-08
+
+### Added in 3.1.0
+
+- `optimize` / `firetv-optimize`: checks the TV for settings that stop or spoil a screensaver and fixes only the ones it has. Offered during `start` and `update`, and undone by `firetv-revert`.
+- Android's built-in Colors screensaver can be made active with `screensaver --set=colors`.
+
+### Changed in 3.1.0
+
+- Aerial Views is the default: it starts checked on a TV with no screensavers yet, and `screensaver --yes` picks it whenever it is installed.
+- Amazon's screensaver is listed as "Amazon with Ads", in the commands and in the on-TV picker (Home Redirect 1.1.1).
+- The Aerial Views screenshot shows the screensaver playing instead of its menu.
+
+### Fixed in 3.1.0
+
+- A screensaver written in its long form (`package/package.Class`) is now recognized as the same screensaver.
+
 ## [3.0.0] - 2026-10-08
 
 Renamed from amazon-fire-tv-fixes to Fire TV Toolkit, since it now does much
@@ -46,6 +63,7 @@ more than fixes.
 
 - The Alexa deep-sleep fix and ad-free screensavers, each with a guided installer and a standalone command.
 
+[3.1.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.0.0
 [2.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v1.0.0

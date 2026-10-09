@@ -19,6 +19,7 @@ test('start on a fresh setup walks through connecting and reaches the menu, then
     { expect: 'Developer Mode and ADB debugging?', send: 'y' },
     { expect: 'IP address', send: `192.168.1.49${ENTER}` },
     { expect: 'review or adjust TV timeout', send: 'n' },
+    { expect: 'optimize the TV for screensavers', send: 'n' },
     ...EXIT_MENU,
   ]);
   assert.equal(r.code, 0, r.out);
@@ -33,6 +34,7 @@ const CONNECT = [
   { expect: 'Developer Mode and ADB debugging?', send: 'y' },
   { expect: 'IP address', send: `192.168.1.49${ENTER}` },
   { expect: 'review or adjust TV timeout', send: 'n' },
+  { expect: 'optimize the TV for screensavers', send: 'n' },
 ];
 const CONTINUE = { expect: 'Nothing has been changed yet. Continue?', send: ENTER };
 const MENU = (n) => ({ expect: 'What would you like to do?', send: `${DOWN.repeat(n)}${ENTER}` });
@@ -74,11 +76,11 @@ test('menu: declining the Alexa revert leaves the fix on', async () => {
   assert.equal(fake.readState().secure['str.auto_wake_up_enabled'], '1');
 });
 
-test('menu: choose the Amazon default as the active screensaver', async () => {
+test('menu: choose Amazon with Ads as the active screensaver', async () => {
   const r = await drive('bin/start.js', [], [
     ...CONNECT,
     MENU(3),
-    { expect: 'Set the active screensaver to:', send: ENTER },
+    { expect: 'Set the active screensaver to:', send: `${DOWN}${ENTER}` },
     CONTINUE,
     { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
   ]);
@@ -200,7 +202,7 @@ test('standalone commands run their guided flow against the fake TV', async () =
   const on = await drive('bin/enable-alexa-fix.js', [], [{ expect: /\[y\/N\]|\[Y\/n\]/, send: 'y' }]);
   assert.equal(fake.readState().secure['str.auto_wake_up_enabled'], '1', on.out);
 
-  const ss = await drive('bin/firetv-set-screensaver.js', [], [{ expect: 'Set the active screensaver to:', send: ENTER }, CONTINUE]);
+  const ss = await drive('bin/firetv-set-screensaver.js', [], [{ expect: 'Set the active screensaver to:', send: `${DOWN}${ENTER}` }, CONTINUE]);
   assert.match(fake.readState().secure.screensaver_components, /amazon/, ss.out);
 
   const sl = await drive('bin/firetv-timeout-sleep.js', [], [{ expect: 'in minutes', send: `30${ENTER}` }, CONTINUE]);

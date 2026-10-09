@@ -65,10 +65,11 @@ so you can run just the part you need later.
 ## Features
 
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
-- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views, AndroSaver, Snoozy, Aquarium Live or Aquarium 4K.
+- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live or Aquarium 4K. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **On-TV screensaver picker**: a Screensavers tile on the TV for switching the screensaver from the couch, since Fire OS Settings only offers Amazon's.
+- **Optimize for screensavers**: checks the TV for settings that stop or spoil a screensaver (screensaver switched off, sleep coming before the screensaver, Amazon's Ambient Experience, Aerial Views' frame rate permission) and fixes only the ones it has. Offered during `start` and `update`, or run `optimize` any time.
 - **Timeout control**: view, change and reset the sleep and screensaver timeouts, with the first value seen on your TV saved as its baseline.
 - **Full revert**: put the TV back how it was, item by item, then remove the tool from your computer.
 - **Script friendly**: every command takes flags, answers `--help`, and exits non-zero on failure.
@@ -89,11 +90,13 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Select any scr
 ### Screensavers
 
 <p align="center">
+    <a href="docs/screenshots/screensaver-aerial-views.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aerial-views-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aerial-views-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aerial-views.jpg" alt="Aerial Views, the default" title="Aerial Views, the default"></picture></a>
     <a href="docs/screenshots/screensaver-aquarium-4k.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aquarium-4k-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aquarium-4k-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aquarium-4k.jpg" alt="Aquarium 4K" title="Aquarium 4K"></picture></a>
     <a href="docs/screenshots/screensaver-aquarium-live.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aquarium-live-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aquarium-live-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aquarium-live.jpg" alt="Aquarium Live" title="Aquarium Live"></picture></a>
     <a href="docs/screenshots/screensaver-snoozy.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-snoozy-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-snoozy-tablet.jpg 2x"><img src="docs/screenshots/screensaver-snoozy.jpg" alt="Snoozy" title="Snoozy"></picture></a>
     <a href="docs/screenshots/screensaver-androsaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-androsaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-androsaver-tablet.jpg 2x"><img src="docs/screenshots/screensaver-androsaver.jpg" alt="AndroSaver" title="AndroSaver"></picture></a>
-    <a href="docs/screenshots/screensaver-aerial-views.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aerial-views-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aerial-views-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aerial-views.jpg" alt="Aerial Views, its on-TV menu" title="Aerial Views, its on-TV menu"></picture></a>
+    <a href="docs/screenshots/screensaver-colors.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-colors-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-colors-tablet.jpg 2x"><img src="docs/screenshots/screensaver-colors.jpg" alt="Colors, built into the TV" title="Colors, built into the TV"></picture></a>
+    <a href="docs/screenshots/screensaver-amazon-with-ads.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-amazon-with-ads-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-amazon-with-ads-tablet.jpg 2x"><img src="docs/screenshots/screensaver-amazon-with-ads.jpg" alt="Amazon with Ads, the factory screensaver" title="Amazon with Ads, the factory screensaver"></picture></a>
 </p>
 
 ### The command line
@@ -103,6 +106,7 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Select any scr
     <a href="docs/screenshots/cli-screensavers.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-screensavers-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-screensavers-tablet.jpg 2x"><img src="docs/screenshots/cli-screensavers.jpg" alt="Installing or removing screensavers" title="Installing or removing screensavers"></picture></a>
     <a href="docs/screenshots/cli-choose-screensaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-choose-screensaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-choose-screensaver-tablet.jpg 2x"><img src="docs/screenshots/cli-choose-screensaver.jpg" alt="Choosing the active screensaver" title="Choosing the active screensaver"></picture></a>
     <a href="docs/screenshots/cli-launcher.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-launcher-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-launcher-tablet.jpg 2x"><img src="docs/screenshots/cli-launcher.jpg" alt="Choosing the home screen" title="Choosing the home screen"></picture></a>
+    <a href="docs/screenshots/cli-optimize.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-optimize-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-optimize-tablet.jpg 2x"><img src="docs/screenshots/cli-optimize.jpg" alt="Optimizing the TV for screensavers" title="Optimizing the TV for screensavers"></picture></a>
     <a href="docs/screenshots/cli-timeouts.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-timeouts-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-timeouts-tablet.jpg 2x"><img src="docs/screenshots/cli-timeouts.jpg" alt="Reviewing the sleep and screensaver timeouts" title="Reviewing the sleep and screensaver timeouts"></picture></a>
     <a href="docs/screenshots/cli-timeouts-current.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-timeouts-current-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-timeouts-current-tablet.jpg 2x"><img src="docs/screenshots/cli-timeouts-current.jpg" alt="The current timeout values" title="The current timeout values"></picture></a>
     <a href="docs/screenshots/cli-revert.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-revert-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-revert-tablet.jpg 2x"><img src="docs/screenshots/cli-revert.jpg" alt="Putting the TV back how it was" title="Putting the TV back how it was"></picture></a>
@@ -204,6 +208,7 @@ each one are listed in [Commands](docs/COMMANDS.md).
 | `disable-alexa-fix` | Turns the fix off again (factory behavior). |
 | `firetv-screensavers` | Installs or removes the ad-free screensavers. |
 | `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. |
+| `optimize`, `firetv-optimize` | Sets the TV up for screensavers, changing only settings it has. |
 | `launcher`, `firetv-launcher` | Installs the AT4K home screen and switches the Home button between it and the Amazon menu. |
 | `firetv-timeouts` | Reviews, edits or resets the sleep and screensaver timeouts in one flow. |
 | `firetv-timeout-sleep` | Changes the sleep timeout. |
@@ -262,6 +267,7 @@ fire-tv-toolkit/
 | [How it works](docs/HOW-IT-WORKS.md) | The exact adb settings each command changes |
 | [Screensavers](docs/SCREENSAVERS.md) | Each screensaver, where it comes from, and how downloads are verified |
 | [Home screen](docs/LAUNCHER.md) | The AT4K home screen, Home Redirect and the on-TV picker |
+| [Optimizing](docs/OPTIMIZE.md) | What `optimize` checks, what it changes, and how it is undone |
 | [Timeouts](docs/TIMEOUTS.md) | The sleep and screensaver timeouts and their baselines |
 | [Uninstalling](docs/UNINSTALLING.md) | Reverting the TV and removing the tool |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | When the TV cannot be reached, or a setting changes back |

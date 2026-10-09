@@ -9,8 +9,8 @@ import { print } from './output.js';
  * two, so this can never silently drift out of date.
  */
 export const COMMANDS = [
-  { name: 'fire-tv-toolkit', desc: 'Runs the full guided installer: adb, device setup, Alexa fix, screensavers, and an optional timeout review.' },
-  { name: 'firetv-revert', desc: 'Reverts what this tool changed on the TV (Alexa fix, active screensaver, installed screensavers, changed timeouts). Does not remove these commands; see uninstall.' },
+  { name: 'fire-tv-toolkit', desc: 'Runs the full guided installer: adb, device setup, Alexa fix, screensavers, timeouts and optimizing.' },
+  { name: 'firetv-revert', desc: 'Puts the TV back how it was, item by item. Keeps these commands installed; see uninstall.' },
   { name: 'firetv-install-adb', desc: 'Installs adb (Android SDK Platform Tools) if it is not already on your machine.' },
   { name: 'enable-alexa-fix', desc: 'Turns on the Alexa deep-sleep fix by itself.' },
   { name: 'disable-alexa-fix', desc: 'Reverts the Alexa deep-sleep fix back to the factory default.' },
@@ -19,6 +19,8 @@ export const COMMANDS = [
   { name: 'screensaver', desc: 'Short for firetv-set-screensaver: chooses which installed screensaver is active.' },
   { name: 'firetv-launcher', desc: 'Installs the optional AT4K home screen and switches the Home button between it and the Amazon menu.' },
   { name: 'launcher', desc: 'Short for firetv-launcher: installs AT4K or switches the Home button.' },
+  { name: 'firetv-optimize', desc: 'Checks the TV for settings that stop or spoil screensavers and fixes only those it has. firetv-revert puts them back.' },
+  { name: 'optimize', desc: 'Short for firetv-optimize: sets the TV up for screensavers.' },
   { name: 'firetv-timeouts', desc: 'Review, edit, and/or reset any of the TV timeouts, all in one guided flow.' },
   { name: 'firetv-timeout-sleep', desc: 'Changes the sleep (deep-sleep/standby) timeout by itself.' },
   { name: 'firetv-timeout-screensaver', desc: 'Changes the screensaver timeout by itself.' },

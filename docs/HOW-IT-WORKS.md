@@ -35,6 +35,19 @@ adb shell settings put system screen_off_timeout <ms>   # screensaver
 
 See [Timeouts](TIMEOUTS.md).
 
+## Optimizing for screensavers
+
+```bash
+adb shell settings put secure screensaver_enabled 1
+adb shell settings put secure screensaver_activate_on_sleep 1
+adb shell settings put secure screensaver_default_component <package>/<service>
+adb shell settings put secure amazon_ambient_enabled 0
+adb shell appops set com.neilturner.aerialviews SYSTEM_ALERT_WINDOW allow
+```
+
+Each one only when the TV has that setting and it is not already set. See
+[Optimizing](OPTIMIZE.md) for every check.
+
 ## The home screen
 
 ```bash

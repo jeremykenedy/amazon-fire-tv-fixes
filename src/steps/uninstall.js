@@ -15,6 +15,7 @@ import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, msToLabel } from './timeouts-shared.js';
 import { launcherState, useHome, removeLauncherApp } from '../apply/launcher.js';
 import { LAUNCHER_APPS } from '../launcher-registry.js';
+import { savedOriginals, revertOptimizations } from '../apply/optimize.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
@@ -77,6 +78,10 @@ async function findOptions(ip) {
     options.push({ name: `Remove ${s.name} from the TV`, value: `pkg:${s.id}` });
   }
   options.push(...buildTimeoutRevertOptions(probedTimeouts), ...buildLauncherRevertOptions(await launcherState(ip)));
+  const optimized = Object.keys(savedOriginals()).length;
+  if (optimized > 0) {
+    options.push({ name: `Undo the screensaver optimizations (${optimized} ${optimized === 1 ? 'setting' : 'settings'})`, value: 'optimize' });
+  }
   if (localClones) {
     options.push({ name: 'Delete locally cloned screensaver source (./screensavers)', value: 'local' });
   }
@@ -94,6 +99,10 @@ async function findOptions(ip) {
 async function applySelection(ip, selected, installedScreensavers, probedTimeouts) {
   const results = [];
 
+  // First, so the reverts below (Amazon default, timeout baselines) have the last word.
+  if (selected.includes('optimize')) {
+    results.push(await applyOptimizeRevert(ip));
+  }
   if (selected.includes('alexa')) {
     results.push(await applyAlexaRevert(ip));
   }
@@ -132,6 +141,15 @@ function reportFailure(message) {
   print(chalk.red(message));
   markFailed();
   return false;
+}
+
+async function applyOptimizeRevert(ip) {
+  const failed = (await revertOptimizations(ip)).filter((r) => !r.ok);
+  if (failed.length > 0) {
+    return reportFailure(`These optimizations did not go back: ${failed.map((r) => r.label).join(', ')}.`);
+  }
+  print(chalk.green('Screensaver optimizations undone.'));
+  return true;
 }
 
 async function applyAlexaRevert(ip) {
