@@ -16,6 +16,7 @@ On a fresh clone the first run copies `.env.example` to `.env` and fills it in.
 | `FIRE_TV_TIMEOUT_SCREENSAVER_FACTORY_MS` | The first command that reads the screensaver timeout | The screensaver timeout first seen on this TV, in milliseconds. |
 | `FIRE_TV_GUARD` | `guard` | `on` while the guard is on. Settings this tool changes are then passed to the guard first, so it keeps the new value. |
 | `FIRE_TV_GUARD_DISABLED` | `guard` | The Amazon updater packages the guard disabled, so `guard --off` turns back on only those. |
+| `FIRE_TV_GUARD_UNLOCKED` | `guard --unlock` | Groups the guard leaves free to change (`screensaver`), kept when the guard is turned on again. |
 | `FIRE_TV_GUARD_BACKGROUND` | `guard` | Each updater the guard stopped running in the background, with its mode from before. |
 | `FIRE_TV_OPTIMIZE_<SETTING>` | `optimize`, the first time it changes that setting | The value the setting had before `optimize` changed it (`null` if the TV had none). `firetv-revert` puts it back and then removes the line. |
 

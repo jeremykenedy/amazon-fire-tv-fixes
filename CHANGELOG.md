@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.1] - 2026-10-08
+
+### Added in 3.2.1
+
+- `guard --unlock=screensaver` stops guarding which screensaver is active, so it can be changed from anywhere, and `guard --lock=screensaver` guards it again (Home Redirect 1.2.1).
+
 ## [3.2.0] - 2026-10-08
 
 ### Added in 3.2.0
@@ -73,6 +79,7 @@ more than fixes.
 
 - The Alexa deep-sleep fix and ad-free screensavers, each with a guided installer and a standalone command.
 
+[3.2.1]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.1
 [3.2.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.0.0

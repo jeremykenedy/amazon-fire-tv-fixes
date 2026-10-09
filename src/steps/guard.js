@@ -1,14 +1,16 @@
 import chalk from 'chalk';
 import { explainStep, promptYN } from '../ui.js';
 import { runWizard } from '../wizard.js';
-import { turnGuardOn, checkGuard, turnGuardOff } from '../apply/guard.js';
-import { guardState } from '../guard-config.js';
+import { turnGuardOn, checkGuard, turnGuardOff, unlockGroup, lockGroup } from '../apply/guard.js';
+import { guardState, GUARD_GROUPS } from '../guard-config.js';
 import { markFailed } from '../exit-status.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   check: { type: 'boolean', desc: 'Put back anything Amazon changed, and report it.' },
   off: { type: 'boolean', desc: 'Turn the guard off and undo what it did.' },
+  unlock: { type: 'string', choices: Object.keys(GUARD_GROUPS), desc: 'Stop guarding one group so it can be changed from anywhere: screensaver (which screensaver is active).' },
+  lock: { type: 'string', choices: Object.keys(GUARD_GROUPS), desc: 'Guard a group again, keeping its current value.' },
   yes: { type: 'boolean', desc: 'Skip the confirmation.' },
 };
 
@@ -65,10 +67,22 @@ async function off(ip) {
  * Keeps Amazon from undoing this toolkit's changes, checks the guard, or turns
  * it off again.
  * @param {string} ip
- * @param {{check?: boolean, off?: boolean, yes?: boolean}} [flags]
+ * @param {{check?: boolean, off?: boolean, yes?: boolean, unlock?: string, lock?: string}} [flags]
  * @returns {Promise<void>}
  */
 export async function manageGuard(ip, flags = {}) {
+  const group = flags.unlock ?? flags.lock;
+  if (group !== undefined) {
+    if (!guardState().on) {
+      print(chalk.yellow('\nThe guard is off, so nothing is locked. Run guard to turn it on.\n'));
+      return;
+    }
+    const results = flags.unlock ? await unlockGroup(ip, group) : await lockGroup(ip, group);
+    if (report(results)) {
+      print(chalk.green(flags.unlock ? `\nThe ${group} is unlocked. Change it from anywhere; guard --lock=${group} keeps it again.\n` : `\nThe ${group} is locked again, as it is now.\n`));
+    }
+    return;
+  }
   if (flags.check) {
     await check(ip);
     return;

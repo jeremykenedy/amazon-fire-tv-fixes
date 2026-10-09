@@ -1,7 +1,7 @@
 import { sendGuard, packageVersion, disablePackage, enablePackage, listPackages, listDisabledPackages, getAppOp, setAppOp, grantPermission, describeAdbError } from '../adb.js';
 import { installLauncherApp } from './launcher.js';
 import { HOME_REDIRECT } from '../launcher-registry.js';
-import { guardState, saveGuardState } from '../guard-config.js';
+import { guardState, saveGuardState, GUARD_GROUPS } from '../guard-config.js';
 
 /** Amazon's update apps that Fire OS lets adb disable. */
 export const UPDATERS = ['com.amazon.tv.easyupgrade', 'com.amazon.tv.forcedotaupdater.v2'];
@@ -105,9 +105,49 @@ export async function turnGuardOn(ip) {
     return results;
   }
   const locked = (await sendGuard(ip, 'lock')) === 'locked';
-  results.push({ label: 'Locked the screensaver, Alexa fix, Home and timeout settings on the TV', ok: locked }, ...(await blockUpdaters(ip, state)));
+  results.push({ label: 'Locked the screensaver, Alexa fix, Home and timeout settings on the TV', ok: locked });
+  for (const group of state.unlocked) {
+    results.push(await forgetGroup(ip, group));
+  }
+  results.push(...(await blockUpdaters(ip, state)));
   saveGuardState({ ...state, on: true });
   return results;
+}
+
+async function forgetGroup(ip, group) {
+  let ok = true;
+  for (const setting of GUARD_GROUPS[group]) {
+    ok = (await sendGuard(ip, 'forget', { setting })) === 'forgotten' && ok;
+  }
+  return { label: `Left the ${group} unlocked`, ok };
+}
+
+/**
+ * Stops guarding one group of settings, such as which screensaver is active,
+ * so it can be changed from anywhere. Stays that way until lockGroup.
+ * @param {string} ip
+ * @param {string} group a key of GUARD_GROUPS
+ * @returns {Promise<Array<{label: string, ok: boolean}>>}
+ */
+export async function unlockGroup(ip, group) {
+  const state = guardState();
+  const result = await forgetGroup(ip, group);
+  if (result.ok && !state.unlocked.includes(group)) {
+    saveGuardState({ ...state, unlocked: [...state.unlocked, group] });
+  }
+  return [result];
+}
+
+/**
+ * Guards a group again, keeping its current value.
+ * @param {string} ip
+ * @param {string} group a key of GUARD_GROUPS
+ * @returns {Promise<Array<{label: string, ok: boolean}>>}
+ */
+export async function lockGroup(ip, group) {
+  const state = guardState();
+  saveGuardState({ ...state, unlocked: state.unlocked.filter((g) => g !== group) });
+  return turnGuardOn(ip);
 }
 
 /**
@@ -144,7 +184,7 @@ export async function turnGuardOff(ip) {
     results.push({ label: `Let ${pkg} run in the background again`, ok: (await getAppOp(ip, pkg, BACKGROUND_OP)) === mode });
   }
   if (results.every((r) => r.ok)) {
-    saveGuardState({ on: false, disabled: [], background: {} });
+    saveGuardState({ on: false, disabled: [], background: {}, unlocked: [] });
   }
   return results;
 }

@@ -13,6 +13,7 @@ import android.content.Intent;
  *   -n com.jeremykenedy.firetv.homeredirect/.GuardReceiver
  *   -a com.jeremykenedy.firetv.homeredirect.GUARD --es cmd lock|unlock|check
  * and for remember: --es setting secure/screensaver_components --es value X
+ * and for forget: --es setting secure/screensaver_components
  */
 public class GuardReceiver extends BroadcastReceiver {
     static final String ACTION = "com.jeremykenedy.firetv.homeredirect.GUARD";
@@ -36,6 +37,9 @@ public class GuardReceiver extends BroadcastReceiver {
             GuardEnforcer.remember(context, intent.getStringExtra("setting"),
                     valueOf(intent.getStringExtra("value")));
             setResultData("remembered");
+        } else if ("forget".equals(cmd)) {
+            GuardEnforcer.forget(context, intent.getStringExtra("setting"));
+            setResultData("forgotten");
         } else if ("check".equals(cmd)) {
             String state = GuardEnforcer.isLocked(context) ? "on" : "off";
             setResultData("guard=" + state + " restored="

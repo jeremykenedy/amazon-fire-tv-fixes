@@ -62,9 +62,10 @@ else if (cmd === 'shell' && a === 'am' && b === 'broadcast') {
     const g = state.guard = state.guard || { locked: false, remembered: {} };
     const cmdName = extra('cmd');
     let reply = 'unknown';
-    if (cmdName === 'lock') { g.locked = true; reply = state.guardReply || 'locked'; }
+    if (cmdName === 'lock') { g.locked = true; g.forgotten = []; reply = state.guardReply || 'locked'; }
     else if (cmdName === 'unlock') { g.locked = false; reply = state.guardReply || 'unlocked'; }
     else if (cmdName === 'remember') { g.remembered[extra('setting')] = extra('value'); reply = 'remembered'; }
+    else if (cmdName === 'forget') { g.forgotten = [...(g.forgotten || []), extra('setting')]; reply = state.forgetReply || 'forgotten'; }
     else if (cmdName === 'check') { reply = state.guardReply || 'guard=' + (g.locked ? 'on' : 'off') + ' restored=' + (state.guardRestored || 'none'); }
     save(); console.log('Broadcasting: Intent\\nBroadcast completed: result=0, data="' + reply + '"');
   }

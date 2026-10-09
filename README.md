@@ -209,7 +209,7 @@ each one are listed in [Commands](docs/COMMANDS.md).
 | `firetv-screensavers` | Installs or removes the ad-free screensavers. |
 | `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. |
 | `optimize`, `firetv-optimize` | Sets the TV up for screensavers, changing only settings it has. |
-| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. `--check` puts back anything that changed, `--off` turns it off. |
+| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. `--check` puts back anything that changed, `--unlock=screensaver` frees the screensaver choice, `--off` turns it off. |
 | `launcher`, `firetv-launcher` | Installs the AT4K home screen and switches the Home button between it and the Amazon menu. |
 | `firetv-timeouts` | Reviews, edits or resets the sleep and screensaver timeouts in one flow. |
 | `firetv-timeout-sleep` | Changes the sleep timeout. |
