@@ -15,3 +15,10 @@ test('README lists every screensaver with a link to its repository', async () =>
   const missing = SCREENSAVERS.filter((s) => !readme.includes(`[${s.name}](https://github.com/${s.repo})`) || !readme.includes(`\`${s.id}\``));
   assert.deepEqual(missing.map((s) => s.id), []);
 });
+
+test('README shows a screenshot of every screensaver', async () => {
+  const { SCREENSAVERS } = await import('../src/screensaver-registry.js');
+  const missing = SCREENSAVERS.map((s) => `docs/screenshots/screensaver-${s.name.toLowerCase().replaceAll(' ', '-')}.jpg`)
+    .filter((file) => !readme.includes(file) || !fs.existsSync(new URL(`../${file}`, import.meta.url)));
+  assert.deepEqual(missing, []);
+});
