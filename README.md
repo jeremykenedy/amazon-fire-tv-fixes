@@ -14,8 +14,6 @@
     <a href="https://github.com/jeremykenedy/fire-tv-toolkit/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-toolkit/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_amazon-fire-tv-fixes"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_amazon-fire-tv-fixes&metric=alert_status" alt="Quality Gate Status"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_amazon-fire-tv-fixes"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_amazon-fire-tv-fixes&metric=coverage" alt="Coverage"></a>
-    <a href="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/build-status/main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/badges/build.png?b=main" alt="Scrutinizer Build Status"></a>
-    <a href="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/?branch=main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/amazon-fire-tv-fixes/badges/quality-score.png?b=main" alt="Scrutinizer Code Quality"></a>
     <a href="https://app.codacy.com/gh/jeremykenedy/fire-tv-toolkit/dashboard"><img src="https://app.codacy.com/project/badge/Grade/f18b3347eae54aeea4251575b7b2de1f" alt="Codacy Badge"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
