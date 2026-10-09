@@ -63,6 +63,9 @@ else if (cmd === 'shell' && a === 'appops' && b === 'set') {
 else if (cmd === 'shell' && a === 'am' && b === 'broadcast' && args.includes('com.jeremykenedy.firetv.homeredirect/.GuardReceiver')) {
   // The guard in Home Redirect: replies only when Home Redirect is installed.
   const extra = (name) => { const i = args.indexOf(name); return i < 0 ? undefined : args[i + 1]; };
+  if (extra('cmd') === 'check' && state.guardCheckDisconnects > 0) {
+    state.guardCheckDisconnects--; save(); process.exit(255);
+  }
   if (!state.installed.includes('com.jeremykenedy.firetv.homeredirect')) { console.log('Broadcasting: Intent\\nBroadcast completed: result=0'); }
   else {
     const g = state.guard = state.guard || { locked: false, remembered: {} };
@@ -120,6 +123,10 @@ else if (cmd === 'shell' && a === 'settings' && b === 'get') {
   const pkg = value('-n').split('/')[0];
   if (!state.installed.includes(pkg) || state.backupFail) { console.log('Broadcast completed: result=1, data="backup failed"'); process.exit(0); }
   const operation = value('operation');
+  if (operation === 'home-on' && state.homeFailuresRemaining > 0) {
+    state.homeFailuresRemaining--; save();
+    console.log('Broadcast completed: result=1, data="Home binding is still settling"'); process.exit(0);
+  }
   state.files = state.files || {};
   if (operation === 'save') {
     if (!state.backupMissing) state.files['/sdcard/Download/fire-tv-ui-backup.txt'] = JSON.stringify(state.preferences || {apps_per_row:5});

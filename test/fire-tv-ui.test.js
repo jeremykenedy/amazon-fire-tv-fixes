@@ -61,6 +61,26 @@ function source(data = { apps_per_row: 4 }) {
 }
 function installedEnv() { fs.writeFileSync(fake.envFile, `FIRE_TV_IP=${ip}\nINSTALLED=true\n`); }
 
+test('an update recovers when enabling debugging disconnects the first helper check', async () => {
+  installed({ installed: [FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
+    versions: { [HOME_REDIRECT.pkg]: '1.2.2' }, guardCheckDisconnects: 1 });
+  await installFireTvUi(ip, flags());
+  assert.equal(fake.readState().guardCheckDisconnects, 0);
+  assert.equal((await launcherState(ip)).home, FIRE_TV_UI.id);
+  assert.ok(fake.readState().appops[FIRE_TV_UI.pkg].GET_USAGE_STATS);
+});
+
+test('an update retries a settling native Home binding for keep and explicit Home choices', async () => {
+  for (const home of ['keep', FIRE_TV_UI.id]) {
+    fake.reset();
+    installed({ homeFailuresRemaining: 1 });
+    await installFireTvUi(ip, flags({ home }));
+    assert.equal(fake.readState().homeFailuresRemaining, 0);
+    assert.equal((await launcherState(ip)).home, FIRE_TV_UI.id);
+    assert.equal(fake.readState().preferences.fire_tv_ui_home_enabled, true);
+  }
+});
+
 test('invalid or conflicting Fire TV UI options refuse to guess', () => {
   for (const value of [{ yes: true }, { install: true, uninstall: true }, { setup: 'simple' },
     { install: true, setup: 'import' }, { uninstall: true, home: 'amazon' },

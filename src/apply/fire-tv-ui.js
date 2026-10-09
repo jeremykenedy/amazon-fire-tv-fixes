@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import {
   getAndroidVersion, grantPermission, setAppOp, getAppOp, installApk, enablePackage,
   pullFile, pushFile, remoteFileExists, removeRemoteFile, backupOperation, openLauncher,
-  getSetting, putSetting, uninstallPackage, listPackages, packageVersion, sendGuard,
+  getSetting, putSetting, uninstallPackage, listPackages, packageVersion, sendGuard, connectAndCheck,
 } from '../adb.js';
 import { downloadApk, removeDownload } from './screensavers.js';
 import { useHome, launcherState, installLauncherApp } from './launcher.js';
@@ -181,7 +181,15 @@ export async function installFireTvUi(ip, options, onProgress = () => {}) {
     if (!(await listPackages(ip)).includes(FIRE_TV_UI.pkg)) {
       throw new Error('The APK did not install Fire TV UI.');
     }
-    if (hasHelper) await sendGuard(ip, 'check');
+    if (hasHelper) {
+      try {
+        await sendGuard(ip, 'check');
+      } catch (failed) {
+        // Enabling Fire TV debugging can restart adbd during the APK update.
+        if (failed.code !== 255 || !(await connectAndCheck(ip))) throw failed;
+        await sendGuard(ip, 'check');
+      }
+    }
     await enablePackage(ip, FIRE_TV_UI.pkg);
     onProgress('Setting up TV screensaver and backup access');
     for (const permission of FIRE_TV_UI.grants) {
@@ -210,10 +218,11 @@ export async function installFireTvUi(ip, options, onProgress = () => {}) {
     }
     if (options.home !== 'keep') {
       onProgress('Configuring the Home button');
-      if (!(await useHome(ip, options.home))) {
+      if (!(await useHome(ip, options.home)) && !(await useHome(ip, options.home))) {
         throw new Error('The TV did not save the Home button choice.');
       }
-    } else if (before.home === FIRE_TV_UI.id && !(await useHome(ip, FIRE_TV_UI.id))) {
+    } else if (before.home === FIRE_TV_UI.id && !(await useHome(ip, FIRE_TV_UI.id))
+        && !(await useHome(ip, FIRE_TV_UI.id))) {
       throw new Error('The TV did not restore its Home button after the update.');
     }
     if (options.screensaver && options.screensaver !== 'keep') {
