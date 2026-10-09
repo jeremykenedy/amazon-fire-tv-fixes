@@ -17,6 +17,8 @@
 - Home routing is rebound after Fire TV UI updates. Opening the launcher no longer force-stops its accessibility services.
 - Intentional CLI timer and screensaver changes update Fire TV UI's desired settings so its protection service does not revert them.
 - Home Redirect 1.2.2 delegates shared settings to Fire TV UI and retires stale snapshots, preserving the GUI's Home and timer choices. Guard enable, disable, and screensaver unlock commands also control the native protector.
+- Home Redirect 1.2.3 sends on-TV screensaver choices through Fire TV UI's protected settings receiver and confirms the active choice before reporting success.
+- Fire TV UI 1.0.1 fixes screensaver selection so the picker's choice survives its local protection service.
 
 ### Changed in 3.3.0
 

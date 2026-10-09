@@ -43,8 +43,8 @@ export const FIRE_TV_UI = {
   service: 'com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.HomeRedirectService',
   controls: 'com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.Hra',
   repo: 'jeremykenedy/fire-tv-ui',
-  tag: 'v1.0.0',
+  tag: 'v1.0.1',
   private: true,
-  asset: 'fire-tv-ui-1.0.0.apk',
+  asset: 'fire-tv-ui-1.0.1.apk',
   grants: ['android.permission.WRITE_SECURE_SETTINGS'],
 };

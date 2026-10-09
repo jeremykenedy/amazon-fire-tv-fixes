@@ -61,9 +61,16 @@ function source(data = { apps_per_row: 4 }) {
 }
 function installedEnv() { fs.writeFileSync(fake.envFile, `FIRE_TV_IP=${ip}\nINSTALLED=true\n`); }
 
+test('Fire TV UI installer uses the current private picker-fix release', () => {
+  assert.equal(FIRE_TV_UI.tag, 'v1.0.1');
+  assert.equal(FIRE_TV_UI.asset, 'fire-tv-ui-1.0.1.apk');
+  assert.equal(FIRE_TV_UI.private, true);
+});
+
 test('an update recovers when enabling debugging disconnects the first helper check', async () => {
   installed({ installed: [FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
-    versions: { [HOME_REDIRECT.pkg]: '1.2.2' }, guardCheckDisconnects: 1 });
+    versions: { [HOME_REDIRECT.pkg]: '1.2.2' },
+    installVersions: { [HOME_REDIRECT.pkg]: '1.2.3' }, guardCheckDisconnects: 1 });
   await installFireTvUi(ip, flags());
   assert.equal(fake.readState().guardCheckDisconnects, 0);
   assert.equal((await launcherState(ip)).home, FIRE_TV_UI.id);
@@ -206,7 +213,7 @@ test('an update reports a rejected Home rebind and keeps the saved layout', asyn
 
 test('an existing toolkit guard is upgraded before Fire TV UI is configured', async () => {
   installed({ installed: [AERIAL, FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
-    versions: { [HOME_REDIRECT.pkg]: '1.2.1' }, installVersions: { [HOME_REDIRECT.pkg]: '1.2.2' } });
+    versions: { [HOME_REDIRECT.pkg]: '1.2.2' }, installVersions: { [HOME_REDIRECT.pkg]: '1.2.3' } });
   const progress = [];
   await installFireTvUi(ip, flags(), (message) => progress.push(message));
   assert.ok(progress.includes('Updating the toolkit guard for Fire TV UI'));
@@ -217,7 +224,7 @@ test('an existing toolkit guard is upgraded before Fire TV UI is configured', as
 test('an outdated guard release cannot replace Fire TV UI or its saved layout', async () => {
   installed({ installed: [AERIAL, FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
     versions: { [HOME_REDIRECT.pkg]: '1.2.1' }, files: { [TV_BACKUP]: '{"apps_per_row":3}' } });
-  await assert.rejects(installFireTvUi(ip, flags()), /guard update must provide version 1\.2\.2/);
+  await assert.rejects(installFireTvUi(ip, flags()), /guard update must provide version 1\.2\.3/);
   assert.equal(fake.readState().preferences.apps_per_row, 7);
   assert.equal(fake.readState().opened, undefined);
   assert.equal(fake.readState().files[TV_BACKUP], '{"apps_per_row":3}');
@@ -233,7 +240,7 @@ test('a failed toolkit guard upgrade stops before replacing Fire TV UI', async (
 
 test('toolkit guard controls the native protector and preserves screensaver unlock and lock behavior', async () => {
   installed({ installed: [AERIAL, FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
-    versions: { [HOME_REDIRECT.pkg]: '1.2.2' } });
+    versions: { [HOME_REDIRECT.pkg]: '1.2.3' } });
   const on = await turnGuardOn(ip);
   assert.ok(on.every((result) => result.ok));
   assert.equal(fake.readState().preferences.fire_tv_ui_protect_settings, true);

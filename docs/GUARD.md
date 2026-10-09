@@ -41,7 +41,7 @@ Change settings with this toolkit (any command) or the Screensavers tile on the
 TV, and the guard keeps your new value. A change made in Fire OS Settings is
 put back, because to the guard it looks like Amazon.
 
-When Fire TV UI is installed, Home Redirect 1.2.2 leaves Home routing, the selected screensaver, its enabled state, the Alexa fix, and both timers to Fire TV UI's local guard. It removes its old copies of those values so they cannot be restored after the launcher is removed. The toolkit still protects the fallback screensaver, activation switches, Ambient Experience, and updater restrictions. The Fire TV UI installer updates an older helper before configuring the launcher.
+When Fire TV UI is installed, Home Redirect 1.2.3 leaves Home routing, the selected screensaver, its enabled state, the Alexa fix, and both timers to Fire TV UI's local guard. It removes its old copies of those values so they cannot be restored after the launcher is removed. The toolkit still protects the fallback screensaver, activation switches, Ambient Experience, and updater restrictions. The Fire TV UI installer updates an older helper before configuring the launcher.
 
 `guard` enables Fire TV UI's settings protection too, and `guard --off` disables it. Screensaver unlock and lock apply to the native picker as well; the picker identifies an unlocked selection. The GUI's update-blocking toggle controls its VPN. Updater package restrictions applied by the toolkit are undone separately with `guard --off`.
 
@@ -75,6 +75,6 @@ already disabled before the guard stays as it was.
 
 ## Needs
 
-Home Redirect 1.2.0 or newer, or 1.2.2 when Fire TV UI is installed. `guard` installs or updates it from this
+Home Redirect 1.2.0 or newer, or 1.2.3 when Fire TV UI is installed. `guard` installs or updates it from this
 project's release, checked against its published SHA-256, and grants it
 `WRITE_SECURE_SETTINGS`.

@@ -7,4 +7,6 @@
     <string name="picker_pick">Pick the screensaver the TV should use.</string>
     <string name="picker_active">Active now: %1$s</string>
     <string name="picker_needs_permission">This app is not allowed to change the screensaver yet. Run firetv-launcher on your computer to finish setting it up.</string>
+    <string name="picker_save_failed">The TV did not save that screensaver. Your previous selection is still active.</string>
+    <string name="picker_update_ui">Update Fire TV UI with Fire TV Toolkit before choosing a screensaver here.</string>
 </resources>
