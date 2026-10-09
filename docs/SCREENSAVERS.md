@@ -7,6 +7,7 @@
 | `snoozy` | Snoozy | `com.overdevs.snoozy` | [jeremykenedy/Snoozy](https://github.com/jeremykenedy/Snoozy) | Animated Snoopy screensaver |
 | `aquarium-live` | Aquarium Live | `com.jeremykenedy.aquariumlive` | [jeremykenedy/aquarium-live](https://github.com/jeremykenedy/aquarium-live) | A living aquarium drawn in real time: four scenes, six looks, day and night |
 | `aquarium-4k` | Aquarium 4K | `com.jeremykenedy.firetv.aquarium` | [jeremykenedy/fire-tv-aquarium](https://github.com/jeremykenedy/fire-tv-aquarium) | Offline 4K aquarium footage with custom fish, sea life and backgrounds |
+| `cloud-drift-clock` | Cloud Drift Clock | `com.jeremykenedy.clouddriftclock` | [jeremykenedy/cloud-drift-clock](https://github.com/jeremykenedy/cloud-drift-clock) | An animated cloudscape with a digital clock and adjustable palette, density, speed and motion |
 | `jellyfish-drift` | Jellyfish Drift | `com.jeremykenedy.jellyfishdrift` | [jeremykenedy/jellyfish-drift](https://github.com/jeremykenedy/jellyfish-drift) | Animated jellyfish with adjustable water, density, motion, species and light rays |
 | `firefly-grove` | Firefly Grove | `com.jeremykenedy.fireflygrove` | [jeremykenedy/firefly-grove](https://github.com/jeremykenedy/firefly-grove) | Animated fireflies in a grove with adjustable density, motion and color |
 | `neon-corridor` | Neon Corridor | `com.jeremykenedy.neoncorridor` | [jeremykenedy/neon-corridor](https://github.com/jeremykenedy/neon-corridor) | A procedural neon tunnel with adjustable density, speed, color, brightness and geometry |
@@ -23,7 +24,7 @@
 | `aqua-surface` | Aqua Surface Drift | `com.jeremykenedy.aquasurfacedrift` | [jeremykenedy/aqua-surface-drift](https://github.com/jeremykenedy/aqua-surface-drift) | Animated water with adjustable environment, lighting, ripples, motion and view |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream and Aqua Surface Drift are original projects.
+README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream and Aqua Surface Drift are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
