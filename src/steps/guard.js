@@ -63,6 +63,20 @@ async function off(ip) {
   }
 }
 
+async function setGroup(ip, { unlock, lock }) {
+  if (!guardState().on) {
+    print(chalk.yellow('\nThe guard is off, so nothing is locked. Run guard to turn it on.\n'));
+    return;
+  }
+  if (unlock) {
+    if (report(await unlockGroup(ip, unlock))) {
+      print(chalk.green(`\nThe ${unlock} is unlocked. Change it from anywhere; guard --lock=${unlock} keeps it again.\n`));
+    }
+  } else if (report(await lockGroup(ip, lock))) {
+    print(chalk.green(`\nThe ${lock} is locked again, as it is now.\n`));
+  }
+}
+
 /**
  * Keeps Amazon from undoing this toolkit's changes, checks the guard, or turns
  * it off again.
@@ -71,16 +85,8 @@ async function off(ip) {
  * @returns {Promise<void>}
  */
 export async function manageGuard(ip, flags = {}) {
-  const group = flags.unlock ?? flags.lock;
-  if (group !== undefined) {
-    if (!guardState().on) {
-      print(chalk.yellow('\nThe guard is off, so nothing is locked. Run guard to turn it on.\n'));
-      return;
-    }
-    const results = flags.unlock ? await unlockGroup(ip, group) : await lockGroup(ip, group);
-    if (report(results)) {
-      print(chalk.green(flags.unlock ? `\nThe ${group} is unlocked. Change it from anywhere; guard --lock=${group} keeps it again.\n` : `\nThe ${group} is locked again, as it is now.\n`));
-    }
+  if (flags.unlock !== undefined || flags.lock !== undefined) {
+    await setGroup(ip, flags);
     return;
   }
   if (flags.check) {
