@@ -26,9 +26,10 @@
 | `perseid-passage` | Perseid Passage | `com.jeremykenedy.perseidpassage` | [jeremykenedy/perseid-passage](https://github.com/jeremykenedy/perseid-passage) | Animated meteor showers with adjustable frequency, size, speed, star density, palette and brightness |
 | `split-flap-drift` | Split-Flap Drift | `com.jeremykenedy.splitflapdrift` | [jeremykenedy/split-flap-drift](https://github.com/jeremykenedy/split-flap-drift) | An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion |
 | `canopy-drift` | Canopy Drift | `com.jeremykenedy.canopydrift` | [jeremykenedy/canopy-drift](https://github.com/jeremykenedy/canopy-drift) | An animated autumn canopy with falling leaves, adjustable tree style, leaf density, wind and lighting |
+| `contour-flow` | Contour Flow | `com.jeremykenedy.contourflow` | [jeremykenedy/contour-flow](https://github.com/jeremykenedy/contour-flow) | Animated topographic contour fields with adjustable relief, palette, density, drift speed, line weight, lighting and brightness |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift and Canopy Drift are original projects.
+README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift and Contour Flow are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it

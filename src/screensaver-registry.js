@@ -198,6 +198,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/canopy-drift',
     blurb: 'An animated autumn canopy with falling leaves, adjustable tree style, leaf density, wind and lighting.',
   },
+  {
+    id: 'contour-flow',
+    name: 'Contour Flow',
+    pkg: 'com.jeremykenedy.contourflow',
+    dreamComponent: 'com.jeremykenedy.contourflow/.ContourFlowDreamService',
+    repo: 'jeremykenedy/contour-flow',
+    blurb: 'Animated topographic contour fields with adjustable relief, palette, density, drift speed, line weight, lighting and brightness.',
+  },
 ];
 
 /**
