@@ -150,6 +150,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/pipeworks-dream',
     blurb: 'Continuously growing geometric pipes with adjustable density, speed, palette and glow.',
   },
+  {
+    id: 'aqua-surface',
+    name: 'Aqua Surface Drift',
+    pkg: 'com.jeremykenedy.aquasurfacedrift',
+    dreamComponent: 'com.jeremykenedy.aquasurfacedrift/.AquaSurfaceDreamService',
+    repo: 'jeremykenedy/aqua-surface-drift',
+    blurb: 'Animated water with adjustable environment, lighting, ripples, motion and view.',
+  },
 ];
 
 /**

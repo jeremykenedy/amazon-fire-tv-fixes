@@ -30,6 +30,7 @@ const VORTEX_SPIRAL = SCREENSAVERS.find((s) => s.id === 'vortex-spiral');
 const SIGNAL_RAIN = SCREENSAVERS.find((s) => s.id === 'signal-rain');
 const RETRO_FLIGHT = SCREENSAVERS.find((s) => s.id === 'retro-flight');
 const PIPEWORKS_DREAM = SCREENSAVERS.find((s) => s.id === 'pipeworks-dream');
+const AQUA_SURFACE = SCREENSAVERS.find((s) => s.id === 'aqua-surface');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -238,6 +239,17 @@ test('Pipeworks Dream registry entry points to its released app and installer re
     dreamComponent: 'com.jeremykenedy.pipeworksdream/.PipeworksDreamService',
     repo: 'jeremykenedy/pipeworks-dream',
     blurb: 'Continuously growing geometric pipes with adjustable density, speed, palette and glow.',
+  });
+});
+
+test('Aqua Surface Drift registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(AQUA_SURFACE, {
+    id: 'aqua-surface',
+    name: 'Aqua Surface Drift',
+    pkg: 'com.jeremykenedy.aquasurfacedrift',
+    dreamComponent: 'com.jeremykenedy.aquasurfacedrift/.AquaSurfaceDreamService',
+    repo: 'jeremykenedy/aqua-surface-drift',
+    blurb: 'Animated water with adjustable environment, lighting, ripples, motion and view.',
   });
 });
 
