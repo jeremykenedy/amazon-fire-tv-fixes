@@ -54,6 +54,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/jellyfish-drift',
     blurb: 'Animated jellyfish with adjustable water, density, motion, species and light rays. No ads, analytics or tracking.',
   },
+  {
+    id: 'firefly-grove',
+    name: 'Firefly Grove',
+    pkg: 'com.jeremykenedy.fireflygrove',
+    dreamComponent: 'com.jeremykenedy.fireflygrove/.FireflyDreamService',
+    repo: 'jeremykenedy/firefly-grove',
+    blurb: 'Animated fireflies in a quiet grove with adjustable density, motion and color. No ads, analytics or tracking.',
+  },
 ];
 
 /**
