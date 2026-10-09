@@ -33,6 +33,7 @@
 
 - [What it does](#what-it-does)
 - [Features](#features)
+- [Available screensavers](#available-screensavers)
 - [Screenshots](#screenshots)
 - [Platform support](#platform-support)
 - [Requirements](#requirements)
@@ -75,9 +76,44 @@ so you can run just the part you need later.
 - **Script friendly**: every command takes flags, answers `--help`, and exits non-zero on failure.
 - **Safe by default**: nothing changes until you confirm, Esc cancels any prompt, and risky steps need a typed confirmation.
 
+## Available screensavers
+
+Every screensaver here is an optional install from its own repository. Each one was checked for ads, analytics and tracking before it was added, and every download is verified against its published SHA-256 (see [Screensavers](docs/SCREENSAVERS.md)).
+
+| Screensaver | Install id | What it is |
+|-------------|------------|------------|
+| [Aerial Views](https://github.com/jeremykenedy/AerialViews) (default) | `aerial` | Aerial drone footage, the Apple TV screensaver look |
+| [AndroSaver](https://github.com/jeremykenedy/androsaver) | `androsaver` | Photo slideshow or music visualizer |
+| [Snoozy](https://github.com/jeremykenedy/Snoozy) | `snoozy` | Animated Snoopy screensaver |
+| [Aquarium Live](https://github.com/jeremykenedy/aquarium-live) | `aquarium-live` | A living aquarium drawn in real time. Four scenes, six looks, day and night |
+| [Aquarium 4K](https://github.com/jeremykenedy/fire-tv-aquarium) | `aquarium-4k` | Offline 4K aquarium footage with custom fish, sea life and backgrounds |
+| [Jellyfish Drift](https://github.com/jeremykenedy/jellyfish-drift) | `jellyfish-drift` | Animated jellyfish with adjustable water, density, motion, species and light rays |
+| [Firefly Grove](https://github.com/jeremykenedy/firefly-grove) | `firefly-grove` | Animated fireflies in a quiet grove with adjustable density, motion and color |
+| [Neon Corridor](https://github.com/jeremykenedy/neon-corridor) | `neon-corridor` | A procedural neon tunnel with adjustable density, speed, color, brightness and geometry |
+| [Starfield Drift](https://github.com/jeremykenedy/starfield-drift) | `starfield-drift` | A procedural animated starfield with adjustable density, speed, color, luminance and meteors |
+| [Rain on Glass](https://github.com/jeremykenedy/rain-on-glass) | `rain-on-glass` | Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights |
+| [Rainforest Cascade](https://github.com/jeremykenedy/rainforest-cascade) | `rainforest-cascade` | An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer |
+| [Blue Meridian](https://github.com/jeremykenedy/blue-meridian) | `blue-meridian` | A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars |
+| [Twilight Hearth](https://github.com/jeremykenedy/twilight-hearth) | `twilight-hearth` | An animated fireplace with adjustable surrounds, flame intensity, embers, motion and room lighting |
+| [Nebula Drift](https://github.com/jeremykenedy/nebula-drift) | `nebula-drift` | Animated nebula clouds with adjustable structure, color, density, stars and meteors |
+| [Vortex Spiral](https://github.com/jeremykenedy/vortex-spiral) | `vortex-spiral` | Animated spiral ribbons with adjustable arms, winding, color, brightness and motion |
+| [Signal Rain](https://github.com/jeremykenedy/signal-rain) | `signal-rain` | Luminous abstract digital rain with adjustable streams, colors and motion |
+
+These come with the TV and can be made active with `screensaver --set=<id>`:
+
+| Screensaver | Id | What it is |
+|-------------|----|------------|
+| Colors | `colors` | Android's built-in slow color wash |
+| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads |
+
+```bash
+firetv-screensavers --install=jellyfish-drift,blue-meridian --yes
+screensaver --set=jellyfish-drift
+```
+
 ## Screenshots
 
-Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade and Blue Meridian use the screenshots from their own repositories. Select any screenshot to see it full size.
+Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral and Signal Rain use the screenshots from their own repositories. Select any screenshot to see it full size.
 
 ### The home screen and the on-TV picker
 
@@ -100,6 +136,10 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drif
     <a href="docs/screenshots/screensaver-rain-on-glass.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-rain-on-glass-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-rain-on-glass-tablet.jpg 2x"><img src="docs/screenshots/screensaver-rain-on-glass.jpg" alt="Rain on Glass" title="Rain on Glass"></picture></a>
     <a href="docs/screenshots/screensaver-rainforest-cascade.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-rainforest-cascade-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-rainforest-cascade-tablet.jpg 2x"><img src="docs/screenshots/screensaver-rainforest-cascade.jpg" alt="Rainforest Cascade" title="Rainforest Cascade"></picture></a>
     <a href="docs/screenshots/screensaver-blue-meridian.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-blue-meridian-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-blue-meridian-tablet.jpg 2x"><img src="docs/screenshots/screensaver-blue-meridian.jpg" alt="Blue Meridian" title="Blue Meridian"></picture></a>
+    <a href="docs/screenshots/screensaver-twilight-hearth.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-twilight-hearth-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-twilight-hearth-tablet.jpg 2x"><img src="docs/screenshots/screensaver-twilight-hearth.jpg" alt="Twilight Hearth" title="Twilight Hearth"></picture></a>
+    <a href="docs/screenshots/screensaver-nebula-drift.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-nebula-drift-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-nebula-drift-tablet.jpg 2x"><img src="docs/screenshots/screensaver-nebula-drift.jpg" alt="Nebula Drift" title="Nebula Drift"></picture></a>
+    <a href="docs/screenshots/screensaver-vortex-spiral.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-vortex-spiral-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-vortex-spiral-tablet.jpg 2x"><img src="docs/screenshots/screensaver-vortex-spiral.jpg" alt="Vortex Spiral" title="Vortex Spiral"></picture></a>
+    <a href="docs/screenshots/screensaver-signal-rain.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-signal-rain-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-signal-rain-tablet.jpg 2x"><img src="docs/screenshots/screensaver-signal-rain.jpg" alt="Signal Rain" title="Signal Rain"></picture></a>
     <a href="docs/screenshots/screensaver-snoozy.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-snoozy-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-snoozy-tablet.jpg 2x"><img src="docs/screenshots/screensaver-snoozy.jpg" alt="Snoozy" title="Snoozy"></picture></a>
     <a href="docs/screenshots/screensaver-androsaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-androsaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-androsaver-tablet.jpg 2x"><img src="docs/screenshots/screensaver-androsaver.jpg" alt="AndroSaver" title="AndroSaver"></picture></a>
     <a href="docs/screenshots/screensaver-colors.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-colors-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-colors-tablet.jpg 2x"><img src="docs/screenshots/screensaver-colors.jpg" alt="Colors, built into the TV" title="Colors, built into the TV"></picture></a>
