@@ -24,6 +24,10 @@ const STARFIELD_DRIFT = SCREENSAVERS.find((s) => s.id === 'starfield-drift');
 const RAIN_ON_GLASS = SCREENSAVERS.find((s) => s.id === 'rain-on-glass');
 const RAINFOREST_CASCADE = SCREENSAVERS.find((s) => s.id === 'rainforest-cascade');
 const BLUE_MERIDIAN = SCREENSAVERS.find((s) => s.id === 'blue-meridian');
+const TWILIGHT_HEARTH = SCREENSAVERS.find((s) => s.id === 'twilight-hearth');
+const NEBULA_DRIFT = SCREENSAVERS.find((s) => s.id === 'nebula-drift');
+const VORTEX_SPIRAL = SCREENSAVERS.find((s) => s.id === 'vortex-spiral');
+const SIGNAL_RAIN = SCREENSAVERS.find((s) => s.id === 'signal-rain');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -169,6 +173,50 @@ test('Blue Meridian registry entry points to its released app and installer repo
   });
 });
 
+test('Twilight Hearth registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(TWILIGHT_HEARTH, {
+    id: 'twilight-hearth',
+    name: 'Twilight Hearth',
+    pkg: 'com.jeremykenedy.twilighthearth',
+    dreamComponent: 'com.jeremykenedy.twilighthearth/.HearthDreamService',
+    repo: 'jeremykenedy/twilight-hearth',
+    blurb: 'An animated fireplace with adjustable surrounds, flame intensity, embers, motion and room lighting. No ads, analytics or tracking.',
+  });
+});
+
+test('Nebula Drift registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(NEBULA_DRIFT, {
+    id: 'nebula-drift',
+    name: 'Nebula Drift',
+    pkg: 'com.jeremykenedy.nebuladrift',
+    dreamComponent: 'com.jeremykenedy.nebuladrift/.NebulaDreamService',
+    repo: 'jeremykenedy/nebula-drift',
+    blurb: 'Animated nebula clouds with adjustable structure, color, density, stars and meteors.',
+  });
+});
+
+test('Vortex Spiral registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(VORTEX_SPIRAL, {
+    id: 'vortex-spiral',
+    name: 'Vortex Spiral',
+    pkg: 'com.jeremykenedy.vortexspiral',
+    dreamComponent: 'com.jeremykenedy.vortexspiral/.VortexDreamService',
+    repo: 'jeremykenedy/vortex-spiral',
+    blurb: 'Animated spiral ribbons with adjustable arms, winding, color, brightness and motion.',
+  });
+});
+
+test('Signal Rain registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(SIGNAL_RAIN, {
+    id: 'signal-rain',
+    name: 'Signal Rain',
+    pkg: 'com.jeremykenedy.signalrain',
+    dreamComponent: 'com.jeremykenedy.signalrain/.SignalRainDreamService',
+    repo: 'jeremykenedy/signal-rain',
+    blurb: 'Luminous abstract digital rain with adjustable streams, colors and motion.',
+  });
+});
+
 test('latestRelease asks for a pinned tag by name when one is given', async () => {
   const seen = [];
   const r = await withFetch(pkgFetch(ANDRO, { seen }), () => sv.latestRelease(ANDRO.repo, undefined, 'v 1/x'));
@@ -260,6 +308,34 @@ test('firetv-screensavers --install installs a screensaver and reports it', asyn
   assert.ok(fake.readState().installed.includes(ANDRO.pkg));
   assert.notEqual(process.exitCode, 1);
 });
+
+test('Twilight Hearth can be installed and selected through the CLI', async () => {
+  const installed = await captured(() => withFetch(
+    pkgFetch(TWILIGHT_HEARTH),
+    () => manageScreensavers(IP, { install: 'twilight-hearth' })
+  ));
+  assert.match(installed.out, /Twilight Hearth installed/);
+  assert.ok(fake.readState().installed.includes(TWILIGHT_HEARTH.pkg));
+
+  const selected = await captured(() => setScreensaver(IP, { set: 'twilight-hearth' }));
+  assert.match(selected.out, /Active screensaver is now Twilight Hearth/);
+  assert.equal(fake.readState().secure.screensaver_components, TWILIGHT_HEARTH.dreamComponent);
+});
+
+for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN]) {
+  test(`${saver.name} can be installed and selected through the CLI`, async () => {
+    const installed = await captured(() => withFetch(
+      pkgFetch(saver),
+      () => manageScreensavers(IP, { install: saver.id })
+    ));
+    assert.match(installed.out, new RegExp(`${saver.name} installed`));
+    assert.ok(fake.readState().installed.includes(saver.pkg));
+
+    const selected = await captured(() => setScreensaver(IP, { set: saver.id }));
+    assert.match(selected.out, new RegExp(`Active screensaver is now ${saver.name}`));
+    assert.equal(fake.readState().secure.screensaver_components, saver.dreamComponent);
+  });
+}
 
 test('firetv-screensavers --install reports a failed install and marks the run failed', async () => {
   const { out } = await captured(() => withFetch(pkgFetch(SNOOZY, { apiStatus: 404 }), () => manageScreensavers(IP, { install: 'snoozy' })));

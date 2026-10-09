@@ -31,10 +31,10 @@ and `remove` refuses to run and points you at `start`.
 | Command | What it does | Flags |
 |---------|--------------|-------|
 | `firetv-screensavers` | Installs or removes screensavers with a checklist. | `--install=<ids>`, `--uninstall=<ids>` (needs `--force`), `--yes`, `--force` |
-| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|jellyfish-drift\|firefly-grove\|neon-corridor\|starfield-drift\|rain-on-glass\|rainforest-cascade\|blue-meridian\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
+| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|jellyfish-drift\|firefly-grove\|neon-corridor\|starfield-drift\|rain-on-glass\|rainforest-cascade\|blue-meridian\|twilight-hearth\|nebula-drift\|vortex-spiral\|signal-rain\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
 
 Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
-`aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`, `rainforest-cascade`, `blue-meridian`. `colors` (Android's built-in Colors) and
+`aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`, `rainforest-cascade`, `blue-meridian`, `twilight-hearth`, `nebula-drift`, `vortex-spiral`, `signal-rain`. `colors` (Android's built-in Colors) and
 `amazon` (Amazon with Ads) come with the TV, for `--set` only.
 
 ## Optimizing for screensavers
@@ -97,6 +97,10 @@ firetv-screensavers --install=rainforest-cascade --yes
 screensaver --set=rainforest-cascade
 firetv-screensavers --install=blue-meridian --yes
 screensaver --set=blue-meridian
+firetv-screensavers --install=twilight-hearth --yes
+screensaver --set=twilight-hearth
+firetv-screensavers --install=nebula-drift,vortex-spiral,signal-rain --yes
+screensaver --set=nebula-drift
 optimize --yes
 guard --yes
 guard --check

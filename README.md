@@ -63,7 +63,7 @@ so you can run just the part you need later.
 ## Features
 
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
-- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade or Blue Meridian, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
+- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, or Signal Rain, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **Fire TV UI**: install a fully customizable launcher with on-TV screensaver previews, timer controls, memory and storage usage, persistent backups, and local settings protection. Its installer collects all choices before making changes.
