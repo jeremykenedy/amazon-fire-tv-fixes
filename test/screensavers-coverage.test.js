@@ -17,6 +17,7 @@ const SNOOZY = SCREENSAVERS.find((s) => s.id === 'snoozy');
 const ANDROSAVER = SCREENSAVERS.find((s) => s.id === 'androsaver');
 const COLORS = BUILT_IN_SCREENSAVERS.find((s) => s.id === 'colors');
 const AERIAL_ENTRY = SCREENSAVERS.find((s) => s.id === 'aerial');
+const JELLYFISH_DRIFT = SCREENSAVERS.find((s) => s.id === 'jellyfish-drift');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -83,6 +84,17 @@ test('parseSha256FromNotes with an asset name reads only that file\'s line', () 
   assert.equal(sv.parseSha256FromNotes(notes, 'two.apk'), b.toLowerCase());
   assert.equal(sv.parseSha256FromNotes(notes, 'three.apk'), null);
   assert.equal(sv.parseSha256FromNotes(notes), null);
+});
+
+test('Jellyfish Drift registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(JELLYFISH_DRIFT, {
+    id: 'jellyfish-drift',
+    name: 'Jellyfish Drift',
+    pkg: 'com.jeremykenedy.jellyfishdrift',
+    dreamComponent: 'com.jeremykenedy.jellyfishdrift/.JellyfishDreamService',
+    repo: 'jeremykenedy/jellyfish-drift',
+    blurb: 'Animated jellyfish with adjustable water, density, motion, species and light rays. No ads, analytics or tracking.',
+  });
 });
 
 test('latestRelease asks for a pinned tag by name when one is given', async () => {

@@ -46,6 +46,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/fire-tv-aquarium',
     blurb: 'Offline 4K aquarium footage with custom fish, sea life and backgrounds. No ads.',
   },
+  {
+    id: 'jellyfish-drift',
+    name: 'Jellyfish Drift',
+    pkg: 'com.jeremykenedy.jellyfishdrift',
+    dreamComponent: 'com.jeremykenedy.jellyfishdrift/.JellyfishDreamService',
+    repo: 'jeremykenedy/jellyfish-drift',
+    blurb: 'Animated jellyfish with adjustable water, density, motion, species and light rays. No ads, analytics or tracking.',
+  },
 ];
 
 /**

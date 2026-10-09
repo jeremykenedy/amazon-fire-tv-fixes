@@ -31,10 +31,10 @@ and `remove` refuses to run and points you at `start`.
 | Command | What it does | Flags |
 |---------|--------------|-------|
 | `firetv-screensavers` | Installs or removes screensavers with a checklist. | `--install=<ids>`, `--uninstall=<ids>` (needs `--force`), `--yes`, `--force` |
-| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
+| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|jellyfish-drift\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
 
 Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
-`aquarium-live`, `aquarium-4k`. `colors` (Android's built-in Colors) and
+`aquarium-live`, `aquarium-4k`, `jellyfish-drift`. `colors` (Android's built-in Colors) and
 `amazon` (Amazon with Ads) come with the TV, for `--set` only.
 
 ## Optimizing for screensavers
@@ -80,6 +80,8 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 enable-alexa-fix --yes
 firetv-screensavers --install=aquarium-4k,aquarium-live --yes
 screensaver --set=aquarium-4k
+firetv-screensavers --install=jellyfish-drift --yes
+screensaver --set=jellyfish-drift
 optimize --yes
 guard --yes
 guard --check
