@@ -11,9 +11,10 @@
 | `firefly-grove` | Firefly Grove | `com.jeremykenedy.fireflygrove` | [jeremykenedy/firefly-grove](https://github.com/jeremykenedy/firefly-grove) | Animated fireflies in a grove with adjustable density, motion and color |
 | `neon-corridor` | Neon Corridor | `com.jeremykenedy.neoncorridor` | [jeremykenedy/neon-corridor](https://github.com/jeremykenedy/neon-corridor) | A procedural neon tunnel with adjustable density, speed, color, brightness and geometry |
 | `starfield-drift` | Starfield Drift | `com.jeremykenedy.starfielddrift` | [jeremykenedy/starfield-drift](https://github.com/jeremykenedy/starfield-drift) | A procedural starfield with adjustable density, speed, color, luminance and meteors |
+| `rain-on-glass` | Rain on Glass | `com.jeremykenedy.rainonglass` | [jeremykenedy/rain-on-glass](https://github.com/jeremykenedy/rain-on-glass) | Animated rainfall with adjustable lighting, density, speed and glass focus |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor and Starfield Drift are original projects.
+README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift and Rain on Glass are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
