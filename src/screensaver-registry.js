@@ -102,6 +102,38 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/blue-meridian',
     blurb: 'A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars. No ads, analytics or tracking.',
   },
+  {
+    id: 'twilight-hearth',
+    name: 'Twilight Hearth',
+    pkg: 'com.jeremykenedy.twilighthearth',
+    dreamComponent: 'com.jeremykenedy.twilighthearth/.HearthDreamService',
+    repo: 'jeremykenedy/twilight-hearth',
+    blurb: 'An animated fireplace with adjustable surrounds, flame intensity, embers, motion and room lighting. No ads, analytics or tracking.',
+  },
+  {
+    id: 'nebula-drift',
+    name: 'Nebula Drift',
+    pkg: 'com.jeremykenedy.nebuladrift',
+    dreamComponent: 'com.jeremykenedy.nebuladrift/.NebulaDreamService',
+    repo: 'jeremykenedy/nebula-drift',
+    blurb: 'Animated nebula clouds with adjustable structure, color, density, stars and meteors.',
+  },
+  {
+    id: 'vortex-spiral',
+    name: 'Vortex Spiral',
+    pkg: 'com.jeremykenedy.vortexspiral',
+    dreamComponent: 'com.jeremykenedy.vortexspiral/.VortexDreamService',
+    repo: 'jeremykenedy/vortex-spiral',
+    blurb: 'Animated spiral ribbons with adjustable arms, winding, color, brightness and motion.',
+  },
+  {
+    id: 'signal-rain',
+    name: 'Signal Rain',
+    pkg: 'com.jeremykenedy.signalrain',
+    dreamComponent: 'com.jeremykenedy.signalrain/.SignalRainDreamService',
+    repo: 'jeremykenedy/signal-rain',
+    blurb: 'Luminous abstract digital rain with adjustable streams, colors and motion.',
+  },
 ];
 
 /**

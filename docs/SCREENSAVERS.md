@@ -14,9 +14,13 @@
 | `rain-on-glass` | Rain on Glass | `com.jeremykenedy.rainonglass` | [jeremykenedy/rain-on-glass](https://github.com/jeremykenedy/rain-on-glass) | Animated rainfall with adjustable lighting, density, speed and glass focus |
 | `rainforest-cascade` | Rainforest Cascade | `com.jeremykenedy.rainforestcascade` | [jeremykenedy/rainforest-cascade](https://github.com/jeremykenedy/rainforest-cascade) | An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer |
 | `blue-meridian` | Blue Meridian | `com.jeremykenedy.bluemeridian` | [jeremykenedy/blue-meridian](https://github.com/jeremykenedy/blue-meridian) | A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars |
+| `twilight-hearth` | Twilight Hearth | `com.jeremykenedy.twilighthearth` | [jeremykenedy/twilight-hearth](https://github.com/jeremykenedy/twilight-hearth) | An animated fireplace with adjustable surrounds, flame intensity, embers, motion and room lighting |
+| `nebula-drift` | Nebula Drift | `com.jeremykenedy.nebuladrift` | [jeremykenedy/nebula-drift](https://github.com/jeremykenedy/nebula-drift) | Animated nebula clouds with adjustable structure, color, density, stars and meteors |
+| `vortex-spiral` | Vortex Spiral | `com.jeremykenedy.vortexspiral` | [jeremykenedy/vortex-spiral](https://github.com/jeremykenedy/vortex-spiral) | Animated spiral ribbons with adjustable arms, winding, color, brightness and motion |
+| `signal-rain` | Signal Rain | `com.jeremykenedy.signalrain` | [jeremykenedy/signal-rain](https://github.com/jeremykenedy/signal-rain) | Luminous abstract digital rain with adjustable streams, colors and motion |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade and Blue Meridian are original projects.
+README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral and Signal Rain are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
