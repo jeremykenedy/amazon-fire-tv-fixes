@@ -23,6 +23,7 @@ const NEON_CORRIDOR = SCREENSAVERS.find((s) => s.id === 'neon-corridor');
 const STARFIELD_DRIFT = SCREENSAVERS.find((s) => s.id === 'starfield-drift');
 const RAIN_ON_GLASS = SCREENSAVERS.find((s) => s.id === 'rain-on-glass');
 const RAINFOREST_CASCADE = SCREENSAVERS.find((s) => s.id === 'rainforest-cascade');
+const BLUE_MERIDIAN = SCREENSAVERS.find((s) => s.id === 'blue-meridian');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -154,6 +155,17 @@ test('Rainforest Cascade registry entry points to its released app and installer
     dreamComponent: 'com.jeremykenedy.rainforestcascade/.WaterfallDreamService',
     repo: 'jeremykenedy/rainforest-cascade',
     blurb: 'An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer. No ads, analytics or tracking.',
+  });
+});
+
+test('Blue Meridian registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(BLUE_MERIDIAN, {
+    id: 'blue-meridian',
+    name: 'Blue Meridian',
+    pkg: 'com.jeremykenedy.bluemeridian',
+    dreamComponent: 'com.jeremykenedy.bluemeridian/.BlueMeridianDreamService',
+    repo: 'jeremykenedy/blue-meridian',
+    blurb: 'A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars. No ads, analytics or tracking.',
   });
 });
 
