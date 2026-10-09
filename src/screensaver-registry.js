@@ -78,6 +78,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/starfield-drift',
     blurb: 'A procedural animated starfield with adjustable density, speed, color, luminance and meteors. No ads, analytics or tracking.',
   },
+  {
+    id: 'rain-on-glass',
+    name: 'Rain on Glass',
+    pkg: 'com.jeremykenedy.rainonglass',
+    dreamComponent: 'com.jeremykenedy.rainonglass/.RainDreamService',
+    repo: 'jeremykenedy/rain-on-glass',
+    blurb: 'Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights. No ads, analytics or tracking.',
+  },
 ];
 
 /**

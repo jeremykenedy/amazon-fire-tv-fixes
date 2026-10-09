@@ -31,10 +31,10 @@ and `remove` refuses to run and points you at `start`.
 | Command | What it does | Flags |
 |---------|--------------|-------|
 | `firetv-screensavers` | Installs or removes screensavers with a checklist. | `--install=<ids>`, `--uninstall=<ids>` (needs `--force`), `--yes`, `--force` |
-| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|jellyfish-drift\|firefly-grove\|neon-corridor\|starfield-drift\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
+| `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. | `--set=<aerial\|androsaver\|snoozy\|aquarium-live\|aquarium-4k\|jellyfish-drift\|firefly-grove\|neon-corridor\|starfield-drift\|rain-on-glass\|colors\|amazon>`, `--yes` picks Aerial Views, or the only installed one |
 
 Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
-`aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`. `colors` (Android's built-in Colors) and
+`aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`. `colors` (Android's built-in Colors) and
 `amazon` (Amazon with Ads) come with the TV, for `--set` only.
 
 ## Optimizing for screensavers
@@ -88,6 +88,8 @@ firetv-screensavers --install=neon-corridor --yes
 screensaver --set=neon-corridor
 firetv-screensavers --install=starfield-drift --yes
 screensaver --set=starfield-drift
+firetv-screensavers --install=rain-on-glass --yes
+screensaver --set=rain-on-glass
 optimize --yes
 guard --yes
 guard --check

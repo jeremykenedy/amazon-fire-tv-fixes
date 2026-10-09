@@ -21,6 +21,7 @@ const JELLYFISH_DRIFT = SCREENSAVERS.find((s) => s.id === 'jellyfish-drift');
 const FIREFLY_GROVE = SCREENSAVERS.find((s) => s.id === 'firefly-grove');
 const NEON_CORRIDOR = SCREENSAVERS.find((s) => s.id === 'neon-corridor');
 const STARFIELD_DRIFT = SCREENSAVERS.find((s) => s.id === 'starfield-drift');
+const RAIN_ON_GLASS = SCREENSAVERS.find((s) => s.id === 'rain-on-glass');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -130,6 +131,17 @@ test('Starfield Drift registry entry points to its released app and installer re
     dreamComponent: 'com.jeremykenedy.starfielddrift/.StarfieldDreamService',
     repo: 'jeremykenedy/starfield-drift',
     blurb: 'A procedural animated starfield with adjustable density, speed, color, luminance and meteors. No ads, analytics or tracking.',
+  });
+});
+
+test('Rain on Glass registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(RAIN_ON_GLASS, {
+    id: 'rain-on-glass',
+    name: 'Rain on Glass',
+    pkg: 'com.jeremykenedy.rainonglass',
+    dreamComponent: 'com.jeremykenedy.rainonglass/.RainDreamService',
+    repo: 'jeremykenedy/rain-on-glass',
+    blurb: 'Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights. No ads, analytics or tracking.',
   });
 });
 
