@@ -1,0 +1,25 @@
+title: Fire TV Toolkit
+description: Ad-free screensavers, a better home screen, and the Alexa deep-sleep fix for your Fire TV, set up from your terminal.
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-relative-links
+  - jekyll-readme-index
+  - jekyll-optional-front-matter
+  - jekyll-titles-from-headings
+relative_links:
+  enabled: true
+  collections: false
+exclude:
+  - node_modules
+  - android
+  - bin
+  - src
+  - test
+  - screensavers
+  - coverage
+  - lcov.info
+  - package.json
+  - package-lock.json
+  - setup.js
+  - sonar-project.properties
+  - .github
