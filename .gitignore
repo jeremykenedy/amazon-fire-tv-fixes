@@ -36,3 +36,4 @@ coverage/
 
 # Android build output
 android/*/build/
+/_site

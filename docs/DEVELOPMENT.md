@@ -35,6 +35,10 @@ for each change.
 3. Tag `v<version>`, publish the release, attach `firetv-home-redirect.apk`,
    and add `SHA-256 (firetv-home-redirect.apk): <hash>` to the notes.
 
+## Project site
+
+The [project site](https://jeremykenedy.github.io/fire-tv-toolkit/) is built from `README.md` and `docs/` by Jekyll (`_config.yml`) and deployed by `.github/workflows/pages.yml` on every push to `main`. Edit the Markdown; there is nothing else to update.
+
 ## Adding a screensaver
 
 Add an entry to `src/screensaver-registry.js` after vetting it (see
