@@ -94,6 +94,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/rainforest-cascade',
     blurb: 'An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer. No ads, analytics or tracking.',
   },
+  {
+    id: 'blue-meridian',
+    name: 'Blue Meridian',
+    pkg: 'com.jeremykenedy.bluemeridian',
+    dreamComponent: 'com.jeremykenedy.bluemeridian/.BlueMeridianDreamService',
+    repo: 'jeremykenedy/blue-meridian',
+    blurb: 'A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars. No ads, analytics or tracking.',
+  },
 ];
 
 /**

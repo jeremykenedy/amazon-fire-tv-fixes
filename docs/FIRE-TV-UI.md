@@ -27,7 +27,7 @@ If the toolkit's Home Redirect helper is already installed, the installer update
 | `--install` | Install or update the launcher. |
 | `--setup` | `keep` (default), `simple`, `tv`, or `import`. |
 | `--home` | `keep` (default), `fire-tv-ui`, or `amazon`. |
-| `--screensaver` | `keep` (default), `on`, `off`, or an installed screensaver ID: `aerial`, `androsaver`, `snoozy`, `aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`, `rainforest-cascade`, `colors`, `amazon`. |
+| `--screensaver` | `keep` (default), `on`, `off`, or an installed screensaver ID: `aerial`, `androsaver`, `snoozy`, `aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`, `rainforest-cascade`, `blue-meridian`, `colors`, `amazon`. |
 | `--protection` | `keep` (default), `on`, or `off`. Protects Home, screensaver selection, enabled state, and timers against reversion. |
 | `--apk` and `--sha256` | Install a local signed APK with its required SHA-256. |
 | `--uninstall` | Save settings, return Home to Amazon, and remove Fire TV UI. |
