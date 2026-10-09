@@ -166,6 +166,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/aqua-surface-drift',
     blurb: 'Animated water with adjustable environment, lighting, ripples, motion and view.',
   },
+  {
+    id: 'earthbound-orbit',
+    name: 'Earthbound Orbit',
+    pkg: 'com.jeremykenedy.earthboundorbit',
+    dreamComponent: 'com.jeremykenedy.earthboundorbit/.EarthboundOrbitDreamService',
+    repo: 'jeremykenedy/earthbound-orbit',
+    blurb: 'A continuously rotating Earth with adjustable atmosphere, star density and camera movement.',
+  },
 ];
 
 /**
