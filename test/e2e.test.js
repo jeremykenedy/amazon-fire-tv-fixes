@@ -20,6 +20,7 @@ test('start on a fresh setup walks through connecting and reaches the menu, then
     { expect: 'IP address', send: `192.168.1.49${ENTER}` },
     { expect: 'review or adjust TV timeout', send: 'n' },
     { expect: 'optimize the TV for screensavers', send: 'n' },
+    { expect: 'guard these settings', send: 'n' },
     ...EXIT_MENU,
   ]);
   assert.equal(r.code, 0, r.out);
@@ -35,6 +36,7 @@ const CONNECT = [
   { expect: 'IP address', send: `192.168.1.49${ENTER}` },
   { expect: 'review or adjust TV timeout', send: 'n' },
   { expect: 'optimize the TV for screensavers', send: 'n' },
+  { expect: 'guard these settings', send: 'n' },
 ];
 const CONTINUE = { expect: 'Nothing has been changed yet. Continue?', send: ENTER };
 const MENU = (n) => ({ expect: 'What would you like to do?', send: `${DOWN.repeat(n)}${ENTER}` });

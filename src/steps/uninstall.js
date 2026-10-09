@@ -16,6 +16,8 @@ import { probeTimeouts, msToLabel } from './timeouts-shared.js';
 import { launcherState, useHome, removeLauncherApp } from '../apply/launcher.js';
 import { LAUNCHER_APPS } from '../launcher-registry.js';
 import { savedOriginals, revertOptimizations } from '../apply/optimize.js';
+import { guardState } from '../guard-config.js';
+import { turnGuardOff } from '../apply/guard.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
@@ -68,6 +70,9 @@ async function findOptions(ip) {
   const probedTimeouts = await probeTimeouts(ip);
 
   const options = [];
+  if (guardState().on) {
+    options.push({ name: 'Turn the guard off, so the reverts below are not put back', value: 'guard' });
+  }
   if (alexaFixOn) {
     options.push({ name: 'Revert the Alexa deep-sleep fix (back to factory)', value: 'alexa' });
   }
@@ -99,7 +104,11 @@ async function findOptions(ip) {
 async function applySelection(ip, selected, installedScreensavers, probedTimeouts) {
   const results = [];
 
-  // First, so the reverts below (Amazon default, timeout baselines) have the last word.
+  // Before anything else, or the guard would put every revert straight back.
+  if (selected.includes('guard')) {
+    results.push(await applyGuardOff(ip));
+  }
+  // Next, so the reverts below (Amazon default, timeout baselines) have the last word.
   if (selected.includes('optimize')) {
     results.push(await applyOptimizeRevert(ip));
   }
@@ -141,6 +150,15 @@ function reportFailure(message) {
   print(chalk.red(message));
   markFailed();
   return false;
+}
+
+async function applyGuardOff(ip) {
+  const failed = (await turnGuardOff(ip)).filter((r) => !r.ok);
+  if (failed.length > 0) {
+    return reportFailure(`The guard could not be fully turned off: ${failed.map((r) => r.label).join(', ')}.`);
+  }
+  print(chalk.green('Guard turned off.'));
+  return true;
 }
 
 async function applyOptimizeRevert(ip) {

@@ -43,6 +43,12 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 |---------|--------------|-------|
 | `optimize`, `firetv-optimize` | Lists the settings this TV has that stop or spoil a screensaver, then fixes the ones you keep checked. See [Optimizing](OPTIMIZE.md). | `--yes` makes every change without asking |
 
+## Guard
+
+| Command | What it does | Flags |
+|---------|--------------|-------|
+| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. See [Guard](GUARD.md). | `--check` puts back anything Amazon changed and reports it, `--off` turns the guard off, `--yes` skips the confirmation |
+
 ## Home screen
 
 | Command | What it does | Flags |
@@ -64,7 +70,7 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button, the launcher apps and the screensaver optimizations. | `--all` reverts everything, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
+| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button, the launcher apps, the screensaver optimizations and the guard. | `--all` reverts everything, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
 | `uninstall` | Runs `firetv-revert` first, then removes the commands and resets `.env`, then offers to delete the repo. | none |
 | `delete`, `remove` | Deletes this repo from your computer after you type `confirm`. Does not touch the TV. | none |
 
@@ -75,6 +81,8 @@ enable-alexa-fix --yes
 firetv-screensavers --install=aquarium-4k,aquarium-live --yes
 screensaver --set=aquarium-4k
 optimize --yes
+guard --yes
+guard --check
 launcher --install --use=at4k
 firetv-timeout-sleep --minutes=30 --yes
 firetv-revert --all --force

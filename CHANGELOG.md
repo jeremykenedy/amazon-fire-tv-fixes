@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.2.0] - 2026-10-08
+
+### Added in 3.2.0
+
+- `guard` / `firetv-guard`: Home Redirect 1.2.0 saves the screensaver, Alexa fix, Home and timeout settings and puts them back when Amazon changes them (straight away, at boot, after an app update, and every 15 minutes). Amazon's `easyupgrade` and `forcedotaupdater` are disabled and its main updater is stopped from running in the background. `--check` puts back anything that slipped through, `--off` undoes it all. Offered during `start` and `update`, and turned off first by `firetv-revert`.
+
+### Changed in 3.2.0
+
+- Scrutinizer removed.
+
 ## [3.1.0] - 2026-10-08
 
 ### Added in 3.1.0
@@ -63,6 +73,7 @@ more than fixes.
 
 - The Alexa deep-sleep fix and ad-free screensavers, each with a guided installer and a standalone command.
 
+[3.2.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.0.0
 [2.0.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v2.0.0

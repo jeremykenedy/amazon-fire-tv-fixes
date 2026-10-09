@@ -68,6 +68,7 @@ so you can run just the part you need later.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **On-TV screensaver picker**: a Screensavers tile on the TV for switching the screensaver from the couch, since Fire OS Settings only offers Amazon's.
 - **Optimize for screensavers**: checks the TV for settings that stop or spoil a screensaver (screensaver switched off, sleep coming before the screensaver, Amazon's Ambient Experience, Aerial Views' frame rate permission) and fixes only the ones it has. Offered during `start` and `update`, or run `optimize` any time.
+- **Guard against Amazon**: Home Redirect saves the screensaver, Alexa fix, Home and timeout settings and puts them back the moment Amazon changes them, after a reboot, after an app update, and every 15 minutes. Amazon's updaters are held back as far as Fire OS allows. `guard --check` reports and fixes anything that slipped through.
 - **Timeout control**: view, change and reset the sleep and screensaver timeouts, with the first value seen on your TV saved as its baseline.
 - **Full revert**: put the TV back how it was, item by item, then remove the tool from your computer.
 - **Script friendly**: every command takes flags, answers `--help`, and exits non-zero on failure.
@@ -105,6 +106,7 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Select any scr
     <a href="docs/screenshots/cli-choose-screensaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-choose-screensaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-choose-screensaver-tablet.jpg 2x"><img src="docs/screenshots/cli-choose-screensaver.jpg" alt="Choosing the active screensaver" title="Choosing the active screensaver"></picture></a>
     <a href="docs/screenshots/cli-launcher.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-launcher-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-launcher-tablet.jpg 2x"><img src="docs/screenshots/cli-launcher.jpg" alt="Choosing the home screen" title="Choosing the home screen"></picture></a>
     <a href="docs/screenshots/cli-optimize.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-optimize-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-optimize-tablet.jpg 2x"><img src="docs/screenshots/cli-optimize.jpg" alt="Optimizing the TV for screensavers" title="Optimizing the TV for screensavers"></picture></a>
+    <a href="docs/screenshots/cli-guard.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-guard-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-guard-tablet.jpg 2x"><img src="docs/screenshots/cli-guard.jpg" alt="Guarding the setup against Amazon" title="Guarding the setup against Amazon"></picture></a>
     <a href="docs/screenshots/cli-timeouts.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-timeouts-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-timeouts-tablet.jpg 2x"><img src="docs/screenshots/cli-timeouts.jpg" alt="Reviewing the sleep and screensaver timeouts" title="Reviewing the sleep and screensaver timeouts"></picture></a>
     <a href="docs/screenshots/cli-timeouts-current.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-timeouts-current-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-timeouts-current-tablet.jpg 2x"><img src="docs/screenshots/cli-timeouts-current.jpg" alt="The current timeout values" title="The current timeout values"></picture></a>
     <a href="docs/screenshots/cli-revert.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/cli-revert-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/cli-revert-tablet.jpg 2x"><img src="docs/screenshots/cli-revert.jpg" alt="Putting the TV back how it was" title="Putting the TV back how it was"></picture></a>
@@ -207,6 +209,7 @@ each one are listed in [Commands](docs/COMMANDS.md).
 | `firetv-screensavers` | Installs or removes the ad-free screensavers. |
 | `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. |
 | `optimize`, `firetv-optimize` | Sets the TV up for screensavers, changing only settings it has. |
+| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. `--check` puts back anything that changed, `--off` turns it off. |
 | `launcher`, `firetv-launcher` | Installs the AT4K home screen and switches the Home button between it and the Amazon menu. |
 | `firetv-timeouts` | Reviews, edits or resets the sleep and screensaver timeouts in one flow. |
 | `firetv-timeout-sleep` | Changes the sleep timeout. |
@@ -265,6 +268,7 @@ fire-tv-toolkit/
 | [How it works](docs/HOW-IT-WORKS.md) | The exact adb settings each command changes |
 | [Screensavers](docs/SCREENSAVERS.md) | Each screensaver, where it comes from, and how downloads are verified |
 | [Home screen](docs/LAUNCHER.md) | The AT4K home screen, Home Redirect and the on-TV picker |
+| [Guard](docs/GUARD.md) | What the guard keeps, how it fights Amazon's updates, and its limits |
 | [Optimizing](docs/OPTIMIZE.md) | What `optimize` checks, what it changes, and how it is undone |
 | [Timeouts](docs/TIMEOUTS.md) | The sleep and screensaver timeouts and their baselines |
 | [Uninstalling](docs/UNINSTALLING.md) | Reverting the TV and removing the tool |

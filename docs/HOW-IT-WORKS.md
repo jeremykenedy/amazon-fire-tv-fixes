@@ -48,6 +48,17 @@ adb shell appops set com.neilturner.aerialviews SYSTEM_ALERT_WINDOW allow
 Each one only when the TV has that setting and it is not already set. See
 [Optimizing](OPTIMIZE.md) for every check.
 
+## The guard
+
+```bash
+adb shell am broadcast -n com.jeremykenedy.firetv.homeredirect/.GuardReceiver \
+  -a com.jeremykenedy.firetv.homeredirect.GUARD --es cmd lock     # or check, unlock
+adb shell pm disable-user --user 0 com.amazon.tv.easyupgrade
+adb shell appops set com.amazon.device.software.ota RUN_ANY_IN_BACKGROUND ignore
+```
+
+See [Guard](GUARD.md).
+
 ## The home screen
 
 ```bash

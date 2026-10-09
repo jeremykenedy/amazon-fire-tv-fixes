@@ -7,6 +7,7 @@
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <queries>
         <package android:name="com.overdevs.at4k" />
@@ -45,5 +46,23 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/home_redirect_service" />
         </service>
+
+        <receiver
+            android:name=".GuardReceiver"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS">
+            <intent-filter>
+                <action android:name="com.jeremykenedy.firetv.homeredirect.GUARD" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".GuardJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 </manifest>

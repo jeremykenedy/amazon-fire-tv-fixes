@@ -3,6 +3,7 @@ import { promisify } from 'node:util';
 import chalk from 'chalk';
 import { startSpinner } from './spinner.js';
 import { getSavedIp, saveIp, promptForIp } from './device-config.js';
+import { isGuardedNow } from './guard-config.js';
 import { print } from './output.js';
 
 const execFileAsync = promisify(execFile);
@@ -162,6 +163,7 @@ export async function getSetting(ip, namespace, key) {
  * @returns {Promise<string | null>}
  */
 export async function putSetting(ip, namespace, key, value) {
+  await rememberIfGuarded(ip, namespace, key, String(value));
   return run(['-s', target(ip), 'shell', 'settings', 'put', namespace, key, String(value)]);
 }
 
@@ -172,6 +174,7 @@ export async function putSetting(ip, namespace, key, value) {
  * @returns {Promise<string | null>}
  */
 export async function deleteSetting(ip, namespace, key) {
+  await rememberIfGuarded(ip, namespace, key, 'null');
   return run(['-s', target(ip), 'shell', 'settings', 'delete', namespace, key]);
 }
 
@@ -256,6 +259,55 @@ export async function getAppOp(ip, pkg, op) {
  */
 export async function setAppOp(ip, pkg, op, mode) {
   return run(['-s', target(ip), 'shell', 'appops', 'set', pkg, op, mode]);
+}
+
+const GUARD_PKG = 'com.jeremykenedy.firetv.homeredirect';
+
+/**
+ * Sends a command to the guard in Home Redirect on the TV.
+ * @param {string} ip
+ * @param {'lock' | 'unlock' | 'check' | 'remember'} cmd
+ * @param {Object<string, string>} [extras]
+ * @returns {Promise<string | null>} the guard's reply, or null when Home Redirect did not answer
+ */
+export async function sendGuard(ip, cmd, extras = {}) {
+  const args = ['-s', target(ip), 'shell', 'am', 'broadcast', '-n', `${GUARD_PKG}/.GuardReceiver`, '-a', `${GUARD_PKG}.GUARD`, '--es', 'cmd', cmd];
+  for (const [name, value] of Object.entries(extras)) {
+    args.push('--es', name, value);
+  }
+  const out = await run(args);
+  return /data="([^"]*)"/.exec(out)?.[1] ?? null;
+}
+
+/**
+ * Tells the guard about a value this tool is about to set, so the guard keeps
+ * it instead of putting the old one back.
+ */
+async function rememberIfGuarded(ip, namespace, key, value) {
+  if (isGuardedNow(namespace, key)) {
+    await sendGuard(ip, 'remember', { setting: `${namespace}/${key}`, value });
+  }
+}
+
+/**
+ * @param {string} ip
+ * @param {string} pkg
+ * @returns {Promise<string | null>} the installed versionName, or null if not installed
+ */
+export async function packageVersion(ip, pkg) {
+  const out = await run(['-s', target(ip), 'shell', 'dumpsys', 'package', pkg]);
+  return /versionName=(\S+)/.exec(out)?.[1] ?? null;
+}
+
+/**
+ * Disables a package for the TV's user, the way Settings would. Fire OS refuses
+ * this for packages it protects.
+ * @param {string} ip
+ * @param {string} pkg
+ * @returns {Promise<string | null>}
+ */
+export async function disablePackage(ip, pkg) {
+  return run(['-s', target(ip), 'shell', 'pm', 'disable-user', '--user', '0', pkg]);
 }
 
 /**

@@ -1,10 +1,14 @@
 package com.jeremykenedy.firetv.homeredirect;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 
 /**
@@ -36,6 +40,8 @@ public class HomeRedirectService extends AccessibilityService {
 
     private static final long SETTLE_MS = 550;
 
+    private static final long GUARD_DELAY_MS = 1000;
+
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private final Runnable redirect = new Runnable() {
@@ -43,6 +49,21 @@ public class HomeRedirectService extends AccessibilityService {
         public void run() {
             waiting = false;
             openTargetLauncher();
+        }
+    };
+
+    private final Runnable guardCheck = new Runnable() {
+        @Override
+        public void run() {
+            GuardEnforcer.enforce(HomeRedirectService.this);
+        }
+    };
+
+    private final ContentObserver guardObserver = new ContentObserver(handler) {
+        @Override
+        public void onChange(boolean selfChange) {
+            handler.removeCallbacks(guardCheck);
+            handler.postDelayed(guardCheck, GUARD_DELAY_MS);
         }
     };
 
@@ -63,6 +84,20 @@ public class HomeRedirectService extends AccessibilityService {
         return AMAZON_LAUNCHER.contentEquals(pkg)
                 && cls != null
                 && cls.toString().startsWith(AMAZON_HOME_PREFIX);
+    }
+
+    /** Watches every guarded setting while this service runs. */
+    @Override
+    protected void onServiceConnected() {
+        ContentResolver resolver = getContentResolver();
+        for (String setting : Guard.SETTINGS) {
+            String key = Guard.key(setting);
+            Uri uri = "system".equals(Guard.namespace(setting))
+                    ? Settings.System.getUriFor(key)
+                    : Settings.Secure.getUriFor(key);
+            resolver.registerContentObserver(uri, false, guardObserver);
+        }
+        GuardEnforcer.enforce(this);
     }
 
     @Override
@@ -116,6 +151,8 @@ public class HomeRedirectService extends AccessibilityService {
     @Override
     public void onDestroy() {
         cancelWait();
+        handler.removeCallbacks(guardCheck);
+        getContentResolver().unregisterContentObserver(guardObserver);
         super.onDestroy();
     }
 }

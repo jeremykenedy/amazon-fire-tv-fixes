@@ -62,6 +62,7 @@ test('setup still launches the app after a failed install, and says so', async (
       { expect: 'IP address', send: `192.168.1.49${ENTER}` },
       { expect: 'review or adjust TV timeout', send: 'n' },
       { expect: 'optimize the TV for screensavers', send: 'n' },
+      { expect: 'guard these settings', send: 'n' },
       { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
     ],
     { env: withNpm({ install: 1 }) }
