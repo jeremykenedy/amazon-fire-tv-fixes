@@ -28,6 +28,8 @@ const TWILIGHT_HEARTH = SCREENSAVERS.find((s) => s.id === 'twilight-hearth');
 const NEBULA_DRIFT = SCREENSAVERS.find((s) => s.id === 'nebula-drift');
 const VORTEX_SPIRAL = SCREENSAVERS.find((s) => s.id === 'vortex-spiral');
 const SIGNAL_RAIN = SCREENSAVERS.find((s) => s.id === 'signal-rain');
+const RETRO_FLIGHT = SCREENSAVERS.find((s) => s.id === 'retro-flight');
+const PIPEWORKS_DREAM = SCREENSAVERS.find((s) => s.id === 'pipeworks-dream');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -217,6 +219,28 @@ test('Signal Rain registry entry points to its released app and installer reposi
   });
 });
 
+test('Retro Flight registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(RETRO_FLIGHT, {
+    id: 'retro-flight',
+    name: 'Retro Flight',
+    pkg: 'com.jeremykenedy.retroflight',
+    dreamComponent: 'com.jeremykenedy.retroflight/.RetroFlightDreamService',
+    repo: 'jeremykenedy/retro-flight',
+    blurb: 'Continuous perspective flight through an original procedural star field.',
+  });
+});
+
+test('Pipeworks Dream registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(PIPEWORKS_DREAM, {
+    id: 'pipeworks-dream',
+    name: 'Pipeworks Dream',
+    pkg: 'com.jeremykenedy.pipeworksdream',
+    dreamComponent: 'com.jeremykenedy.pipeworksdream/.PipeworksDreamService',
+    repo: 'jeremykenedy/pipeworks-dream',
+    blurb: 'Continuously growing geometric pipes with adjustable density, speed, palette and glow.',
+  });
+});
+
 test('latestRelease asks for a pinned tag by name when one is given', async () => {
   const seen = [];
   const r = await withFetch(pkgFetch(ANDRO, { seen }), () => sv.latestRelease(ANDRO.repo, undefined, 'v 1/x'));
@@ -322,7 +346,7 @@ test('Twilight Hearth can be installed and selected through the CLI', async () =
   assert.equal(fake.readState().secure.screensaver_components, TWILIGHT_HEARTH.dreamComponent);
 });
 
-for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN]) {
+for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM]) {
   test(`${saver.name} can be installed and selected through the CLI`, async () => {
     const installed = await captured(() => withFetch(
       pkgFetch(saver),

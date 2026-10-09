@@ -8,7 +8,7 @@
 - `firetv-ui`: guided installation, update, removal, and backup transfer for Fire TV UI. Choose the saved simple layout, keep current settings, restore the TV backup, or import a file, then review Home, screensaver, protection, and backup choices before execution.
 - Fire TV UI in the main menu, launcher selection, and full revert options.
 - Persistent TV Downloads backups with validated computer import/export and private computer files. Uninstall keeps the TV backup unless deletion is explicitly selected.
-- Add Twilight Hearth, Nebula Drift, Vortex Spiral, and Signal Rain to the guided screensaver installer and selector.
+- Add Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, and Pipeworks Dream to the guided screensaver installer and selector.
 
 ### Fixed in 3.3.0
 

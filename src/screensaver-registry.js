@@ -134,6 +134,22 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/signal-rain',
     blurb: 'Luminous abstract digital rain with adjustable streams, colors and motion.',
   },
+  {
+    id: 'retro-flight',
+    name: 'Retro Flight',
+    pkg: 'com.jeremykenedy.retroflight',
+    dreamComponent: 'com.jeremykenedy.retroflight/.RetroFlightDreamService',
+    repo: 'jeremykenedy/retro-flight',
+    blurb: 'Continuous perspective flight through an original procedural star field.',
+  },
+  {
+    id: 'pipeworks-dream',
+    name: 'Pipeworks Dream',
+    pkg: 'com.jeremykenedy.pipeworksdream',
+    dreamComponent: 'com.jeremykenedy.pipeworksdream/.PipeworksDreamService',
+    repo: 'jeremykenedy/pipeworks-dream',
+    blurb: 'Continuously growing geometric pipes with adjustable density, speed, palette and glow.',
+  },
 ];
 
 /**
