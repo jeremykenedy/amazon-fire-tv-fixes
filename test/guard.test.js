@@ -72,6 +72,32 @@ public final class GuardTest {
   execFileSync('java', ['-cp', dir, 'com.jeremykenedy.firetv.homeredirect.GuardTest']);
 });
 
+test('the native helper keeps ADB debugging on and never touches wireless debugging', () => {
+  const dir = path.join(fake.dir, 'native-adb');
+  fs.mkdirSync(dir);
+  const source = path.join(dir, 'AdbTest.java');
+  fs.writeFileSync(source, `package com.jeremykenedy.firetv.homeredirect;
+import java.util.*;
+public final class AdbTest {
+  public static void main(String[] args) {
+    Map<String,String> tv = new HashMap<>();
+    tv.put("adb_enabled", "0");
+    tv.put("adb_wifi_enabled", "0");
+    if (!Guard.adbOff(tv).equals(Arrays.asList("adb_enabled")))
+      throw new AssertionError("Only ADB debugging comes back on, never wireless debugging: " + Guard.adbOff(tv));
+    tv.put("adb_enabled", "1");
+    if (!Guard.adbOff(tv).isEmpty())
+      throw new AssertionError("ADB debugging that is on is left alone");
+    tv.put("adb_enabled", Guard.ABSENT);
+    if (!Guard.adbOff(tv).isEmpty())
+      throw new AssertionError("A missing switch is not an off switch");
+  }
+}`);
+  const guard = new URL('../android/home-redirect/src/com/jeremykenedy/firetv/homeredirect/Guard.java', import.meta.url);
+  execFileSync('javac', ['-d', dir, source, guard.pathname]);
+  execFileSync('java', ['-cp', dir, 'com.jeremykenedy.firetv.homeredirect.AdbTest']);
+});
+
 test('the guard state round-trips through .env and is removed when off', () => {
   const state = { on: true, disabled: [EASY], background: { [OTA]: 'default' }, unlocked: ['screensaver'] };
   const raw = mergeGuardEnv('FIRE_TV_IP=1.2.3.4\n', state);

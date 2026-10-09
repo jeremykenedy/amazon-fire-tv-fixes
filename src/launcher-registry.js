@@ -20,7 +20,7 @@ export const AT4K = {
  * The newest release with a Home Redirect APK attached. Move it to the new
  * tag whenever a release attaches a newer build.
  */
-const HOME_REDIRECT_RELEASE = 'v3.3.0';
+const HOME_REDIRECT_RELEASE = 'v3.6.1';
 
 /** Built from android/home-redirect and attached to HOME_REDIRECT_RELEASE. */
 export const HOME_REDIRECT = {

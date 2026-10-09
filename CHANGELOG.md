@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.6.1] - 2026-10-09
+
+### Fixed in 3.6.1
+
+- ADB debugging stays on. Home Redirect 1.2.4 turns it back on if it is switched off, and checks at every restart. It never turns on wireless debugging, which the toolkit does not need and which makes Fire OS ask to allow debugging on the network after every restart. See [Guard](docs/GUARD.md#keeping-adb-debugging-on).
+
 ## [3.3.0] - 2026-10-08
 
 ### Added in 3.3.0

@@ -7,6 +7,7 @@ import android.app.job.JobService;
 public class GuardJob extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
+        AdbKeeper.keepOn(this);
         GuardEnforcer.enforce(this);
         return false;
     }
