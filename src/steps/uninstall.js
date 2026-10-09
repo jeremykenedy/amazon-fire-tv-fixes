@@ -14,7 +14,8 @@ import { markFailed } from '../exit-status.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, msToLabel } from './timeouts-shared.js';
 import { launcherState, useHome, removeLauncherApp } from '../apply/launcher.js';
-import { LAUNCHER_APPS } from '../launcher-registry.js';
+import { LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
+import { uninstallFireTvUi } from '../apply/fire-tv-ui.js';
 import { savedOriginals, revertOptimizations } from '../apply/optimize.js';
 import { guardState } from '../guard-config.js';
 import { turnGuardOff } from '../apply/guard.js';
@@ -48,11 +49,14 @@ export function buildTimeoutRevertOptions(probed) {
  */
 export function buildLauncherRevertOptions(state) {
   const options = [];
-  if (state.home === 'at4k') {
+  if (state.home === 'at4k' || state.home === FIRE_TV_UI.id) {
     options.push({ name: 'Send the Home button back to the Amazon menu', value: 'home' });
   }
   for (const app of LAUNCHER_APPS.filter((a) => state.installed.includes(a.id))) {
     options.push({ name: `Remove ${app.name} from the TV`, value: `launcher:${app.id}` });
+  }
+  if (state.installed.includes(FIRE_TV_UI.id)) {
+    options.push({ name: 'Remove Fire TV UI and keep its TV layout backup', value: 'launcher:fire-tv-ui' });
   }
   return options;
 }
@@ -126,6 +130,15 @@ async function applySelection(ip, selected, installedScreensavers, probedTimeout
   }
   for (const app of LAUNCHER_APPS.filter((a) => selected.includes(`launcher:${a.id}`))) {
     results.push(await applyLauncherRemoval(ip, app));
+  }
+  if (selected.includes('launcher:fire-tv-ui')) {
+    try {
+      await uninstallFireTvUi(ip);
+      print(chalk.green('Fire TV UI removed. The layout backup remains on the TV.'));
+      results.push(true);
+    } catch (error) {
+      results.push(reportFailure(error.message));
+    }
   }
   for (const r of probedTimeouts.filter((x) => selected.includes(`timeout:${x.def.id}`))) {
     results.push(await applyTimeoutRevert(ip, r));

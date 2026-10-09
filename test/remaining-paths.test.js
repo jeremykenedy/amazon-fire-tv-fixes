@@ -238,8 +238,8 @@ test('ensureConnected retries in a terminal: a typo is rejected, an unreachable 
   const clear = '\x7f'.repeat(12);
   const r = await drive('test/helpers/ss-ensure-connected.js', ['--tty'], [
     { expect: /IP address/, send: `${clear}abc${ENTER}` },
-    { expect: 'Enter a valid IPv4 address', send: `${'\x7f'.repeat(3)}${IP}${ENTER}` },
-  ]);
+    { expect: 'Enter a valid IPv4 address', send: `\x7f\x7f\x7f${IP}${ENTER}` },
+  ], { env: { TERM: 'xterm-256color' } });
   assert.match(r.out, /Couldn't reach a Fire TV at 10\.0\.0\.9/, r.out);
   assert.match(r.out, new RegExp(`Resolved ${IP.replace(/\./g, '\\.')}`), r.out);
 });

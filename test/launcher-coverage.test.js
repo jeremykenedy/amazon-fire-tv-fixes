@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { installFakeAdb, captured, AERIAL } from './helpers/fake-adb.js';
 import { drive, DOWN, ENTER } from './helpers/drive.js';
 import { launcherFetch, useDroppingAdb } from './helpers/launcher-fakes.js';
-import { AT4K, HOME_REDIRECT } from '../src/launcher-registry.js';
+import { AT4K, HOME_REDIRECT, FIRE_TV_UI } from '../src/launcher-registry.js';
 import {
   parseServices,
   servicesFor,
@@ -178,6 +178,37 @@ test('firetv-launcher --use=at4k needs both apps first', async () => {
   const { out } = await captured(() => manageLauncher(ip, { use: 'at4k' }));
   assert.match(out, /both need to be installed first/);
   assert.equal(process.exitCode, 1);
+});
+
+test('launcher Fire TV UI choice requires installation and preserves unrelated services', async () => {
+  const missing = await captured(() => manageLauncher(ip, { use: FIRE_TV_UI.id }));
+  assert.match(missing.out, /Run firetv-ui --install/);
+  assert.equal(process.exitCode, 1);
+  assert.equal(fake.readState().secure[SERVICES], undefined);
+
+  process.exitCode = undefined;
+  installedEnv();
+  fake.setState({ installed: [FIRE_TV_UI.pkg], secure: secure({ [SERVICES]: 'reader/Service' }) });
+  const switched = await drive('bin/launcher.js', ['--use=fire-tv-ui', '--yes'], []);
+  assert.equal(switched.code, 0, switched.out);
+  assert.match(switched.out, /now goes to Fire TV UI/);
+  assert.equal(fake.readState().secure[SERVICES], `reader/Service:${FIRE_TV_UI.controls}:${FIRE_TV_UI.service}`);
+
+  const back = await captured(() => manageLauncher(ip, { use: 'amazon' }));
+  assert.match(back.out, /now goes to the Amazon menu/);
+  assert.equal(fake.readState().secure[SERVICES], 'reader/Service');
+});
+
+test('launcher menu offers installed Fire TV UI before applying the reviewed choice', async () => {
+  installedEnv();
+  fake.setState({ installed: [FIRE_TV_UI.pkg] });
+  const on = await drive('bin/launcher.js', [], [
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${ENTER}` },
+    CONTINUE,
+  ], withFetchStub);
+  assert.equal(on.code, 0, on.out);
+  assert.match(on.out, /Use Fire TV UI as the home screen/);
+  assert.equal(fake.readState().secure[SERVICES], `${FIRE_TV_UI.controls}:${FIRE_TV_UI.service}`);
 });
 
 test('firetv-launcher --use switches and goes back', async () => {

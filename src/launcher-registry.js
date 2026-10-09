@@ -33,3 +33,15 @@ export const HOME_REDIRECT = {
 };
 
 export const LAUNCHER_APPS = [AT4K, HOME_REDIRECT];
+
+export const FIRE_TV_UI = {
+  id: 'fire-tv-ui',
+  name: 'Fire TV UI',
+  pkg: 'com.jeremykenedy.firetv.ui',
+  service: 'com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.HomeRedirectService',
+  controls: 'com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.Hra',
+  repo: 'jeremykenedy/fire-tv-toolkit',
+  tag: `v${version}`,
+  asset: 'fire-tv-ui-1.0.0.apk',
+  grants: ['android.permission.WRITE_SECURE_SETTINGS'],
+};

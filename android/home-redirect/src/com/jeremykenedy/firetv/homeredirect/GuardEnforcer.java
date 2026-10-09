@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -35,6 +36,15 @@ final class GuardEnforcer {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
+    private static boolean hasNativeUi(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo("com.jeremykenedy.firetv.ui", 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException missing) {
+            return false;
+        }
+    }
+
     static boolean isLocked(Context context) {
         return prefs(context).getBoolean(LOCKED, false);
     }
@@ -62,8 +72,11 @@ final class GuardEnforcer {
     static void lock(Context context) {
         ContentResolver resolver = context.getContentResolver();
         SharedPreferences.Editor editor = prefs(context).edit().clear();
+        boolean nativeUiInstalled = hasNativeUi(context);
         for (String setting : Guard.SETTINGS) {
-            editor.putString(setting, read(resolver, setting));
+            if (!nativeUiInstalled || !Guard.isNativeUiSetting(setting)) {
+                editor.putString(setting, read(resolver, setting));
+            }
         }
         editor.putBoolean(LOCKED, true).apply();
         schedule(context);
@@ -103,13 +116,19 @@ final class GuardEnforcer {
         ContentResolver resolver = context.getContentResolver();
         Map<String, String> locked = new HashMap<>();
         Map<String, String> current = new HashMap<>();
+        boolean nativeUiInstalled = hasNativeUi(context);
         if (isLocked(context)) {
+            SharedPreferences.Editor editor = prefs(context).edit();
             for (String setting : Guard.SETTINGS) {
                 locked.put(setting, prefs(context).getString(setting, null));
                 current.put(setting, read(resolver, setting));
+                if (nativeUiInstalled && Guard.isNativeUiSetting(setting)) {
+                    editor.remove(setting);
+                }
             }
+            editor.apply();
         }
-        List<String> changed = Guard.drift(locked, current);
+        List<String> changed = Guard.drift(locked, current, nativeUiInstalled);
         for (String setting : changed) {
             try {
                 write(resolver, setting, locked.get(setting));

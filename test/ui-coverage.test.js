@@ -237,7 +237,7 @@ test('menu: the fix toggle offers to apply it when off, and declining changes no
     { expect: 'guard these settings', send: 'n' },
     { expect: 'What would you like to do?', send: `${DOWN}${ENTER}` },
     { expect: 'Apply the fix? [y/N]', send: 'n' },
-    { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
+    { expect: 'What would you like to do?', send: `${DOWN.repeat(7)}${ENTER}` },
   ]);
   assert.equal(r.code, 0, r.out);
   assert.match(r.out, /Current state: fix is OFF/);

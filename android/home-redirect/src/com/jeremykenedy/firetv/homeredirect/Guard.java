@@ -47,14 +47,26 @@ final class Guard {
         return false;
     }
 
+    static boolean isNativeUiSetting(String setting) {
+        return "secure/screensaver_components".equals(setting)
+                || "secure/screensaver_enabled".equals(setting)
+                || "secure/str.auto_wake_up_enabled".equals(setting)
+                || "secure/sleep_timeout".equals(setting)
+                || "secure/enabled_accessibility_services".equals(setting)
+                || "system/screen_off_timeout".equals(setting);
+    }
+
     /**
      * The guarded settings whose current value differs from the locked one.
      * A setting that was never locked is left alone.
      */
     static List<String> drift(Map<String, String> locked,
-            Map<String, String> current) {
+            Map<String, String> current, boolean nativeUiInstalled) {
         List<String> changed = new ArrayList<>();
         for (String setting : SETTINGS) {
+            if (nativeUiInstalled && isNativeUiSetting(setting)) {
+                continue;
+            }
             String want = locked.get(setting);
             if (want == null) {
                 continue;

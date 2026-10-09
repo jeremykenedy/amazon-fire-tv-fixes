@@ -4,17 +4,17 @@ import { explainStep } from '../ui.js';
 import { runWizard } from '../wizard.js';
 import { startSpinner } from '../spinner.js';
 import { launcherState, installLauncherApp, useHome } from '../apply/launcher.js';
-import { LAUNCHER_APPS } from '../launcher-registry.js';
+import { LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
 import { markFailed } from '../exit-status.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   install: { type: 'boolean', desc: 'Install or update AT4K and the Home Redirect app.' },
-  use: { type: 'string', choices: ['at4k', 'amazon'], desc: 'Where the Home button goes: at4k or amazon.' },
+  use: { type: 'string', choices: ['at4k', 'amazon', 'fire-tv-ui'], desc: 'Where the Home button goes: at4k, amazon or fire-tv-ui.' },
   yes: { type: 'boolean', desc: 'For scripts; --install or --use is still required.' },
 };
 
-const HOME_NAMES = { at4k: 'AT4K', amazon: 'the Amazon menu' };
+const HOME_NAMES = { at4k: 'AT4K', amazon: 'the Amazon menu', 'fire-tv-ui': 'Fire TV UI' };
 
 /**
  * Installs both launcher apps, reporting each one.
@@ -40,17 +40,22 @@ async function installAll(ip) {
   if (homeBefore === 'at4k' && state.home !== 'at4k') {
     await useHome(ip, 'at4k');
   }
-  return ok || state.installed.length === LAUNCHER_APPS.length;
+  return ok || LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
 }
 
 /**
  * @param {string} ip
- * @param {'at4k' | 'amazon'} mode
+ * @param {'at4k' | 'amazon' | 'fire-tv-ui'} mode
  * @returns {Promise<void>}
  */
 async function switchHome(ip, mode) {
   const state = await launcherState(ip);
-  if (mode === 'at4k' && state.installed.length < LAUNCHER_APPS.length) {
+  if (mode === FIRE_TV_UI.id && !state.installed.includes(FIRE_TV_UI.id)) {
+    print(chalk.red('\nFire TV UI needs to be installed first. Run firetv-ui --install.\n'));
+    markFailed();
+    return;
+  }
+  if (mode === 'at4k' && !LAUNCHER_APPS.every((app) => state.installed.includes(app.id))) {
     print(chalk.red('\nAT4K and the Home Redirect app both need to be installed first. Run firetv-launcher --install.\n'));
     markFailed();
     return;
@@ -69,7 +74,7 @@ async function switchHome(ip, mode) {
 
 /**
  * @param {string} ip
- * @param {{install?: boolean, use?: 'at4k' | 'amazon'}} flags
+ * @param {{install?: boolean, use?: 'at4k' | 'amazon' | 'fire-tv-ui'}} flags
  */
 async function runFromFlags(ip, flags) {
   if (flags.install && !(await installAll(ip))) {
@@ -84,21 +89,24 @@ async function runFromFlags(ip, flags) {
 }
 
 function menuChoices(state) {
-  const installed = state.installed.length === LAUNCHER_APPS.length;
+  const installed = LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
   const choices = [{ name: installed ? 'Update AT4K and the Home Redirect app' : 'Install AT4K and the Home Redirect app', value: 'install' }];
   if (state.home === 'amazon') {
     choices.push({ name: 'Use AT4K as the home screen', value: 'at4k' });
   } else {
     choices.push({ name: 'Go back to the Amazon home screen', value: 'amazon' });
   }
+  if (state.installed.includes(FIRE_TV_UI.id) && state.home !== FIRE_TV_UI.id) {
+    choices.push({ name: 'Use Fire TV UI as the home screen', value: FIRE_TV_UI.id });
+  }
   return choices;
 }
 
 /**
  * `firetv-launcher`: installs the optional AT4K home screen and switches the
- * Home button between it and the Amazon menu.
+ * Home button between installed launchers and the Amazon menu.
  * @param {string} ip
- * @param {{install?: boolean, use?: 'at4k' | 'amazon', yes?: boolean}} [flags]
+ * @param {{install?: boolean, use?: 'at4k' | 'amazon' | 'fire-tv-ui', yes?: boolean}} [flags]
  * @returns {Promise<void>}
  */
 export async function manageLauncher(ip, flags = {}) {
@@ -107,7 +115,7 @@ export async function manageLauncher(ip, flags = {}) {
     return;
   }
   if (flags.yes) {
-    print(chalk.red('\n--yes alone does not pick anything. Pass --install, --use=at4k or --use=amazon.\n'));
+    print(chalk.red('\n--yes alone does not pick anything. Pass --install, --use=at4k, --use=amazon or --use=fire-tv-ui.\n'));
     markFailed();
     return;
   }

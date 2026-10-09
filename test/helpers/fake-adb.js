@@ -49,12 +49,14 @@ else if (cmd === 'shell' && a === 'appops' && b === 'get') {
   console.log(mode ? d + ': ' + mode + '; time=+1d' : 'No operations.');
 }
 else if (cmd === 'shell' && a === 'appops' && b === 'set') {
-  if ((state.lockedKeys || []).includes(d)) { process.exit(0); }
-  state.appops = state.appops || {}; state.appops[c] = { ...(state.appops[c] || {}), [d]: process.argv.slice(-1)[0] };
-  if (process.argv.slice(-1)[0] === 'default') delete state.appops[c][d];
+  const pkg = c === '--uid' ? d : c;
+  const op = c === '--uid' ? args[5] : d;
+  if ((state.lockedKeys || []).includes(op)) { process.exit(0); }
+  state.appops = state.appops || {}; state.appops[pkg] = { ...(state.appops[pkg] || {}), [op]: process.argv.slice(-1)[0] };
+  if (process.argv.slice(-1)[0] === 'default') delete state.appops[pkg][op];
   save();
 }
-else if (cmd === 'shell' && a === 'am' && b === 'broadcast') {
+else if (cmd === 'shell' && a === 'am' && b === 'broadcast' && args.includes('com.jeremykenedy.firetv.homeredirect/.GuardReceiver')) {
   // The guard in Home Redirect: replies only when Home Redirect is installed.
   const extra = (name) => { const i = args.indexOf(name); return i < 0 ? undefined : args[i + 1]; };
   if (!state.installed.includes('com.jeremykenedy.firetv.homeredirect')) { console.log('Broadcasting: Intent\\nBroadcast completed: result=0'); }
@@ -97,6 +99,56 @@ else if (cmd === 'shell' && a === 'settings' && b === 'get') {
 } else if (cmd === 'shell' && a === 'pm' && b === 'uninstall') {
   if (state.installed.includes(c) && !state.stuck) { state.installed = state.installed.filter((p) => p !== c); save(); console.log('Success'); }
   else console.log('Failure [DELETE_FAILED_INTERNAL_ERROR]');
+} else if (cmd === 'shell' && a === 'getprop') {
+  console.log(state.sdk === undefined ? '30' : state.sdk);
+} else if (cmd === 'push') {
+  state.files = state.files || {}; state.files[b] = fs.readFileSync(a,'utf8'); save();
+} else if (cmd === 'pull') {
+  if (!Object.hasOwn(state.files || {}, a)) fail('remote file does not exist');
+  fs.writeFileSync(b,state.transferMismatch ? 'corrupt' : state.files[a]);
+} else if (cmd === 'shell' && a === 'test') {
+  if (!Object.hasOwn(state.files || {}, c)) process.exit(1);
+} else if (cmd === 'shell' && a === 'rm') {
+  if (state.files) delete state.files[c]; save();
+} else if (cmd === 'shell' && a === 'am' && b === 'broadcast') {
+  const value = (name) => args[args.indexOf(name) + 1];
+  const pkg = value('-n').split('/')[0];
+  if (!state.installed.includes(pkg) || state.backupFail) { console.log('Broadcast completed: result=1, data="backup failed"'); process.exit(0); }
+  const operation = value('operation');
+  state.files = state.files || {};
+  if (operation === 'save') {
+    if (!state.backupMissing) state.files['/sdcard/Download/fire-tv-ui-backup.txt'] = JSON.stringify(state.preferences || {apps_per_row:5});
+  }
+  else if (operation === 'simple') state.preferences = {apps_per_row:5, hide_watch_next:true};
+  else if (operation === 'restore') state.preferences = JSON.parse(state.files[value('source') === 'import' ? '/sdcard/Download/fire-tv-ui-import.txt' : '/sdcard/Download/fire-tv-ui-backup.txt']);
+  else if (['home-preference-on','home-preference-off'].includes(operation)) {
+    state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_home_enabled = operation === 'home-preference-on';
+  }
+  else if (['protection-on','protection-off'].includes(operation)) {
+    state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_protect_settings = operation === 'protection-on';
+    state.preferences.fire_tv_ui_dream_unlocked = false;
+  }
+  else if (operation === 'dream-unlock') {
+    state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_dream_unlocked = true;
+  }
+  else if (operation === 'setting') {
+    const namespace = value('namespace');
+    const key = value('key');
+    const requested = value('value');
+    if ((state.lockedKeys || []).includes(key)) {
+      console.log('Broadcast completed: result=1, data="java.lang.IllegalStateException: setting refused"'); process.exit(0);
+    }
+    if (state.rejectOverMax && namespace === 'system' && key === 'screen_off_timeout' && Number(requested) > 2147460000) {
+      console.log('Broadcast completed: result=1, data="java.lang.IllegalArgumentException: value too large"'); process.exit(0);
+    }
+    state[namespace] = state[namespace] || {}; state[namespace][key] = requested;
+    state.preferences = state.preferences || {};
+    const desired = {sleep_timeout:'fire_tv_ui_sleep',screen_off_timeout:'fire_tv_ui_idle',screensaver_components:'fire_tv_ui_dream',screensaver_enabled:'fire_tv_ui_dream_enabled','str.auto_wake_up_enabled':'fire_tv_ui_auto_wake'}[key];
+    state.preferences[desired] = key === 'screensaver_components' ? requested : key === 'screensaver_enabled' ? requested === '1' : Number(requested);
+  }
+  save(); console.log('Broadcast completed: result=0, data="ok"');
+} else if (cmd === 'shell' && a === 'am' && ['start','force-stop'].includes(b)) {
+  state.opened = args[args.length - 1]; save();
 } else { fail('fake adb: unsupported ' + args.join(' ')); }
 `;
 

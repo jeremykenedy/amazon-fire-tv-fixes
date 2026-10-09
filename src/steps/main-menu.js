@@ -9,6 +9,7 @@ import { manageScreensavers } from './screensavers.js';
 import { setScreensaver } from './set-screensaver.js';
 import { reviewTimeoutsIfWanted, manageAllTimeoutsStep } from './timeout-manage.js';
 import { manageLauncher } from './launcher.js';
+import { manageFireTvUi } from './fire-tv-ui.js';
 import { optimizeIfWanted } from './optimize.js';
 import { guardIfWanted } from './guard.js';
 import { print } from '../output.js';
@@ -20,6 +21,7 @@ const MENU_CHOICES = [
   { name: 'Choose the active screensaver', value: 'set-screensaver' },
   { name: 'Review or adjust TV timeouts', value: 'timeouts' },
   { name: 'Choose the home screen (AT4K or Amazon)', value: 'launcher' },
+  { name: 'Install, update, or uninstall Fire TV UI and manage backups', value: 'fire-tv-ui' },
 ];
 
 const MENU_ACTIONS = {
@@ -29,6 +31,7 @@ const MENU_ACTIONS = {
   'set-screensaver': (ip) => setScreensaver(ip),
   timeouts: (ip) => manageAllTimeoutsStep(ip),
   launcher: (ip) => manageLauncher(ip),
+  'fire-tv-ui': (ip) => manageFireTvUi(ip),
 };
 
 function printIntro() {
@@ -39,6 +42,7 @@ function printIntro() {
   print(chalk.gray('  4. Choose which installed screensaver is active.'));
   print(chalk.gray('  5. Review or change the TV sleep and screensaver timeouts, optimize the TV for screensavers, and guard it all (optional).'));
   print(chalk.gray('  6. Switch the home screen to AT4K, or back to the Amazon menu (optional).'));
+  print(chalk.gray('  7. Install Fire TV UI with a saved layout, or manage its TV backups (optional).'));
   print(chalk.gray('\nEach standalone command is named after its step in the README.\n'));
 }
 

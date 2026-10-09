@@ -1,6 +1,8 @@
 import { test, before, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { installFakeAdb, captured, AERIAL } from './helpers/fake-adb.js';
 import { drive, DOWN, ENTER } from './helpers/drive.js';
 import { launcherFetch } from './helpers/launcher-fakes.js';
@@ -40,6 +42,34 @@ after(() => {
   globalThis.fetch = realFetch;
   fake.restore();
   process.exitCode = undefined;
+});
+
+test('the native helper leaves Fire TV UI choices alone while protecting its other settings', () => {
+  const dir = path.join(fake.dir, 'native-guard');
+  fs.mkdirSync(dir);
+  const source = path.join(dir, 'GuardTest.java');
+  fs.writeFileSync(source, `package com.jeremykenedy.firetv.homeredirect;
+import java.util.*;
+public final class GuardTest {
+  public static void main(String[] args) {
+    Map<String,String> locked = new HashMap<>();
+    locked.put("secure/screensaver_components", "old/.Dream");
+    locked.put("secure/sleep_timeout", "840000");
+    locked.put("secure/enabled_accessibility_services", "old/Service");
+    locked.put("secure/screensaver_default_component", "old/.Default");
+    locked.put("secure/amazon_ambient_enabled", "0");
+    Map<String,String> current = new HashMap<>();
+    for (String key : locked.keySet()) current.put(key, "changed");
+    List<String> nativeOwned = Guard.drift(locked, current, true);
+    if (!nativeOwned.equals(Arrays.asList("secure/screensaver_default_component", "secure/amazon_ambient_enabled")))
+      throw new AssertionError(nativeOwned);
+    if (Guard.drift(locked, current, false).size() != 5)
+      throw new AssertionError("Classic guard stopped protecting its settings");
+  }
+}`);
+  const guard = new URL('../android/home-redirect/src/com/jeremykenedy/firetv/homeredirect/Guard.java', import.meta.url);
+  execFileSync('javac', ['-d', dir, source, guard.pathname]);
+  execFileSync('java', ['-cp', dir, 'com.jeremykenedy.firetv.homeredirect.GuardTest']);
 });
 
 test('the guard state round-trips through .env and is removed when off', () => {
@@ -197,7 +227,7 @@ test('start offers the guard, and firetv-revert turns it off before anything els
     { expect: 'optimize the TV for screensavers', send: 'n' },
     { expect: 'guard these settings', send: 'y' },
     { expect: 'Nothing has been changed yet. Continue?', send: ENTER },
-    { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
+    { expect: 'What would you like to do?', send: `${DOWN.repeat(7)}${ENTER}` },
   ]);
   assert.equal(r.code, 0, r.out);
   assert.equal(fake.readState().guard.locked, true);

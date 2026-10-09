@@ -53,9 +53,12 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `launcher`, `firetv-launcher` | Installs AT4K and the Home Redirect app, and switches the Home button between AT4K and the Amazon menu. | `--install`, `--use=<at4k\|amazon>`, `--yes` (still needs `--install` or `--use`) |
+| `launcher`, `firetv-launcher` | Installs AT4K and the Home Redirect app, or switches Home between AT4K, installed Fire TV UI, and Amazon. | `--install`, `--use=<at4k\|fire-tv-ui\|amazon>`, `--yes` (still needs `--install` or `--use`) |
+| `firetv-ui` | Installs or removes Fire TV UI with layout, Home, screensaver, protection, and backup choices. | See [Fire TV UI](FIRE-TV-UI.md) for every flag. |
 
 ## Timeouts
+
+For the Fire TV UI launcher, use `firetv-ui` to collect installation, layout, Home, screensaver, protection, and backup choices before applying them. See [Fire TV UI](FIRE-TV-UI.md) for every flag and transfer example. Timer and screensaver commands below also update Fire TV UI's local protection settings when it is installed.
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
