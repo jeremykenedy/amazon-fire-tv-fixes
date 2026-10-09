@@ -67,6 +67,28 @@ foreground, for example from Settings. After any update, run `guard --check`:
 it disables any updater that came back and reports each setting the guard put
 back.
 
+## Keeping ADB debugging on
+
+Home Redirect 1.2.4 turns ADB debugging back on whenever it is switched off,
+and checks again every time the TV starts. This is on whether or not the
+guard is on. ADB debugging is what opens port 5555, which is all the toolkit
+needs.
+
+It never touches **wireless debugging** (`adb_wifi_enabled`). The toolkit does
+not use it, and while it is on, Fire OS asks after every restart whether to
+allow debugging on this network: it does not remember the answer across
+restarts, even with **Always allow on this network** ticked. Leave wireless
+debugging off and the question does not come up. To stop Home Redirect
+keeping ADB debugging on:
+
+```bash
+adb shell am broadcast -n com.jeremykenedy.firetv.homeredirect/.GuardReceiver \
+  -a com.jeremykenedy.firetv.homeredirect.GUARD --es cmd adb --es value off
+```
+
+`--es value on` turns it back on, and leaving out `value` reports `adb=kept` or
+`adb=released`.
+
 ## Turning it off
 
 `guard --off`, or the first item in `firetv-revert`, unlocks the settings and

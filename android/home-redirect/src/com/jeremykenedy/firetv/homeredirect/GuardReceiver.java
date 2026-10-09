@@ -14,6 +14,7 @@ import android.content.Intent;
  *   -a com.jeremykenedy.firetv.homeredirect.GUARD --es cmd lock|unlock|check
  * and for remember: --es setting secure/screensaver_components --es value X
  * and for forget: --es setting secure/screensaver_components
+ * and for ADB debugging: --es cmd adb --es value on|off (no value just reports)
  */
 public class GuardReceiver extends BroadcastReceiver {
     static final String ACTION = "com.jeremykenedy.firetv.homeredirect.GUARD";
@@ -22,6 +23,7 @@ public class GuardReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (!ACTION.equals(action)) {
+            AdbKeeper.keepOn(context);
             GuardEnforcer.enforce(context);
             GuardEnforcer.schedule(context);
             return;
@@ -44,6 +46,12 @@ public class GuardReceiver extends BroadcastReceiver {
             String state = GuardEnforcer.isLocked(context) ? "on" : "off";
             setResultData("guard=" + state + " restored="
                     + Guard.describe(GuardEnforcer.enforce(context)));
+        } else if ("adb".equals(cmd)) {
+            String value = intent.getStringExtra("value");
+            if ("on".equals(value) || "off".equals(value)) {
+                AdbKeeper.setKept(context, "on".equals(value));
+            }
+            setResultData("adb=" + (AdbKeeper.isKept(context) ? "kept" : "released"));
         } else {
             setResultData("unknown");
         }

@@ -67,6 +67,13 @@ public class HomeRedirectService extends AccessibilityService {
         }
     };
 
+    private final ContentObserver adbObserver = new ContentObserver(handler) {
+        @Override
+        public void onChange(boolean selfChange) {
+            AdbKeeper.keepOn(HomeRedirectService.this);
+        }
+    };
+
     private boolean waiting;
 
     private boolean settingsMayFollow;
@@ -86,7 +93,7 @@ public class HomeRedirectService extends AccessibilityService {
                 && cls.toString().startsWith(AMAZON_HOME_PREFIX);
     }
 
-    /** Watches every guarded setting while this service runs. */
+    /** Watches every guarded setting and the ADB switches while this runs. */
     @Override
     protected void onServiceConnected() {
         ContentResolver resolver = getContentResolver();
@@ -97,6 +104,11 @@ public class HomeRedirectService extends AccessibilityService {
                     : Settings.Secure.getUriFor(key);
             resolver.registerContentObserver(uri, false, guardObserver);
         }
+        for (String key : Guard.ADB_SWITCHES) {
+            resolver.registerContentObserver(Settings.Global.getUriFor(key),
+                    false, adbObserver);
+        }
+        AdbKeeper.keepOn(this);
         GuardEnforcer.enforce(this);
     }
 
@@ -153,6 +165,7 @@ public class HomeRedirectService extends AccessibilityService {
         cancelWait();
         handler.removeCallbacks(guardCheck);
         getContentResolver().unregisterContentObserver(guardObserver);
+        getContentResolver().unregisterContentObserver(adbObserver);
         super.onDestroy();
     }
 }

@@ -26,6 +26,14 @@ final class Guard {
         "system/screen_off_timeout",
     };
 
+    /**
+     * The ADB debugging switch, which also opens port 5555 on Fire TV.
+     * Wireless debugging (adb_wifi_enabled) is left alone: the toolkit does
+     * not need it, and Fire OS asks to allow it on the network after every
+     * restart while it is on.
+     */
+    static final String[] ADB_SWITCHES = {"adb_enabled"};
+
     private Guard() {
     }
 
@@ -102,5 +110,17 @@ final class Guard {
             out.append(s);
         }
         return out.toString();
+    }
+
+    /** The ADB switches that are off. A switch the TV does not have is skipped. */
+    static List<String> adbOff(Map<String, String> current) {
+        List<String> off = new ArrayList<>();
+        for (String key : ADB_SWITCHES) {
+            String have = current.get(key);
+            if (have != null && !ABSENT.equals(have) && !"1".equals(have)) {
+                off.add(key);
+            }
+        }
+        return off;
     }
 }
