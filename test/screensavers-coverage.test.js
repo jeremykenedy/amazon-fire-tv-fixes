@@ -19,6 +19,7 @@ const COLORS = BUILT_IN_SCREENSAVERS.find((s) => s.id === 'colors');
 const AERIAL_ENTRY = SCREENSAVERS.find((s) => s.id === 'aerial');
 const JELLYFISH_DRIFT = SCREENSAVERS.find((s) => s.id === 'jellyfish-drift');
 const FIREFLY_GROVE = SCREENSAVERS.find((s) => s.id === 'firefly-grove');
+const NEON_CORRIDOR = SCREENSAVERS.find((s) => s.id === 'neon-corridor');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -106,6 +107,17 @@ test('Firefly Grove registry entry points to its released app and installer repo
     dreamComponent: 'com.jeremykenedy.fireflygrove/.FireflyDreamService',
     repo: 'jeremykenedy/firefly-grove',
     blurb: 'Animated fireflies in a quiet grove with adjustable density, motion and color. No ads, analytics or tracking.',
+  });
+});
+
+test('Neon Corridor registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(NEON_CORRIDOR, {
+    id: 'neon-corridor',
+    name: 'Neon Corridor',
+    pkg: 'com.jeremykenedy.neoncorridor',
+    dreamComponent: 'com.jeremykenedy.neoncorridor/.NeonDreamService',
+    repo: 'jeremykenedy/neon-corridor',
+    blurb: 'A procedural neon tunnel with adjustable density, speed, color, brightness and geometry. No ads, analytics or tracking.',
   });
 });
 
