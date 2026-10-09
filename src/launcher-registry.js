@@ -20,14 +20,20 @@ export const AT4K = {
   sha256: 'ac34c0abf1ceee5d5133dc3e99bde9173a00c5a16132852507ed23c0fbd41341',
 };
 
-/** Built from android/home-redirect and attached to this tool's release of the same version. */
+/**
+ * The newest release with a Home Redirect APK attached. Move it to the new
+ * tag whenever a release attaches a newer build.
+ */
+const HOME_REDIRECT_RELEASE = 'v3.2.2';
+
+/** Built from android/home-redirect and attached to HOME_REDIRECT_RELEASE. */
 export const HOME_REDIRECT = {
   id: 'home-redirect',
   name: 'Home Redirect and Screensaver Picker',
   pkg: 'com.jeremykenedy.firetv.homeredirect',
   service: 'com.jeremykenedy.firetv.homeredirect/com.jeremykenedy.firetv.homeredirect.HomeRedirectService',
   repo: 'jeremykenedy/fire-tv-toolkit',
-  tag: `v${version}`,
+  tag: HOME_REDIRECT_RELEASE,
   asset: 'firetv-home-redirect.apk',
   grants: ['android.permission.WRITE_SECURE_SETTINGS'],
 };
