@@ -23,9 +23,11 @@
 | `pipeworks-dream` | Pipeworks Dream | `com.jeremykenedy.pipeworksdream` | [jeremykenedy/pipeworks-dream](https://github.com/jeremykenedy/pipeworks-dream) | Continuously growing geometric pipes with adjustable density, speed, palette and glow |
 | `aqua-surface` | Aqua Surface Drift | `com.jeremykenedy.aquasurfacedrift` | [jeremykenedy/aqua-surface-drift](https://github.com/jeremykenedy/aqua-surface-drift) | Animated water with adjustable environment, lighting, ripples, motion and view |
 | `earthbound-orbit` | Earthbound Orbit | `com.jeremykenedy.earthboundorbit` | [jeremykenedy/earthbound-orbit](https://github.com/jeremykenedy/earthbound-orbit) | A continuously rotating Earth with adjustable atmosphere, star density and camera movement |
+| `perseid-passage` | Perseid Passage | `com.jeremykenedy.perseidpassage` | [jeremykenedy/perseid-passage](https://github.com/jeremykenedy/perseid-passage) | Animated meteor showers with adjustable frequency, size, speed, star density, palette and brightness |
+| `split-flap-drift` | Split-Flap Drift | `com.jeremykenedy.splitflapdrift` | [jeremykenedy/split-flap-drift](https://github.com/jeremykenedy/split-flap-drift) | An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift and Earthbound Orbit are original projects.
+README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage and Split-Flap Drift are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it

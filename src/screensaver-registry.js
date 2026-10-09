@@ -174,6 +174,22 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/earthbound-orbit',
     blurb: 'A continuously rotating Earth with adjustable atmosphere, star density and camera movement.',
   },
+  {
+    id: 'perseid-passage',
+    name: 'Perseid Passage',
+    pkg: 'com.jeremykenedy.perseidpassage',
+    dreamComponent: 'com.jeremykenedy.perseidpassage/.MeteorDreamService',
+    repo: 'jeremykenedy/perseid-passage',
+    blurb: 'Animated meteor showers with adjustable frequency, size, speed, star density, palette and brightness. No network access.',
+  },
+  {
+    id: 'split-flap-drift',
+    name: 'Split-Flap Drift',
+    pkg: 'com.jeremykenedy.splitflapdrift',
+    dreamComponent: 'com.jeremykenedy.splitflapdrift/.SplitFlapDreamService',
+    repo: 'jeremykenedy/split-flap-drift',
+    blurb: 'An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion.',
+  },
 ];
 
 /**

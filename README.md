@@ -64,7 +64,7 @@ so you can run just the part you need later.
 ## Features
 
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
-- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, or Earthbound Orbit, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
+- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, or Split-Flap Drift, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **Fire TV UI**: install a fully customizable launcher with on-TV screensaver previews, timer controls, memory and storage usage, persistent backups, and local settings protection. Its installer collects all choices before making changes.
@@ -103,22 +103,24 @@ Every screensaver here is an optional install from its own repository. Each one 
 | [Pipeworks Dream](https://github.com/jeremykenedy/pipeworks-dream) | `pipeworks-dream` | Continuously growing geometric pipes with adjustable density, speed, palette and glow |
 | [Aqua Surface Drift](https://github.com/jeremykenedy/aqua-surface-drift) | `aqua-surface` | Animated water with adjustable environment, lighting, ripples, motion and view |
 | [Earthbound Orbit](https://github.com/jeremykenedy/earthbound-orbit) | `earthbound-orbit` | A rotating Earth with adjustable atmosphere, star density and camera movement |
+| [Perseid Passage](https://github.com/jeremykenedy/perseid-passage) | `perseid-passage` | Animated meteor showers with adjustable frequency, size, speed, star density, palette and brightness |
+| [Split-Flap Drift](https://github.com/jeremykenedy/split-flap-drift) | `split-flap-drift` | An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion |
 
 These come with the TV and can be made active with `screensaver --set=<id>`:
 
 | Screensaver | Id | What it is |
 |-------------|----|------------|
 | Colors | `colors` | Android's built-in slow color wash |
-| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads 😞 |
+| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads |
 
 ```bash
-firetv-screensavers --install=jellyfish-drift,blue-meridian --yes
-screensaver --set=jellyfish-drift
+firetv-screensavers --install=perseid-passage,split-flap-drift --yes
+screensaver --set=split-flap-drift
 ```
 
 ## Screenshots
 
-Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift and Earthbound Orbit use screenshots from their own repositories. Select any screenshot to see it full size.
+Captured on an Insignia Fire TV Edition TV, Android TV emulators, and in macOS Terminal. Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage and Split-Flap Drift use screenshots from their own repositories. Select any screenshot to see it full size.
 
 ### The home screen and the on-TV picker
 
@@ -135,6 +137,8 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Cloud Drift Cl
     <a href="docs/screenshots/screensaver-aquarium-4k.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aquarium-4k-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aquarium-4k-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aquarium-4k.jpg" alt="Aquarium 4K" title="Aquarium 4K"></picture></a>
     <a href="docs/screenshots/screensaver-aquarium-live.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aquarium-live-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aquarium-live-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aquarium-live.jpg" alt="Aquarium Live" title="Aquarium Live"></picture></a>
     <a href="docs/screenshots/screensaver-cloud-drift-clock.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-cloud-drift-clock-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-cloud-drift-clock-tablet.jpg 2x"><img src="docs/screenshots/screensaver-cloud-drift-clock.jpg" alt="Cloud Drift Clock, a digital clock drifting over daylight clouds" title="Cloud Drift Clock"></picture></a>
+    <a href="docs/screenshots/screensaver-perseid-passage.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-perseid-passage-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-perseid-passage-tablet.jpg 2x"><img src="docs/screenshots/screensaver-perseid-passage.jpg" alt="Perseid Passage with bright meteors crossing a deep blue starfield" title="Perseid Passage"></picture></a>
+    <a href="docs/screenshots/screensaver-split-flap-drift.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-split-flap-drift-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-split-flap-drift-tablet.jpg 2x"><img src="docs/screenshots/screensaver-split-flap-drift.jpg" alt="Split-Flap Drift with an illuminated split-flap clock floating on a dark background" title="Split-Flap Drift"></picture></a>
     <a href="docs/screenshots/screensaver-jellyfish-drift.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-jellyfish-drift-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-jellyfish-drift-tablet.jpg 2x"><img src="docs/screenshots/screensaver-jellyfish-drift.jpg" alt="Jellyfish Drift" title="Jellyfish Drift"></picture></a>
     <a href="docs/screenshots/screensaver-firefly-grove.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-firefly-grove-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-firefly-grove-tablet.jpg 2x"><img src="docs/screenshots/screensaver-firefly-grove.jpg" alt="Firefly Grove" title="Firefly Grove"></picture></a>
     <a href="docs/screenshots/screensaver-neon-corridor.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-neon-corridor-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-neon-corridor-tablet.jpg 2x"><img src="docs/screenshots/screensaver-neon-corridor.jpg" alt="Neon Corridor" title="Neon Corridor"></picture></a>
