@@ -60,6 +60,9 @@ export async function grantBackupAccess(ip) {
     if (await getAppOp(ip, FIRE_TV_UI.pkg, 'MANAGE_EXTERNAL_STORAGE') !== 'allow') {
       throw new Error('The TV did not allow persistent backup access.');
     }
+    if (sdk <= 32) {
+      await grantPermission(ip, FIRE_TV_UI.pkg, 'android.permission.READ_EXTERNAL_STORAGE');
+    }
   } else {
     for (const permission of ['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']) {
       await grantPermission(ip, FIRE_TV_UI.pkg, `android.permission.${permission}`);
@@ -152,6 +155,9 @@ export async function installFireTvUi(ip, options, onProgress = () => {}) {
       onProgress('Updating the toolkit guard for Fire TV UI');
       const helper = await installLauncherApp(ip, HOME_REDIRECT);
       if (!helper.ok) throw new Error(`Could not update the toolkit guard: ${helper.error}`);
+      if (!versionAtLeast(await packageVersion(ip, HOME_REDIRECT.pkg), NATIVE_UI_GUARD_MIN_VERSION)) {
+        throw new Error(`The toolkit guard update must provide version ${NATIVE_UI_GUARD_MIN_VERSION} or newer. Fire TV UI was kept unchanged.`);
+      }
     }
     if (options.setup === 'tv') {
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'firetv-backup-'));
@@ -180,6 +186,9 @@ export async function installFireTvUi(ip, options, onProgress = () => {}) {
     onProgress('Setting up TV screensaver and backup access');
     for (const permission of FIRE_TV_UI.grants) {
       await grantPermission(ip, FIRE_TV_UI.pkg, permission);
+    }
+    if (!before.installed.includes(FIRE_TV_UI.id)) {
+      await grantPermission(ip, FIRE_TV_UI.pkg, 'android.permission.READ_TV_LISTINGS');
     }
     await grantBackupAccess(ip);
     for (const operation of ['GET_USAGE_STATS', 'REQUEST_INSTALL_PACKAGES']) {

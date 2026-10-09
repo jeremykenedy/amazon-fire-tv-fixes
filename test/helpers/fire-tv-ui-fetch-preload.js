@@ -7,14 +7,16 @@ export function fireTvUiFetch() {
   const checksum = (app) => crypto.createHash('sha256').update(`pkg:${app.pkg}`).digest('hex');
   return async (url) => {
     const value = String(url);
-    const api = `https://api.github.com/repos/${FIRE_TV_UI.repo}/releases/tags/${FIRE_TV_UI.tag}`;
-    if (value === api) {
-      return Response.json({ tag_name: FIRE_TV_UI.tag,
+    const releaseApp = apps.find((app) => value === `https://api.github.com/repos/${app.repo}/releases/tags/${app.tag}`);
+    if (releaseApp) {
+      return Response.json({ tag_name: releaseApp.tag,
         body: apps.map((app) => `SHA-256 (${app.asset}): ${checksum(app)}`).join('\n'),
         assets: apps.map((app) => ({ name: app.asset,
+          url: `https://api.github.com/repos/${app.repo}/releases/assets/${apps.indexOf(app) + 1}`,
           browser_download_url: `https://github.com/${app.repo}/releases/download/${app.tag}/${app.asset}` })) });
     }
-    const app = apps.find((entry) => value === `https://github.com/${entry.repo}/releases/download/${entry.tag}/${entry.asset}`);
+    const app = apps.find((entry, index) => value === `https://github.com/${entry.repo}/releases/download/${entry.tag}/${entry.asset}`
+      || value === `https://api.github.com/repos/${entry.repo}/releases/assets/${index + 1}`);
     if (app) return new Response(`pkg:${app.pkg}`);
     return launcherFetch()(url);
   };

@@ -37,6 +37,7 @@ export function setScreensaversDirForTesting(dirPath) {
  * @property {string} [asset] exact APK file name, when the release carries more than one
  * @property {string} [tag] a specific release tag instead of the latest release
  * @property {string} [sha256] a checksum pinned here, for authors who publish none
+ * @property {boolean} [private] whether GitHub credentials are required
  */
 
 /**
@@ -107,14 +108,17 @@ export function assertTrustedRedirect(url) {
 /**
  * Fetches the APK, following redirects by hand so every hop can be checked
  * before it is requested. The first URL must already have passed
- * assertTrustedApkUrl.
+ * the release URL or asset API URL validation.
  * @param {string} apkUrl
+ * @param {string} [token] sent only to the initial, validated GitHub API URL
  * @returns {Promise<Response>} the final, successful response
  */
-async function fetchTrusted(apkUrl) {
+async function fetchTrusted(apkUrl, token) {
   let current = new URL(apkUrl);
   for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
-    const res = await fetch(current, { redirect: 'manual' });
+    const headers = token && hop === 0
+      ? { Authorization: `Bearer ${token}`, Accept: 'application/octet-stream' } : {};
+    const res = await fetch(current, { redirect: 'manual', headers });
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
       if (!location) {
@@ -129,16 +133,52 @@ async function fetchTrusted(apkUrl) {
   throw new Error(`Download redirected more than ${MAX_REDIRECTS} times`);
 }
 
+function assertTrustedApiAssetUrl(assetUrl, repo) {
+  let url;
+  try {
+    url = new URL(assetUrl);
+  } catch {
+    throw new Error('GitHub did not provide a valid release asset API URL');
+  }
+  const prefix = `/repos/${repo}/releases/assets/`;
+  if (url.protocol !== 'https:' || url.hostname !== 'api.github.com' || url.username || url.password
+      || url.port || url.search || url.hash || !url.pathname.startsWith(prefix)
+      || !/^\d+$/.test(url.pathname.slice(prefix.length))) {
+    throw new Error('Refusing to download from an unexpected release asset API location');
+  }
+}
+
+async function githubToken() {
+  let token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  if (!token) {
+    try {
+      const result = await execFileAsync('gh', ['auth', 'token', '--hostname', 'github.com'], { timeout: 10000 });
+      token = result.stdout.trim();
+    } catch {
+      throw new Error('Fire TV UI is private. Sign in with gh auth login, set GH_TOKEN with repository access, or supply --apk and --sha256');
+    }
+  }
+  if (!/^[A-Za-z0-9_]+$/.test(token)) {
+    throw new Error('The GitHub token is invalid. Sign in with gh auth login or update GH_TOKEN');
+  }
+  return token;
+}
+
 /**
  * @param {string} repo GitHub "owner/name", always from the fixed registry, never user input
  * @param {string} [assetName] exact asset file name, for a release that carries more than one APK
  * @param {string} [tag] a specific release tag instead of the latest release
- * @returns {Promise<{apkUrl: string, sha256: string | null, sha256Url: string | null, tag: string}>} the .apk asset from the latest release, its checksum from the notes, and its .sha256 file if one was published
+ * @param {string} [token] GitHub credentials for a private repository
+ * @returns {Promise<{apkUrl: string, apkApiUrl?: string, sha256: string | null, sha256Url: string | null, sha256ApiUrl?: string | null, tag: string}>} the APK URLs and published checksum
  */
-export async function latestRelease(repo, assetName, tag) {
+export async function latestRelease(repo, assetName, tag, token) {
   const which = tag ? `tags/${encodeURIComponent(tag)}` : 'latest';
-  const res = await fetch(`https://api.github.com/repos/${repo}/releases/${which}`);
+  const headers = token ? { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } : {};
+  const res = await fetch(`https://api.github.com/repos/${repo}/releases/${which}`, { headers, redirect: token ? 'error' : 'follow' });
   if (res.status === 404) {
+    if (token) {
+      throw new Error(`${repo} has no accessible published release. Check your GitHub repository access or supply --apk and --sha256`);
+    }
     throw new Error(`${repo} has no published release, so there is no APK to install from it`);
   }
   if (!res.ok) {
@@ -153,8 +193,10 @@ export async function latestRelease(repo, assetName, tag) {
   const checksumFile = assets.find((a) => a.name === `${apk.name}.sha256`);
   return {
     apkUrl: apk.browser_download_url,
+    apkApiUrl: apk.url,
     sha256: parseSha256FromNotes(release.body, assetName),
     sha256Url: checksumFile ? checksumFile.browser_download_url : null,
+    sha256ApiUrl: checksumFile ? checksumFile.url : null,
     tag: release.tag_name,
   };
 }
@@ -177,9 +219,10 @@ export function parseSha256File(text) {
  * @param {string} repo
  * @returns {Promise<string | null>}
  */
-async function fetchSha256File(url, repo) {
-  assertTrustedApkUrl(url, repo);
-  const res = await fetchTrusted(url);
+async function fetchSha256File(url, repo, token) {
+  if (token) assertTrustedApiAssetUrl(url, repo);
+  else assertTrustedApkUrl(url, repo);
+  const res = await fetchTrusted(url, token);
   if (!res.ok) {
     throw new Error(`Downloading the checksum file failed with status ${res.status}`);
   }
@@ -218,12 +261,16 @@ export async function cloneIfMissing(entry) {
  * @returns {Promise<string>} local .apk path, inside its own temp directory (see removeDownload)
  */
 export async function downloadApk(entry) {
-  const { apkUrl, sha256: fromNotes, sha256Url } = await latestRelease(entry.repo, entry.asset, entry.tag);
+  const token = entry.private ? await githubToken() : undefined;
+  const { apkUrl, apkApiUrl, sha256: fromNotes, sha256Url, sha256ApiUrl } =
+    await latestRelease(entry.repo, entry.asset, entry.tag, token);
   assertTrustedApkUrl(apkUrl, entry.repo);
+  if (token) assertTrustedApiAssetUrl(apkApiUrl, entry.repo);
   // A hash pinned in the registry wins: it is used for apps whose author
   // publishes no checksum, and it cannot be changed by editing the release.
-  const sha256 = entry.sha256 || fromNotes || (sha256Url ? await fetchSha256File(sha256Url, entry.repo) : null);
-  const res = await fetchTrusted(apkUrl);
+  const sha256 = entry.sha256 || fromNotes
+    || (sha256Url ? await fetchSha256File(token ? sha256ApiUrl : sha256Url, entry.repo, token) : null);
+  const res = await fetchTrusted(token ? apkApiUrl : apkUrl, token);
   if (!res.ok) {
     throw new Error(`Download failed with status ${res.status}`);
   }

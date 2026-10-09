@@ -27,6 +27,9 @@ else if (cmd === 'install') {
   const body = fs.readFileSync(args[args.length - 1], 'utf8');
   const named = body.startsWith('pkg:') ? [body.slice(4).trim()] : state.installOnApk || [];
   for (const p of named) if (!state.installed.includes(p)) state.installed.push(p);
+  for (const p of named) if (state.installVersions?.[p]) {
+    state.versions = { ...state.versions, [p]: state.installVersions[p] };
+  }
   // Like Android dropping an updated accessibility app from the enabled list.
   if (state.dropServicesOnInstall && state.secure) delete state.secure.enabled_accessibility_services;
   save(); console.log('Success');

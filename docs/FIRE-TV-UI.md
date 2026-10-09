@@ -1,6 +1,8 @@
 # Fire TV UI
 
-Fire TV UI is a separate launcher maintained in the private [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui) repository. It needs Android 8.1 / API 27 or newer. Its final APK distribution is pending device verification. Until a download is published for the installer, supply a local signed APK and its published SHA-256 with `--apk` and `--sha256`. The toolkit does not upload that APK or your backups.
+Fire TV UI is a separate launcher maintained in the private [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui) repository. It needs Android 8.1 / API 27 or newer. Its APK stays in that private repository. The installer uses `GH_TOKEN`, `GITHUB_TOKEN`, or your GitHub CLI login to download the published release. Your GitHub account needs access to the repository; a fine-grained token needs read access to its contents. Credentials are sent only to GitHub's API and are removed before following asset redirects. Downloads retain the SHA-256 verification used for other installers.
+
+Sign in once with `gh auth login` before running the guided installer. Until final device verification and release publication, supply a local signed APK and its SHA-256 with `--apk` and `--sha256`. The toolkit does not upload that APK or your backups.
 
 ## Guided installer
 
@@ -17,7 +19,7 @@ firetv-ui --install --setup=tv --home=fire-tv-ui
 firetv-ui --install --setup=import --file=/path/to/backup.txt
 ```
 
-The installer grants screensaver control, backup access, storage statistics, and permission to request screensaver installations. It saves the existing settings before an update and rebinds Home routing if Android drops accessibility services during installation.
+The installer grants screensaver control, backup access, storage statistics, and permission to request screensaver installations. A fresh installation also grants TV listings access so the launcher can start without a first-launch permission dialog. Updates preserve an existing TV listings permission choice. It saves the existing settings before an update and rebinds Home routing if Android drops accessibility services during installation.
 
 If the toolkit's Home Redirect helper is already installed, the installer updates it to a version that leaves the launcher's settings to Fire TV UI. This prevents the two guards from restoring different choices.
 

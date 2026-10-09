@@ -31,15 +31,23 @@ const CONTINUE = { expect: 'Nothing has been changed yet. Continue?', send: ENTE
 let fake;
 let undo;
 let realFetch;
+let realToken;
 
 before(() => {
   fake = installFakeAdb();
   undo = useDroppingAdb(fake);
   realFetch = globalThis.fetch;
+  realToken = process.env.GH_TOKEN;
+  process.env.GH_TOKEN = 'test_private_release_token';
   globalThis.fetch = fireTvUiFetch();
 });
 beforeEach(() => { fake.reset(); process.exitCode = undefined; });
-after(() => { globalThis.fetch = realFetch; undo(); fake.restore(); process.exitCode = undefined; });
+after(() => {
+  globalThis.fetch = realFetch;
+  if (realToken === undefined) delete process.env.GH_TOKEN;
+  else process.env.GH_TOKEN = realToken;
+  undo(); fake.restore(); process.exitCode = undefined;
+});
 
 function installed(extra = {}) {
   fake.setState({ installed: [AERIAL, FIRE_TV_UI.pkg], preferences: { apps_per_row: 7 },
@@ -152,6 +160,8 @@ test('simple install applies the preset and sets up Home and backup access', asy
   assert.equal(state.preferences.apps_per_row, 5);
   assert.equal(state.appops[FIRE_TV_UI.pkg].MANAGE_EXTERNAL_STORAGE, 'allow');
   assert.ok(state.grants[FIRE_TV_UI.pkg].includes('android.permission.WRITE_SECURE_SETTINGS'));
+  assert.ok(state.grants[FIRE_TV_UI.pkg].includes('android.permission.READ_TV_LISTINGS'));
+  assert.ok(state.grants[FIRE_TV_UI.pkg].includes('android.permission.READ_EXTERNAL_STORAGE'));
   assert.equal((await launcherState(ip)).home, FIRE_TV_UI.id);
   assert.equal(fs.existsSync(state.lastInstallPath), false);
 });
@@ -162,6 +172,7 @@ test('an update preserves the current layout and restores Home dropped by Androi
   assert.equal(fake.readState().preferences.apps_per_row, 7);
   assert.equal(JSON.parse(fake.readState().files[TV_BACKUP]).apps_per_row, 7);
   assert.equal((await launcherState(ip)).home, FIRE_TV_UI.id);
+  assert.ok(!fake.readState().grants[FIRE_TV_UI.pkg].includes('android.permission.READ_TV_LISTINGS'));
 });
 
 test('an update reports a rejected Home rebind and keeps the saved layout', async () => {
@@ -175,12 +186,21 @@ test('an update reports a rejected Home rebind and keeps the saved layout', asyn
 
 test('an existing toolkit guard is upgraded before Fire TV UI is configured', async () => {
   installed({ installed: [AERIAL, FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
-    versions: { [HOME_REDIRECT.pkg]: '1.2.1' } });
+    versions: { [HOME_REDIRECT.pkg]: '1.2.1' }, installVersions: { [HOME_REDIRECT.pkg]: '1.2.2' } });
   const progress = [];
   await installFireTvUi(ip, flags(), (message) => progress.push(message));
   assert.ok(progress.includes('Updating the toolkit guard for Fire TV UI'));
   assert.ok(fake.readState().grants[HOME_REDIRECT.pkg].includes('android.permission.WRITE_SECURE_SETTINGS'));
   assert.equal(fake.readState().preferences.apps_per_row, 7);
+});
+
+test('an outdated guard release cannot replace Fire TV UI or its saved layout', async () => {
+  installed({ installed: [AERIAL, FIRE_TV_UI.pkg, HOME_REDIRECT.pkg],
+    versions: { [HOME_REDIRECT.pkg]: '1.2.1' }, files: { [TV_BACKUP]: '{"apps_per_row":3}' } });
+  await assert.rejects(installFireTvUi(ip, flags()), /guard update must provide version 1\.2\.2/);
+  assert.equal(fake.readState().preferences.apps_per_row, 7);
+  assert.equal(fake.readState().opened, undefined);
+  assert.equal(fake.readState().files[TV_BACKUP], '{"apps_per_row":3}');
 });
 
 test('a failed toolkit guard upgrade stops before replacing Fire TV UI', async () => {
@@ -379,6 +399,17 @@ test('legacy Android grants storage permissions and a rejected storage grant can
   installed({ lockedKeys: ['MANAGE_EXTERNAL_STORAGE'] });
   await assert.rejects(saveTvBackup(ip), /persistent backup access/);
   assert.equal(fake.readState().files?.[TV_BACKUP], undefined);
+});
+
+test('Android 30 through 32 grants media read access but Android 33 does not request removed storage permissions', async () => {
+  for (const sdk of [30, 32, 33]) {
+    fake.reset();
+    fake.setState({ sdk });
+    await grantBackupAccess(ip);
+    assert.equal(fake.readState().appops[FIRE_TV_UI.pkg].MANAGE_EXTERNAL_STORAGE, 'allow');
+    assert.deepEqual(fake.readState().grants?.[FIRE_TV_UI.pkg] || [],
+      sdk <= 32 ? ['android.permission.READ_EXTERNAL_STORAGE'] : []);
+  }
 });
 
 test('local APKs require the exact checksum before installation and staged files are removed', async () => {

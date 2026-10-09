@@ -183,3 +183,113 @@ test('parseSha256File reads the sha256sum format and nothing else', () => {
   assert.equal(parseSha256File(''), null);
   assert.equal(parseSha256File(null), null);
 });
+
+const privateEntry = { ...entry, private: true };
+const privateApiAsset = 'https://api.github.com/repos/owner/repo/releases/assets/123';
+const testToken = 'test_private_release_token';
+
+async function withToken(token, body) {
+  const previous = { GH_TOKEN: process.env.GH_TOKEN, GITHUB_TOKEN: process.env.GITHUB_TOKEN };
+  delete process.env.GITHUB_TOKEN;
+  if (token === undefined) delete process.env.GH_TOKEN;
+  else process.env.GH_TOKEN = token;
+  try { return await body(); }
+  finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+}
+
+function privateRelease(assetUrl = privateApiAsset, notes = `SHA-256: ${goodSum}`) {
+  return Response.json({ tag_name: 'v1', body: notes, assets: [
+    { name: 'app.apk', url: assetUrl, browser_download_url: 'https://github.com/owner/repo/releases/download/v1/app.apk' },
+    { name: 'app.apk.sha256', url: privateApiAsset + '4', browser_download_url: 'https://github.com/owner/repo/releases/download/v1/app.apk.sha256' },
+  ] });
+}
+
+test('private releases authenticate metadata and the API asset but never send credentials to redirects', async () => {
+  const seen = [];
+  const stub = async (url, options) => {
+    seen.push({ url: String(url), headers: options.headers });
+    if (String(url).includes('/releases/latest')) return privateRelease();
+    if (String(url) === privateApiAsset) {
+      return new Response(null, { status: 302, headers: { location: 'https://release-assets.githubusercontent.com/private/app.apk' } });
+    }
+    return new Response(bytes);
+  };
+  const filename = await withToken(testToken, () => withFetch(stub, () => downloadApk(privateEntry)));
+  try {
+    assert.deepEqual(fs.readFileSync(filename), bytes);
+    assert.equal(seen[0].headers.Authorization, `Bearer ${testToken}`);
+    assert.equal(seen[1].headers.Authorization, `Bearer ${testToken}`);
+    assert.equal(seen[1].headers.Accept, 'application/octet-stream');
+    assert.equal(seen[2].headers.Authorization, undefined);
+    assert.equal(fs.statSync(path.dirname(filename)).mode & 0o077, 0);
+  } finally { removeDownload(filename); }
+});
+
+test('private releases verify an authenticated checksum file and reject changed APK bytes', async () => {
+  const seen = [];
+  const stub = async (url, options) => {
+    seen.push(options.headers.Authorization);
+    if (String(url).includes('/releases/latest')) return privateRelease(privateApiAsset, 'No checksum in notes');
+    if (String(url) === privateApiAsset + '4') return new Response(`${goodSum}  app.apk\n`);
+    return new Response('tampered');
+  };
+  await assert.rejects(withToken(testToken, () => withFetch(stub, () => downloadApk(privateEntry))), /Checksum mismatch/);
+  assert.deepEqual(seen, Array(3).fill(`Bearer ${testToken}`));
+});
+
+test('private release asset URLs cannot send a token to another host, repository or endpoint', async () => {
+  for (const url of ['https://evil.example/app.apk', 'https://api.github.com/repos/other/repo/releases/assets/123',
+    'https://api.github.com/repos/owner/repo/releases/assets/123?extra=1',
+    'https://api.github.com/repos/owner/repo/releases/assets/not-an-id']) {
+    let requests = 0;
+    await assert.rejects(withToken(testToken, () => withFetch(async () => {
+      requests += 1;
+      return privateRelease(url);
+    }, () => downloadApk(privateEntry))), /unexpected release asset API location/);
+    assert.equal(requests, 1, 'Only release metadata may be requested');
+  }
+});
+
+test('private release access failures explain authentication without exposing the token', async () => {
+  await assert.rejects(withToken(testToken, () => withFetch(async () => new Response(null, { status: 404 }),
+    () => downloadApk(privateEntry))), (error) => /repository access/.test(error.message) && !error.message.includes(testToken));
+  let requested = false;
+  await assert.rejects(withToken('invalid\r\ntoken', () => withFetch(async () => {
+    requested = true;
+  }, () => downloadApk(privateEntry))), /GitHub token is invalid/);
+  assert.equal(requested, false);
+});
+
+test('public APK downloads remain anonymous when GitHub credentials are present', async () => {
+  const stub = stubFetch(`SHA-256: ${goodSum}`);
+  const filename = await withToken(testToken, () => withFetch((url, options) => {
+    assert.equal(options.headers.Authorization, undefined);
+    return stub(url);
+  }, () => downloadApk(entry)));
+  removeDownload(filename);
+});
+
+test('private downloads can use the GitHub CLI login and give a clear error when it is unavailable', async () => {
+  const dir = fs.mkdtempSync(path.join(process.env.TMPDIR || '/tmp', 'firetv-gh-test-'));
+  const executable = path.join(dir, 'gh');
+  const previousPath = process.env.PATH;
+  fs.writeFileSync(executable, `#!/bin/sh\nprintf '%s\\n' '${testToken}'\n`, { mode: 0o700 });
+  process.env.PATH = dir + path.delimiter + previousPath;
+  try {
+    const filename = await withToken(undefined, () => withFetch(async (url, options) => {
+      assert.equal(options.headers.Authorization, `Bearer ${testToken}`);
+      return String(url).includes('/releases/latest') ? privateRelease() : new Response(bytes);
+    }, () => downloadApk(privateEntry)));
+    removeDownload(filename);
+    fs.writeFileSync(executable, '#!/bin/sh\nexit 1\n', { mode: 0o700 });
+    await assert.rejects(withToken(undefined, () => downloadApk(privateEntry)), /Sign in with gh auth login/);
+  } finally {
+    process.env.PATH = previousPath;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
