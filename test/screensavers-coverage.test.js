@@ -22,6 +22,7 @@ const FIREFLY_GROVE = SCREENSAVERS.find((s) => s.id === 'firefly-grove');
 const NEON_CORRIDOR = SCREENSAVERS.find((s) => s.id === 'neon-corridor');
 const STARFIELD_DRIFT = SCREENSAVERS.find((s) => s.id === 'starfield-drift');
 const RAIN_ON_GLASS = SCREENSAVERS.find((s) => s.id === 'rain-on-glass');
+const RAINFOREST_CASCADE = SCREENSAVERS.find((s) => s.id === 'rainforest-cascade');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -142,6 +143,17 @@ test('Rain on Glass registry entry points to its released app and installer repo
     dreamComponent: 'com.jeremykenedy.rainonglass/.RainDreamService',
     repo: 'jeremykenedy/rain-on-glass',
     blurb: 'Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights. No ads, analytics or tracking.',
+  });
+});
+
+test('Rainforest Cascade registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(RAINFOREST_CASCADE, {
+    id: 'rainforest-cascade',
+    name: 'Rainforest Cascade',
+    pkg: 'com.jeremykenedy.rainforestcascade',
+    dreamComponent: 'com.jeremykenedy.rainforestcascade/.WaterfallDreamService',
+    repo: 'jeremykenedy/rainforest-cascade',
+    blurb: 'An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer. No ads, analytics or tracking.',
   });
 });
 
