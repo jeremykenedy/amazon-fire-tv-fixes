@@ -382,7 +382,7 @@ test('Twilight Hearth can be installed and selected through the CLI', async () =
   assert.equal(fake.readState().secure.screensaver_components, TWILIGHT_HEARTH.dreamComponent);
 });
 
-for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM, CLOUD_DRIFT_CLOCK]) {
+for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM, CLOUD_DRIFT_CLOCK, EARTHBOUND_ORBIT]) {
   test(`${saver.name} can be installed and selected through the CLI`, async () => {
     const installed = await captured(() => withFetch(
       pkgFetch(saver),
