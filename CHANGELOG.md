@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.7.0] - 2026-10-09
+
+### Added in 3.7.0
+
+- Add Skyburst Nocturne and Pulse Circuit to the guided screensaver installer and selector, with verified release checksums and reviewed README previews.
+
+### Upgrade
+
+Run `git pull` on the Toolkit checkout, then `node setup.js` to refresh command links. Install either saver with `firetv-screensavers --install=<id> --yes` and activate it with `screensaver --set=<id>`.
+
 ## [3.6.1] - 2026-10-09
 
 ### Fixed in 3.6.1

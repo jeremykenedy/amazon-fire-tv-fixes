@@ -22,6 +22,29 @@ test('screensaver package names are unique', () => {
   assert.equal(new Set(pkgs).size, pkgs.length);
 });
 
+test('Skyburst Nocturne and Pulse Circuit keep their published package identities', () => {
+  const expected = {
+    'skyburst-nocturne': [
+      'com.jeremykenedy.skyburstnocturne',
+      'com.jeremykenedy.skyburstnocturne/.FireworksDreamService',
+      'jeremykenedy/skyburst-nocturne',
+    ],
+    'pulse-circuit': [
+      'com.jeremykenedy.pulsecircuit',
+      'com.jeremykenedy.pulsecircuit/.PulseDreamService',
+      'jeremykenedy/pulse-circuit',
+    ],
+  };
+
+  for (const [id, [pkg, dreamComponent, repo]] of Object.entries(expected)) {
+    const entry = SCREENSAVERS.find((screensaver) => screensaver.id === id);
+    assert.ok(entry, `${id} should be available to the installer`);
+    assert.equal(entry.pkg, pkg);
+    assert.equal(entry.dreamComponent, dreamComponent);
+    assert.equal(entry.repo, repo);
+  }
+});
+
 test('every dreamComponent starts with its own package name', () => {
   for (const entry of SCREENSAVERS) {
     assert.ok(

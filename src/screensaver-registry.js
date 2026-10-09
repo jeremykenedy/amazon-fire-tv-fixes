@@ -206,6 +206,22 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/contour-flow',
     blurb: 'Animated topographic contour fields with adjustable relief, palette, density, drift speed, line weight, lighting and brightness.',
   },
+  {
+    id: 'skyburst-nocturne',
+    name: 'Skyburst Nocturne',
+    pkg: 'com.jeremykenedy.skyburstnocturne',
+    dreamComponent: 'com.jeremykenedy.skyburstnocturne/.FireworksDreamService',
+    repo: 'jeremykenedy/skyburst-nocturne',
+    blurb: 'Animated fireworks with adjustable frequency, size, speed, star density, palette and scene brightness.',
+  },
+  {
+    id: 'pulse-circuit',
+    name: 'Pulse Circuit',
+    pkg: 'com.jeremykenedy.pulsecircuit',
+    dreamComponent: 'com.jeremykenedy.pulsecircuit/.PulseDreamService',
+    repo: 'jeremykenedy/pulse-circuit',
+    blurb: 'Animated geometric patterns with adjustable arena, shape density, geometry, motion, palette, pulse rhythm and light intensity.',
+  },
 ];
 
 /**
