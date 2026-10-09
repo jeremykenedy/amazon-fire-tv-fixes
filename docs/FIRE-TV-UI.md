@@ -1,8 +1,8 @@
 # Fire TV UI
 
-Fire TV UI is a separate launcher maintained in the private [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui) repository. It needs Android 8.1 / API 27 or newer. Its APK stays in that private repository. The installer uses `GH_TOKEN`, `GITHUB_TOKEN`, or your GitHub CLI login to download the published release. Your GitHub account needs access to the repository; a fine-grained token needs read access to its contents. Credentials are sent only to GitHub's API and are removed before following asset redirects. Downloads retain the SHA-256 verification used for other installers.
+Fire TV UI is a separate launcher maintained in the private [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui) repository. It needs Android 8.1 / API 27 or newer. The installer uses `GH_TOKEN`, `GITHUB_TOKEN`, or your GitHub CLI login to download the published release. Your GitHub account needs access to the repository; a fine-grained token needs read access to its contents. Credentials are sent only to GitHub's API and are removed before following asset redirects. Downloads retain SHA-256 verification.
 
-Sign in once with `gh auth login` before running the guided installer. Until final device verification and release publication, supply a local signed APK and its SHA-256 with `--apk` and `--sha256`. The toolkit does not upload that APK or your backups.
+Sign in once with `gh auth login` before running the guided installer. The toolkit downloads Fire TV UI 1.0.1 from its private release, verifies the SHA-256, and updates the installed app without replacing its settings or backups. A local signed APK can also be supplied with `--apk` and `--sha256`. The toolkit does not upload that APK or your backups.
 
 ## Guided installer
 
@@ -11,7 +11,7 @@ Run `firetv-ui` or select Fire TV UI in the main menu. Choose installation, remo
 The simple setup supplies the saved blue layout, app rows, sorting, and visibility choices. It excludes personal weather locations and widget contents. Keeping settings preserves the current installation. Restoring the TV backup or importing a file uses your own saved layout instead.
 
 ```bash
-firetv-ui --install --apk=/path/to/fire-tv-ui-1.0.0.apk --sha256=PUBLISHED_SHA256 --setup=simple --home=fire-tv-ui
+firetv-ui --install --apk=/path/to/fire-tv-ui-1.0.1.apk --sha256=PUBLISHED_SHA256 --setup=simple --home=fire-tv-ui
 firetv-ui
 firetv-ui --install --setup=simple --home=fire-tv-ui --protection=on
 firetv-ui --install --setup=keep --home=keep --screensaver=keep --yes

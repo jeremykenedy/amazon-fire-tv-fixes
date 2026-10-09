@@ -1,8 +1,10 @@
 package com.jeremykenedy.firetv.homeredirect;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.ServiceInfo;
@@ -29,6 +31,15 @@ public class ScreensaverPickerActivity extends Activity {
     static final String ACTIVE_SETTING = "screensaver_components";
 
     static final String ENABLED_SETTING = "screensaver_enabled";
+
+    private static final String FIRE_TV_UI_PACKAGE = "com.jeremykenedy.firetv.ui";
+
+    private static final String FIRE_TV_UI_ACTION =
+            FIRE_TV_UI_PACKAGE + ".SELECT_SCREENSAVER";
+
+    private interface SettingCallback {
+        void run();
+    }
 
     private List<Screensavers.Choice> choices = new ArrayList<>();
 
@@ -135,18 +146,128 @@ public class ScreensaverPickerActivity extends Activity {
 
     private void choose(int position) {
         Screensavers.Choice choice = choices.get(position);
+        String previous = Settings.Secure.getString(getContentResolver(),
+                ACTIVE_SETTING);
+        String wasEnabled = Settings.Secure.getString(getContentResolver(),
+                ENABLED_SETTING);
+        if (hasFireTvUi()) {
+            if (!hasFireTvUiSelector()) {
+                load();
+                status.setText(R.string.picker_update_ui);
+                return;
+            }
+            setFireTvUiSelection(choice.component,
+                    new SettingCallback() {
+                        @Override
+                        public void run() {
+                            remember(choice.component);
+                            load();
+                        }
+                    }, new SettingCallback() {
+                        @Override
+                        public void run() {
+                            showSaveFailure();
+                        }
+                    });
+            return;
+        }
+
         ContentResolver resolver = getContentResolver();
         try {
-            Settings.Secure.putString(resolver, ACTIVE_SETTING,
-                    choice.component);
-            GuardEnforcer.remember(this, "secure/" + ACTIVE_SETTING,
-                    choice.component);
-            GuardEnforcer.remember(this, "secure/" + ENABLED_SETTING, "1");
-            Settings.Secure.putInt(resolver, ENABLED_SETTING, 1);
-            status.setText(getString(R.string.picker_active, choice.label));
+            boolean componentSaved = Settings.Secure.putString(resolver,
+                    ACTIVE_SETTING, choice.component);
+            boolean enabledSaved = Settings.Secure.putInt(resolver,
+                    ENABLED_SETTING, 1);
+            String current = Settings.Secure.getString(resolver,
+                    ACTIVE_SETTING);
+            if (!componentSaved || !enabledSaved
+                    || !Screensavers.fullComponent(choice.component).equals(
+                            Screensavers.fullComponent(current))) {
+                Settings.Secure.putString(resolver, ACTIVE_SETTING, previous);
+                restoreEnabled(wasEnabled);
+                showSaveFailure();
+                return;
+            }
+            remember(choice.component);
+            load();
         } catch (SecurityException e) {
-            list.setItemChecked(position, false);
-            status.setText(R.string.picker_needs_permission);
+            showPermissionFailure();
         }
+    }
+
+    private boolean hasFireTvUi() {
+        try {
+            getPackageManager().getPackageInfo(FIRE_TV_UI_PACKAGE, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException missing) {
+            return false;
+        }
+    }
+
+    private boolean hasFireTvUiSelector() {
+        try {
+            getPackageManager().getReceiverInfo(new ComponentName(
+                    FIRE_TV_UI_PACKAGE,
+                    FIRE_TV_UI_PACKAGE + ".ScreensaverSelectionReceiver"), 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException missing) {
+            return false;
+        }
+    }
+
+    private void setFireTvUiSelection(String component,
+            SettingCallback success, SettingCallback failure) {
+        Intent request = new Intent(FIRE_TV_UI_ACTION);
+        request.setComponent(new ComponentName(FIRE_TV_UI_PACKAGE,
+                FIRE_TV_UI_PACKAGE + ".ScreensaverSelectionReceiver"));
+        request.putExtra("component", component);
+        try {
+            sendOrderedBroadcast(request, null, new BroadcastReceiver() {
+                @Override
+                public void onReceive(android.content.Context context,
+                        Intent intent) {
+                    String current = Settings.Secure.getString(getContentResolver(),
+                            ACTIVE_SETTING);
+                    String actualEnabled = Settings.Secure.getString(
+                            getContentResolver(), ENABLED_SETTING);
+                    boolean componentMatches = Screensavers.fullComponent(component).equals(
+                            Screensavers.fullComponent(current));
+                    boolean enabledMatches = "1".equals(actualEnabled);
+                    if (getResultCode() != 0 || !"ok".equals(getResultData())
+                            || !componentMatches || !enabledMatches) {
+                        failure.run();
+                        return;
+                    }
+                    success.run();
+                }
+            }, null, 0, null, null);
+        } catch (SecurityException denied) {
+            failure.run();
+        }
+    }
+
+    private void restoreEnabled(String enabled) {
+        if ("0".equals(enabled) || "1".equals(enabled)) {
+            Settings.Secure.putString(getContentResolver(), ENABLED_SETTING,
+                    enabled);
+        } else {
+            getContentResolver().delete(Settings.Secure.CONTENT_URI,
+                    "name=?", new String[] {ENABLED_SETTING});
+        }
+    }
+
+    private void remember(String component) {
+        GuardEnforcer.remember(this, "secure/" + ACTIVE_SETTING, component);
+        GuardEnforcer.remember(this, "secure/" + ENABLED_SETTING, "1");
+    }
+
+    private void showPermissionFailure() {
+        load();
+        status.setText(R.string.picker_needs_permission);
+    }
+
+    private void showSaveFailure() {
+        load();
+        status.setText(R.string.picker_save_failed);
     }
 }

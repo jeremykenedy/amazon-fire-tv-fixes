@@ -16,7 +16,7 @@ const BACKGROUND_OP = 'RUN_ANY_IN_BACKGROUND';
 
 /** The first Home Redirect with the guard in it. */
 export const GUARD_MIN_VERSION = '1.2.0';
-export const NATIVE_UI_GUARD_MIN_VERSION = '1.2.2';
+export const NATIVE_UI_GUARD_MIN_VERSION = '1.2.3';
 
 /**
  * Pure: whether version a is at least version b ("1.10.0" >= "1.2.0").
