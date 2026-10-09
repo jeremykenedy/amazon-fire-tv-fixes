@@ -34,6 +34,7 @@ else if (cmd === 'install') {
 else if (cmd === 'shell' && a === 'input') { console.log(''); }
 else if (cmd === 'shell' && a === 'monkey') { console.log('Events injected: 1'); }
 else if (cmd === 'shell' && a === 'settings' && b === 'delete') {
+  if (state.nativeHomeGuard && state.preferences?.fire_tv_ui_home_enabled && ['enabled_accessibility_services','accessibility_enabled'].includes(d)) process.exit(0);
   if (state[c]) delete state[c][d];
   save(); console.log('Deleted 1 rows');
 }
@@ -87,6 +88,7 @@ else if (cmd === 'shell' && a === 'settings' && b === 'get') {
   const v = (state[c] || {})[d];
   console.log(v === undefined ? 'null' : v);
 } else if (cmd === 'shell' && a === 'settings' && b === 'put') {
+  if (state.nativeHomeGuard && state.preferences?.fire_tv_ui_home_enabled && ['enabled_accessibility_services','accessibility_enabled'].includes(d)) process.exit(0);
   if (state.rejectOverMax && c === 'system' && d === 'screen_off_timeout' && Number(process.argv.slice(-1)[0]) > 2147460000) fail('java.lang.IllegalArgumentException: value too large');
   // lockedKeys: the TV takes the write without error but nothing changes.
   if ((state.lockedKeys || []).includes(d)) { process.exit(0); }
@@ -123,6 +125,22 @@ else if (cmd === 'shell' && a === 'settings' && b === 'get') {
   else if (operation === 'restore') state.preferences = JSON.parse(state.files[value('source') === 'import' ? '/sdcard/Download/fire-tv-ui-import.txt' : '/sdcard/Download/fire-tv-ui-backup.txt']);
   else if (['home-preference-on','home-preference-off'].includes(operation)) {
     state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_home_enabled = operation === 'home-preference-on';
+  }
+  else if (['home-on','home-off'].includes(operation)) {
+    const keys = ['enabled_accessibility_services','accessibility_enabled'];
+    if (keys.some((key) => (state.lockedKeys || []).includes(key) || (state.dropWrites || []).includes(key))) {
+      console.log('Broadcast completed: result=1, data="Home routing refused"'); process.exit(0);
+    }
+    const on = operation === 'home-on';
+    const own = ['com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.Hra', 'com.jeremykenedy.firetv.ui/com.jeremykenedy.firetv.ui.HomeRedirectService'];
+    const replaced = [...own, 'com.overdevs.at4k/com.overdevs.at4k.Hra', 'com.jeremykenedy.firetv.homeredirect/com.jeremykenedy.firetv.homeredirect.HomeRedirectService', 'com.overdevs.at4khelper/com.overdevs.at4khelper.HomeRedirectAccessibilityService'];
+    state.secure = state.secure || {};
+    const current = (state.secure.enabled_accessibility_services || '').split(':').filter(Boolean);
+    const requested = current.filter((service) => !(on ? replaced : own).includes(service));
+    if (on) requested.push(...own);
+    state.secure.enabled_accessibility_services = requested.join(':');
+    state.secure.accessibility_enabled = requested.length ? '1' : '0';
+    state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_home_enabled = on;
   }
   else if (['protection-on','protection-off'].includes(operation)) {
     state.preferences = state.preferences || {}; state.preferences.fire_tv_ui_protect_settings = operation === 'protection-on';

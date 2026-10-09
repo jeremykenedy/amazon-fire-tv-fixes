@@ -289,7 +289,7 @@ export async function sendGuard(ip, cmd, extras = {}) {
   for (const [name, value] of Object.entries(extras)) {
     args.push('--es', name, value);
   }
-  const out = await run(args);
+  const out = await run(args, { timeout: 60000 });
   return /data="([^"]*)"/.exec(out)?.[1] ?? null;
 }
 

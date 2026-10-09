@@ -137,12 +137,11 @@ export async function useHome(ip, mode) {
   const requested = servicesFor(before.services, mode);
   try {
     if (before.installed.includes(FIRE_TV_UI.id)) {
-      await backupOperation(ip, FIRE_TV_UI.pkg, mode === FIRE_TV_UI.id ? 'home-preference-on' : 'home-preference-off');
+      await backupOperation(ip, FIRE_TV_UI.pkg, mode === FIRE_TV_UI.id ? 'home-on' : 'home-preference-off');
     }
-    if (mode === FIRE_TV_UI.id) {
-      await writeServices(ip, servicesFor(before.services, 'amazon').filter((service) => service !== AT4K.service));
+    if (mode !== FIRE_TV_UI.id) {
+      await writeServices(ip, requested);
     }
-    await writeServices(ip, requested);
     const readBack = parseServices(await getSetting(ip, 'secure', SERVICES_KEY));
     const enabled = await getSetting(ip, 'secure', ENABLED_KEY);
     if (readBack.join(':') !== requested.join(':') || enabled !== (requested.length ? '1' : '0')) {

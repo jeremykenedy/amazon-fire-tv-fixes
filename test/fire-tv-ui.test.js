@@ -93,6 +93,17 @@ test('a partially rejected Home change restores the previous services and enable
   assert.equal(fake.readState().secure.accessibility_enabled, '0');
 });
 
+test('Home changes use the native control while protection rejects outside service changes', async () => {
+  fake.setState({ installed: [FIRE_TV_UI.pkg, AT4K.pkg, HOME_REDIRECT.pkg], nativeHomeGuard: true,
+    preferences: {fire_tv_ui_home_enabled:true},
+    secure: { [SERVICES]: `reader/Service:${AT4K.service}:${HOME_REDIRECT.service}`, accessibility_enabled: '1' } });
+  assert.equal(await useHome(ip, FIRE_TV_UI.id), true);
+  assert.equal(fake.readState().secure[SERVICES], `reader/Service:${FIRE_TV_UI.controls}:${FIRE_TV_UI.service}`);
+  assert.equal(await useHome(ip, 'amazon'), true);
+  assert.equal(fake.readState().secure[SERVICES], 'reader/Service');
+  assert.equal(fake.readState().preferences.fire_tv_ui_home_enabled, false);
+});
+
 test('intentional CLI timer and screensaver changes update the protected settings', async () => {
   installed();
   assert.deepEqual(await setTimeoutMs(ip, findTimeoutById('sleep'), 600000),
