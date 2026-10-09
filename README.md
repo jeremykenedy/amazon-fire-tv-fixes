@@ -104,7 +104,7 @@ These come with the TV and can be made active with `screensaver --set=<id>`:
 | Screensaver | Id | What it is |
 |-------------|----|------------|
 | Colors | `colors` | Android's built-in slow color wash |
-| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads |
+| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads 😞 |
 
 ```bash
 firetv-screensavers --install=jellyfish-drift,blue-meridian --yes
