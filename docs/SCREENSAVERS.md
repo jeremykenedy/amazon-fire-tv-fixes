@@ -27,9 +27,11 @@
 | `split-flap-drift` | Split-Flap Drift | `com.jeremykenedy.splitflapdrift` | [jeremykenedy/split-flap-drift](https://github.com/jeremykenedy/split-flap-drift) | An animated drifting flip clock with adjustable time format, seconds, date, finish, lighting and motion |
 | `canopy-drift` | Canopy Drift | `com.jeremykenedy.canopydrift` | [jeremykenedy/canopy-drift](https://github.com/jeremykenedy/canopy-drift) | An animated autumn canopy with falling leaves, adjustable tree style, leaf density, wind and lighting |
 | `contour-flow` | Contour Flow | `com.jeremykenedy.contourflow` | [jeremykenedy/contour-flow](https://github.com/jeremykenedy/contour-flow) | Animated topographic contour fields with adjustable relief, palette, density, drift speed, line weight, lighting and brightness |
+| `skyburst-nocturne` | Skyburst Nocturne | `com.jeremykenedy.skyburstnocturne` | [jeremykenedy/skyburst-nocturne](https://github.com/jeremykenedy/skyburst-nocturne) | Animated fireworks with adjustable frequency, size, speed, star density, palette and scene brightness |
+| `pulse-circuit` | Pulse Circuit | `com.jeremykenedy.pulsecircuit` | [jeremykenedy/pulse-circuit](https://github.com/jeremykenedy/pulse-circuit) | Animated geometric patterns with adjustable arena, shape density, geometry, motion, palette, pulse rhythm and light intensity |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift and Contour Flow are original projects.
+README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift, Contour Flow, Skyburst Nocturne and Pulse Circuit are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
@@ -64,6 +66,28 @@ If neither is there, or the hash does not match, nothing is installed. The
 download URL must be the repository's own release path on github.com, and
 redirects may only go to GitHub's release asset hosts. Each download goes to
 its own private temporary folder that is deleted afterwards.
+
+## Integration contract
+
+For each released saver, keep the installer ID, Android package, DreamService
+component, GitHub release asset, asset byte count and SHA-256 aligned across the
+Toolkit registry and Fire TV UI catalog. The UI catalog preview must point to a
+visually reviewed running-app capture; record its source path and hashes in
+`fire-tv-ui/app/previews/sources.json`. Keep each app's settings schema and
+provider documented in its own configuration guide. Register the saver in
+`src/screensaver-registry.js`, `app/screensavers.json`, and both README galleries.
+Run `npm test` in this repository, then run `bash scripts/test.sh` and
+`FIRE_TV_UI_TEST_SERIAL=emulator-PORT python3 -m unittest tests.test_settings_routes -v`
+in the Fire TV UI checkout before publishing the host projects.
+Toolkit gallery files use `docs/screenshots/screensaver-<id>.jpg` and the two
+responsive files under `docs/screenshots/grid/`. Fire TV UI uses the
+component-hash JPEG named by `app/previews/index.json`; its source capture,
+device, preview hash, and source hash belong in `app/previews/sources.json`.
+
+| Id | Package and DreamService | Release asset | Bytes | SHA-256 | Settings provider |
+|----|--------------------------|---------------|-------|---------|-------------------|
+| `skyburst-nocturne` | `com.jeremykenedy.skyburstnocturne/.FireworksDreamService` | [v1.0.0 APK](https://github.com/jeremykenedy/skyburst-nocturne/releases/download/v1.0.0/skyburst-nocturne.apk) | 37748 | `2ce571933d6f4a8017ada3c5598d21edc363b51598f4d4c302bafebb0863a57a` | `content://com.jeremykenedy.skyburstnocturne.settings/schema` |
+| `pulse-circuit` | `com.jeremykenedy.pulsecircuit/.PulseDreamService` | [v1.0.0 APK](https://github.com/jeremykenedy/pulse-circuit/releases/download/v1.0.0/pulse-circuit.apk) | 33485 | `5e71095d0b2966d1cf803ad9299ad7a233309848d1aea8e27423cfcf8ff96c95` | `content://com.jeremykenedy.pulsecircuit.settings/schema` |
 
 ## Notes
 
