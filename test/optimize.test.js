@@ -260,6 +260,7 @@ test('start offers to optimize, and firetv-revert offers to undo it', async () =
     { expect: 'optimize the TV for screensavers', send: 'y' },
     { expect: 'Which changes should be made?', send: ENTER },
     { expect: 'Nothing has been changed yet. Continue?', send: ENTER },
+    { expect: 'guard these settings', send: 'n' },
     { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
   ]);
   assert.equal(r.code, 0, r.out);

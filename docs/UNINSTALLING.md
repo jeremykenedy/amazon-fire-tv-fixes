@@ -9,6 +9,7 @@ firetv-revert
 A checklist of everything this tool changed that is still in place, all
 checked by default; uncheck anything you want to keep:
 
+- the guard, first, so it does not put the reverts below straight back
 - the Alexa deep-sleep fix
 - the active screensaver (back to Amazon's)
 - each installed screensaver

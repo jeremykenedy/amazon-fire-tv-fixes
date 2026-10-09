@@ -54,6 +54,31 @@ else if (cmd === 'shell' && a === 'appops' && b === 'set') {
   if (process.argv.slice(-1)[0] === 'default') delete state.appops[c][d];
   save();
 }
+else if (cmd === 'shell' && a === 'am' && b === 'broadcast') {
+  // The guard in Home Redirect: replies only when Home Redirect is installed.
+  const extra = (name) => { const i = args.indexOf(name); return i < 0 ? undefined : args[i + 1]; };
+  if (!state.installed.includes('com.jeremykenedy.firetv.homeredirect')) { console.log('Broadcasting: Intent\\nBroadcast completed: result=0'); }
+  else {
+    const g = state.guard = state.guard || { locked: false, remembered: {} };
+    const cmdName = extra('cmd');
+    let reply = 'unknown';
+    if (cmdName === 'lock') { g.locked = true; reply = state.guardReply || 'locked'; }
+    else if (cmdName === 'unlock') { g.locked = false; reply = state.guardReply || 'unlocked'; }
+    else if (cmdName === 'remember') { g.remembered[extra('setting')] = extra('value'); reply = 'remembered'; }
+    else if (cmdName === 'check') { reply = state.guardReply || 'guard=' + (g.locked ? 'on' : 'off') + ' restored=' + (state.guardRestored || 'none'); }
+    save(); console.log('Broadcasting: Intent\\nBroadcast completed: result=0, data="' + reply + '"');
+  }
+}
+else if (cmd === 'shell' && a === 'dumpsys' && b === 'package') {
+  const v = (state.versions || {})[c];
+  console.log(state.installed.includes(c) ? 'Packages:\\n    versionName=' + (v || '1.0.0') : 'Unable to find package: ' + c);
+}
+else if (cmd === 'shell' && a === 'pm' && b === 'disable-user') {
+  const pkg = args[args.length - 1];
+  if ((state.protectedPkgs || []).includes(pkg)) fail('java.lang.SecurityException: Cannot disable a protected package: ' + pkg);
+  if (!(state.lockedKeys || []).includes(pkg)) { state.disabled = [...new Set([...(state.disabled || []), pkg])]; save(); }
+  console.log('Package ' + pkg + ' new state: disabled-user');
+}
 else if (cmd === 'shell' && a === 'echo') { console.log(state.echoReply === undefined ? b : state.echoReply); }
 else if (cmd === 'shell' && a === 'settings' && b === 'get') {
   const v = (state[c] || {})[d];

@@ -21,6 +21,8 @@ export const COMMANDS = [
   { name: 'launcher', desc: 'Short for firetv-launcher: installs AT4K or switches the Home button.' },
   { name: 'firetv-optimize', desc: 'Checks the TV for settings that stop or spoil screensavers and fixes only those it has. firetv-revert puts them back.' },
   { name: 'optimize', desc: 'Short for firetv-optimize: sets the TV up for screensavers.' },
+  { name: 'firetv-guard', desc: 'Keeps Amazon from undoing your setup: Home Redirect puts the screensaver, Alexa fix, Home and timeouts back, and updaters are held back. --check, --off.' },
+  { name: 'guard', desc: 'Short for firetv-guard: keeps Amazon from undoing your setup.' },
   { name: 'firetv-timeouts', desc: 'Review, edit, and/or reset any of the TV timeouts, all in one guided flow.' },
   { name: 'firetv-timeout-sleep', desc: 'Changes the sleep (deep-sleep/standby) timeout by itself.' },
   { name: 'firetv-timeout-screensaver', desc: 'Changes the screensaver timeout by itself.' },

@@ -14,6 +14,9 @@ On a fresh clone the first run copies `.env.example` to `.env` and fills it in.
 | `INSTALLED` | `start`, `update` | `true` once setup has connected to the TV. Together with a valid `FIRE_TV_IP` this is what unlocks the other commands. |
 | `FIRE_TV_TIMEOUT_SLEEP_FACTORY_MS` | The first command that reads the sleep timeout | The sleep timeout first seen on this TV, in milliseconds. Resets go back to this. |
 | `FIRE_TV_TIMEOUT_SCREENSAVER_FACTORY_MS` | The first command that reads the screensaver timeout | The screensaver timeout first seen on this TV, in milliseconds. |
+| `FIRE_TV_GUARD` | `guard` | `on` while the guard is on. Settings this tool changes are then passed to the guard first, so it keeps the new value. |
+| `FIRE_TV_GUARD_DISABLED` | `guard` | The Amazon updater packages the guard disabled, so `guard --off` turns back on only those. |
+| `FIRE_TV_GUARD_BACKGROUND` | `guard` | Each updater the guard stopped running in the background, with its mode from before. |
 | `FIRE_TV_OPTIMIZE_<SETTING>` | `optimize`, the first time it changes that setting | The value the setting had before `optimize` changed it (`null` if the TV had none). `firetv-revert` puts it back and then removes the line. |
 
 ## Changing TVs

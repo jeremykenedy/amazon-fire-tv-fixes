@@ -139,6 +139,9 @@ public class ScreensaverPickerActivity extends Activity {
         try {
             Settings.Secure.putString(resolver, ACTIVE_SETTING,
                     choice.component);
+            GuardEnforcer.remember(this, "secure/" + ACTIVE_SETTING,
+                    choice.component);
+            GuardEnforcer.remember(this, "secure/" + ENABLED_SETTING, "1");
             Settings.Secure.putInt(resolver, ENABLED_SETTING, 1);
             status.setText(getString(R.string.picker_active, choice.label));
         } catch (SecurityException e) {

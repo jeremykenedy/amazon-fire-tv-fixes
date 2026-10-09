@@ -234,6 +234,7 @@ test('menu: the fix toggle offers to apply it when off, and declining changes no
     { expect: 'What would you like to do?', send: ` ${ENTER}` },
     { expect: 'No timeout changes', send: '' },
     { expect: 'optimize the TV for screensavers', send: 'n' },
+    { expect: 'guard these settings', send: 'n' },
     { expect: 'What would you like to do?', send: `${DOWN}${ENTER}` },
     { expect: 'Apply the fix? [y/N]', send: 'n' },
     { expect: 'What would you like to do?', send: `${DOWN.repeat(6)}${ENTER}` },
