@@ -4,6 +4,7 @@
 
 ### Added in 3.3.0
 
+- Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift and Rain on Glass screensavers, as optional installs in `firetv-screensavers`, with screenshots in the README.
 - `firetv-ui`: guided installation, update, removal, and backup transfer for Fire TV UI. Choose the saved simple layout, keep current settings, restore the TV backup, or import a file, then review Home, screensaver, protection, and backup choices before execution.
 - Fire TV UI in the main menu, launcher selection, and full revert options.
 - Persistent TV Downloads backups with validated computer import/export and private computer files. Uninstall keeps the TV backup unless deletion is explicitly selected.
