@@ -43,12 +43,12 @@ export function parseGuardEnv(raw) {
  * @returns {string}
  */
 export function mergeGuardEnv(raw, state) {
-  let out = (raw || '').replace(new RegExp(`^(${ON}|${DISABLED}|${BACKGROUND})=.*\\n?`, 'gm'), '');
+  let out = (raw || '').replace(new RegExp(String.raw`^(${ON}|${DISABLED}|${BACKGROUND})=.*\n?`, 'gm'), '');
   if (state.on) {
     const lines = [
       `${ON}=on`,
       `${DISABLED}=${state.disabled.join(',')}`,
-      `${BACKGROUND}=${Object.entries(state.background).map(([pkg, mode]) => `${pkg}=${mode}`).join(',')}`,
+      `${BACKGROUND}=${Object.entries(state.background).map((pair) => pair.join('=')).join(',')}`,
     ];
     out = out.trim() === '' ? `${lines.join('\n')}\n` : `${out.trimEnd()}\n${lines.join('\n')}\n`;
   }

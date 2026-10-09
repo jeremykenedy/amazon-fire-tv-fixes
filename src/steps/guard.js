@@ -14,7 +14,12 @@ export const FLAG_SPEC = {
 
 function report(results) {
   for (const r of results) {
-    print(r.ok ? chalk.green(`  ✔ ${r.label}`) : chalk.red(`  ✖ ${r.label}${r.detail ? `: ${r.detail}` : ''}`));
+    if (r.ok) {
+      print(chalk.green(`  ✔ ${r.label}`));
+    } else {
+      const detail = r.detail ? ': ' + r.detail : '';
+      print(chalk.red(`  ✖ ${r.label}${detail}`));
+    }
   }
   const ok = results.every((r) => r.ok);
   if (!ok) {

@@ -104,8 +104,8 @@ export async function turnGuardOn(ip) {
   if (!results[0].ok) {
     return results;
   }
-  results.push({ label: 'Locked the screensaver, Alexa fix, Home and timeout settings on the TV', ok: (await sendGuard(ip, 'lock')) === 'locked' });
-  results.push(...(await blockUpdaters(ip, state)));
+  const locked = (await sendGuard(ip, 'lock')) === 'locked';
+  results.push({ label: 'Locked the screensaver, Alexa fix, Home and timeout settings on the TV', ok: locked }, ...(await blockUpdaters(ip, state)));
   saveGuardState({ ...state, on: true });
   return results;
 }
