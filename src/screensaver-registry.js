@@ -86,6 +86,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/rain-on-glass',
     blurb: 'Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights. No ads, analytics or tracking.',
   },
+  {
+    id: 'rainforest-cascade',
+    name: 'Rainforest Cascade',
+    pkg: 'com.jeremykenedy.rainforestcascade',
+    dreamComponent: 'com.jeremykenedy.rainforestcascade/.WaterfallDreamService',
+    repo: 'jeremykenedy/rainforest-cascade',
+    blurb: 'An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer. No ads, analytics or tracking.',
+  },
 ];
 
 /**
