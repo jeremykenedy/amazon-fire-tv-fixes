@@ -243,7 +243,7 @@ export async function grantPermission(ip, pkg, permission) {
  */
 export async function getAppOp(ip, pkg, op) {
   const out = await run(['-s', target(ip), 'shell', 'appops', 'get', pkg, op]);
-  const match = new RegExp(`^${op}: (\\w+)`, 'm').exec(out);
+  const match = new RegExp(String.raw`^${op}: (\w+)`, 'm').exec(out);
   return match ? match[1] : 'default';
 }
 

@@ -175,7 +175,7 @@ export function mergeOriginal(raw, id, value) {
  * @returns {string}
  */
 export function dropOriginal(raw, id) {
-  return (raw || '').replace(new RegExp(`^${envKeyFor(id)}=.*\\n?`, 'm'), '');
+  return (raw || '').replace(new RegExp(String.raw`^${envKeyFor(id)}=.*\n?`, 'm'), '');
 }
 
 /** @returns {Object<string, string>} */
