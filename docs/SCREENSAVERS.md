@@ -18,9 +18,11 @@
 | `nebula-drift` | Nebula Drift | `com.jeremykenedy.nebuladrift` | [jeremykenedy/nebula-drift](https://github.com/jeremykenedy/nebula-drift) | Animated nebula clouds with adjustable structure, color, density, stars and meteors |
 | `vortex-spiral` | Vortex Spiral | `com.jeremykenedy.vortexspiral` | [jeremykenedy/vortex-spiral](https://github.com/jeremykenedy/vortex-spiral) | Animated spiral ribbons with adjustable arms, winding, color, brightness and motion |
 | `signal-rain` | Signal Rain | `com.jeremykenedy.signalrain` | [jeremykenedy/signal-rain](https://github.com/jeremykenedy/signal-rain) | Luminous abstract digital rain with adjustable streams, colors and motion |
+| `retro-flight` | Retro Flight | `com.jeremykenedy.retroflight` | [jeremykenedy/retro-flight](https://github.com/jeremykenedy/retro-flight) | Continuous perspective flight through an original procedural star field |
+| `pipeworks-dream` | Pipeworks Dream | `com.jeremykenedy.pipeworksdream` | [jeremykenedy/pipeworks-dream](https://github.com/jeremykenedy/pipeworks-dream) | Continuously growing geometric pipes with adjustable density, speed, palette and glow |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral and Signal Rain are original projects.
+README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight and Pipeworks Dream are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
