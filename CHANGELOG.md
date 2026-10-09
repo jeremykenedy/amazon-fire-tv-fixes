@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.2.2] - 2026-10-08
+
+### Added in 3.2.2
+
+- Seven new screensavers as optional installs in `firetv-screensavers`: Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade and Blue Meridian, with screenshots in the README.
+- A [project site](https://jeremykenedy.github.io/fire-tv-toolkit/), built from the README and docs and deployed on every push to `main`.
+
+### Changed in 3.2.2
+
+- Images optimized.
+
 ## [3.2.1] - 2026-10-08
 
 ### Added in 3.2.1
@@ -79,6 +90,7 @@ more than fixes.
 
 - The Alexa deep-sleep fix and ad-free screensavers, each with a guided installer and a standalone command.
 
+[3.2.2]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.2
 [3.2.1]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.1
 [3.2.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/jeremykenedy/fire-tv-toolkit/releases/tag/v3.1.0

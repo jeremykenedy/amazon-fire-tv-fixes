@@ -63,7 +63,7 @@ so you can run just the part you need later.
 ## Features
 
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
-- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift or Rain on Glass, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
+- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade or Blue Meridian, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **On-TV screensaver picker**: a Screensavers tile on the TV for switching the screensaver from the couch, since Fire OS Settings only offers Amazon's.
@@ -76,7 +76,7 @@ so you can run just the part you need later.
 
 ## Screenshots
 
-Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift and Rain on Glass use the screenshots from their own repositories. Select any screenshot to see it full size.
+Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade and Blue Meridian use the screenshots from their own repositories. Select any screenshot to see it full size.
 
 ### The home screen and the on-TV picker
 
@@ -97,6 +97,8 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Jellyfish Drif
     <a href="docs/screenshots/screensaver-neon-corridor.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-neon-corridor-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-neon-corridor-tablet.jpg 2x"><img src="docs/screenshots/screensaver-neon-corridor.jpg" alt="Neon Corridor" title="Neon Corridor"></picture></a>
     <a href="docs/screenshots/screensaver-starfield-drift.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-starfield-drift-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-starfield-drift-tablet.jpg 2x"><img src="docs/screenshots/screensaver-starfield-drift.jpg" alt="Starfield Drift" title="Starfield Drift"></picture></a>
     <a href="docs/screenshots/screensaver-rain-on-glass.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-rain-on-glass-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-rain-on-glass-tablet.jpg 2x"><img src="docs/screenshots/screensaver-rain-on-glass.jpg" alt="Rain on Glass" title="Rain on Glass"></picture></a>
+    <a href="docs/screenshots/screensaver-rainforest-cascade.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-rainforest-cascade-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-rainforest-cascade-tablet.jpg 2x"><img src="docs/screenshots/screensaver-rainforest-cascade.jpg" alt="Rainforest Cascade" title="Rainforest Cascade"></picture></a>
+    <a href="docs/screenshots/screensaver-blue-meridian.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-blue-meridian-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-blue-meridian-tablet.jpg 2x"><img src="docs/screenshots/screensaver-blue-meridian.jpg" alt="Blue Meridian" title="Blue Meridian"></picture></a>
     <a href="docs/screenshots/screensaver-snoozy.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-snoozy-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-snoozy-tablet.jpg 2x"><img src="docs/screenshots/screensaver-snoozy.jpg" alt="Snoozy" title="Snoozy"></picture></a>
     <a href="docs/screenshots/screensaver-androsaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-androsaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-androsaver-tablet.jpg 2x"><img src="docs/screenshots/screensaver-androsaver.jpg" alt="AndroSaver" title="AndroSaver"></picture></a>
     <a href="docs/screenshots/screensaver-colors.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-colors-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-colors-tablet.jpg 2x"><img src="docs/screenshots/screensaver-colors.jpg" alt="Colors, built into the TV" title="Colors, built into the TV"></picture></a>
