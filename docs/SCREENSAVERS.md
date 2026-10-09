@@ -7,9 +7,10 @@
 | `snoozy` | Snoozy | `com.overdevs.snoozy` | [jeremykenedy/Snoozy](https://github.com/jeremykenedy/Snoozy) | Animated Snoopy screensaver |
 | `aquarium-live` | Aquarium Live | `com.jeremykenedy.aquariumlive` | [jeremykenedy/aquarium-live](https://github.com/jeremykenedy/aquarium-live) | A living aquarium drawn in real time: four scenes, six looks, day and night |
 | `aquarium-4k` | Aquarium 4K | `com.jeremykenedy.firetv.aquarium` | [jeremykenedy/fire-tv-aquarium](https://github.com/jeremykenedy/fire-tv-aquarium) | Offline 4K aquarium footage with custom fish, sea life and backgrounds |
+| `jellyfish-drift` | Jellyfish Drift | `com.jeremykenedy.jellyfishdrift` | [jeremykenedy/jellyfish-drift](https://github.com/jeremykenedy/jellyfish-drift) | Animated jellyfish with adjustable water, density, motion, species and light rays |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live and Aquarium 4K are original projects.
+README). Aquarium Live, Aquarium 4K and Jellyfish Drift are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
