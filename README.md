@@ -261,6 +261,8 @@ fire-tv-toolkit/
 
 ## Documentation
 
+Every guide is also on the project site: [jeremykenedy.github.io/fire-tv-toolkit](https://jeremykenedy.github.io/fire-tv-toolkit/).
+
 | Guide | What it covers |
 |-------|----------------|
 | [Commands](docs/COMMANDS.md) | Every command and every flag |
