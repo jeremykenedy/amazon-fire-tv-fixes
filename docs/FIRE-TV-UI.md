@@ -1,6 +1,6 @@
 # Fire TV UI
 
-Fire TV UI is a separate launcher maintained at [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui). It needs Android 8.1 / API 27 or newer. The toolkit downloads its signed APK from this toolkit's public release and verifies the published SHA-256 before installation. The GUI source repository can remain private; installing the published APK does not require GitHub authentication.
+Fire TV UI is a separate launcher maintained in the private [jeremykenedy/fire-tv-ui](https://github.com/jeremykenedy/fire-tv-ui) repository. It needs Android 8.1 / API 27 or newer. Its final APK distribution is pending device verification. Until a download is published for the installer, supply a local signed APK and its published SHA-256 with `--apk` and `--sha256`. The toolkit does not upload that APK or your backups.
 
 ## Guided installer
 
@@ -9,6 +9,7 @@ Run `firetv-ui` or select Fire TV UI in the main menu. Choose installation, remo
 The simple setup supplies the saved blue layout, app rows, sorting, and visibility choices. It excludes personal weather locations and widget contents. Keeping settings preserves the current installation. Restoring the TV backup or importing a file uses your own saved layout instead.
 
 ```bash
+firetv-ui --install --apk=/path/to/fire-tv-ui-1.0.0.apk --sha256=PUBLISHED_SHA256 --setup=simple --home=fire-tv-ui
 firetv-ui
 firetv-ui --install --setup=simple --home=fire-tv-ui --protection=on
 firetv-ui --install --setup=keep --home=keep --screensaver=keep --yes
@@ -27,7 +28,7 @@ If the toolkit's Home Redirect helper is already installed, the installer update
 | `--install` | Install or update the launcher. |
 | `--setup` | `keep` (default), `simple`, `tv`, or `import`. |
 | `--home` | `keep` (default), `fire-tv-ui`, or `amazon`. |
-| `--screensaver` | `keep` (default), `on`, `off`, or an installed screensaver ID: `aerial`, `androsaver`, `snoozy`, `aquarium-live`, `aquarium-4k`, `jellyfish-drift`, `firefly-grove`, `neon-corridor`, `starfield-drift`, `rain-on-glass`, `rainforest-cascade`, `blue-meridian`, `colors`, `amazon`. |
+| `--screensaver` | `keep` (default), `on`, `off`, or an installed screensaver ID from the [screensaver registry](SCREENSAVERS.md), including `colors` and `amazon`. |
 | `--protection` | `keep` (default), `on`, or `off`. Protects Home, screensaver selection, enabled state, and timers against reversion. |
 | `--apk` and `--sha256` | Install a local signed APK with its required SHA-256. |
 | `--uninstall` | Save settings, return Home to Amazon, and remove Fire TV UI. |
