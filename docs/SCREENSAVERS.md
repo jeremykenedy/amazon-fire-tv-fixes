@@ -20,9 +20,10 @@
 | `signal-rain` | Signal Rain | `com.jeremykenedy.signalrain` | [jeremykenedy/signal-rain](https://github.com/jeremykenedy/signal-rain) | Luminous abstract digital rain with adjustable streams, colors and motion |
 | `retro-flight` | Retro Flight | `com.jeremykenedy.retroflight` | [jeremykenedy/retro-flight](https://github.com/jeremykenedy/retro-flight) | Continuous perspective flight through an original procedural star field |
 | `pipeworks-dream` | Pipeworks Dream | `com.jeremykenedy.pipeworksdream` | [jeremykenedy/pipeworks-dream](https://github.com/jeremykenedy/pipeworks-dream) | Continuously growing geometric pipes with adjustable density, speed, palette and glow |
+| `aqua-surface` | Aqua Surface Drift | `com.jeremykenedy.aquasurfacedrift` | [jeremykenedy/aqua-surface-drift](https://github.com/jeremykenedy/aqua-surface-drift) | Animated water with adjustable environment, lighting, ripples, motion and view |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight and Pipeworks Dream are original projects.
+README). Aquarium Live, Aquarium 4K, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream and Aqua Surface Drift are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it

@@ -9,6 +9,7 @@
 - Fire TV UI in the main menu, launcher selection, and full revert options.
 - Persistent TV Downloads backups with validated computer import/export and private computer files. Uninstall keeps the TV backup unless deletion is explicitly selected.
 - Add Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, and Pipeworks Dream to the guided screensaver installer and selector.
+- Add Aqua Surface Drift to the guided installer and selector, with a verified screenshot in the README gallery.
 
 ### Fixed in 3.3.0
 
