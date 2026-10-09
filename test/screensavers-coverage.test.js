@@ -31,6 +31,7 @@ const SIGNAL_RAIN = SCREENSAVERS.find((s) => s.id === 'signal-rain');
 const RETRO_FLIGHT = SCREENSAVERS.find((s) => s.id === 'retro-flight');
 const PIPEWORKS_DREAM = SCREENSAVERS.find((s) => s.id === 'pipeworks-dream');
 const AQUA_SURFACE = SCREENSAVERS.find((s) => s.id === 'aqua-surface');
+const CLOUD_DRIFT_CLOCK = SCREENSAVERS.find((s) => s.id === 'cloud-drift-clock');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -253,6 +254,17 @@ test('Aqua Surface Drift registry entry points to its released app and installer
   });
 });
 
+test('Cloud Drift Clock registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(CLOUD_DRIFT_CLOCK, {
+    id: 'cloud-drift-clock',
+    name: 'Cloud Drift Clock',
+    pkg: 'com.jeremykenedy.clouddriftclock',
+    dreamComponent: 'com.jeremykenedy.clouddriftclock/.CloudDreamService',
+    repo: 'jeremykenedy/cloud-drift-clock',
+    blurb: 'A moving cloudscape with an adjustable digital clock, sky palette, density, speed and motion. No ads, analytics or tracking.',
+  });
+});
+
 test('latestRelease asks for a pinned tag by name when one is given', async () => {
   const seen = [];
   const r = await withFetch(pkgFetch(ANDRO, { seen }), () => sv.latestRelease(ANDRO.repo, undefined, 'v 1/x'));
@@ -358,7 +370,7 @@ test('Twilight Hearth can be installed and selected through the CLI', async () =
   assert.equal(fake.readState().secure.screensaver_components, TWILIGHT_HEARTH.dreamComponent);
 });
 
-for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM]) {
+for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM, CLOUD_DRIFT_CLOCK]) {
   test(`${saver.name} can be installed and selected through the CLI`, async () => {
     const installed = await captured(() => withFetch(
       pkgFetch(saver),

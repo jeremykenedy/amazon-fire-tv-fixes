@@ -47,6 +47,14 @@ export const SCREENSAVERS = [
     blurb: 'Offline 4K aquarium footage with custom fish, sea life and backgrounds. No ads.',
   },
   {
+    id: 'cloud-drift-clock',
+    name: 'Cloud Drift Clock',
+    pkg: 'com.jeremykenedy.clouddriftclock',
+    dreamComponent: 'com.jeremykenedy.clouddriftclock/.CloudDreamService',
+    repo: 'jeremykenedy/cloud-drift-clock',
+    blurb: 'A moving cloudscape with an adjustable digital clock, sky palette, density, speed and motion. No ads, analytics or tracking.',
+  },
+  {
     id: 'jellyfish-drift',
     name: 'Jellyfish Drift',
     pkg: 'com.jeremykenedy.jellyfishdrift',

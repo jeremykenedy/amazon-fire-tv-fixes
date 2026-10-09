@@ -338,6 +338,14 @@ test('screensaver selection rolls back when enabling it is rejected', async () =
   assert.equal(fake.readState().secure.screensaver_enabled, '0');
 });
 
+test('Fire TV UI can select Cloud Drift Clock when it is installed', async () => {
+  const cloudDriftClock = UI_SCREENSAVERS.find((entry) => entry.id === 'cloud-drift-clock');
+  fake.setState({ installed: [cloudDriftClock.pkg], secure: { screensaver_components: 'old/Old', screensaver_enabled: '0' } });
+  await configureScreensaver(ip, cloudDriftClock.id);
+  assert.equal(fake.readState().secure.screensaver_components, cloudDriftClock.dreamComponent);
+  assert.equal(fake.readState().secure.screensaver_enabled, '1');
+});
+
 test('the global revert offers Fire TV UI removal with backup retention', () => {
   const options = buildLauncherRevertOptions({ home: FIRE_TV_UI.id, installed: [FIRE_TV_UI.id] });
   assert.deepEqual(options.map((option) => option.value), ['home', 'launcher:fire-tv-ui']);

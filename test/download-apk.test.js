@@ -255,6 +255,15 @@ test('private release asset URLs cannot send a token to another host, repository
   }
 });
 
+test('private releases reject an invalid GitHub asset API URL', async () => {
+  let requests = 0;
+  await assert.rejects(withToken(testToken, () => withFetch(async () => {
+    requests += 1;
+    return privateRelease('http://[');
+  }, () => downloadApk(privateEntry))), /valid release asset API URL/);
+  assert.equal(requests, 1, 'Only release metadata may be requested');
+});
+
 test('private release access failures explain authentication without exposing the token', async () => {
   await assert.rejects(withToken(testToken, () => withFetch(async () => new Response(null, { status: 404 }),
     () => downloadApk(privateEntry))), (error) => /repository access/.test(error.message) && !error.message.includes(testToken));
