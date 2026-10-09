@@ -32,6 +32,7 @@ const RETRO_FLIGHT = SCREENSAVERS.find((s) => s.id === 'retro-flight');
 const PIPEWORKS_DREAM = SCREENSAVERS.find((s) => s.id === 'pipeworks-dream');
 const AQUA_SURFACE = SCREENSAVERS.find((s) => s.id === 'aqua-surface');
 const CLOUD_DRIFT_CLOCK = SCREENSAVERS.find((s) => s.id === 'cloud-drift-clock');
+const EARTHBOUND_ORBIT = SCREENSAVERS.find((s) => s.id === 'earthbound-orbit');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -262,6 +263,17 @@ test('Cloud Drift Clock registry entry points to its released app and installer 
     dreamComponent: 'com.jeremykenedy.clouddriftclock/.CloudDreamService',
     repo: 'jeremykenedy/cloud-drift-clock',
     blurb: 'A moving cloudscape with an adjustable digital clock, sky palette, density, speed and motion. No ads, analytics or tracking.',
+  });
+});
+
+test('Earthbound Orbit registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(EARTHBOUND_ORBIT, {
+    id: 'earthbound-orbit',
+    name: 'Earthbound Orbit',
+    pkg: 'com.jeremykenedy.earthboundorbit',
+    dreamComponent: 'com.jeremykenedy.earthboundorbit/.EarthboundOrbitDreamService',
+    repo: 'jeremykenedy/earthbound-orbit',
+    blurb: 'A continuously rotating Earth with adjustable atmosphere, star density and camera movement.',
   });
 });
 

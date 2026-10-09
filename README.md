@@ -64,7 +64,7 @@ so you can run just the part you need later.
 ## Features
 
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
-- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, or Aqua Surface Drift, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
+- **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, or Earthbound Orbit, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
 - **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
 - **Fire TV UI**: install a fully customizable launcher with on-TV screensaver previews, timer controls, memory and storage usage, persistent backups, and local settings protection. Its installer collects all choices before making changes.
@@ -102,6 +102,7 @@ Every screensaver here is an optional install from its own repository. Each one 
 | [Retro Flight](https://github.com/jeremykenedy/retro-flight) | `retro-flight` | Continuous perspective flight through an original procedural star field |
 | [Pipeworks Dream](https://github.com/jeremykenedy/pipeworks-dream) | `pipeworks-dream` | Continuously growing geometric pipes with adjustable density, speed, palette and glow |
 | [Aqua Surface Drift](https://github.com/jeremykenedy/aqua-surface-drift) | `aqua-surface` | Animated water with adjustable environment, lighting, ripples, motion and view |
+| [Earthbound Orbit](https://github.com/jeremykenedy/earthbound-orbit) | `earthbound-orbit` | A rotating Earth with adjustable atmosphere, star density and camera movement |
 
 These come with the TV and can be made active with `screensaver --set=<id>`:
 
@@ -117,7 +118,7 @@ screensaver --set=jellyfish-drift
 
 ## Screenshots
 
-Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream and Aqua Surface Drift use screenshots from their own repositories. Select any screenshot to see it full size.
+Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift and Earthbound Orbit use screenshots from their own repositories. Select any screenshot to see it full size.
 
 ### The home screen and the on-TV picker
 
@@ -148,6 +149,7 @@ Captured on an Insignia Fire TV Edition TV and in macOS Terminal. Cloud Drift Cl
     <a href="docs/screenshots/screensaver-retro-flight.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-retro-flight-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-retro-flight-tablet.jpg 2x"><img src="docs/screenshots/screensaver-retro-flight.jpg" alt="Retro Flight" title="Retro Flight"></picture></a>
     <a href="docs/screenshots/screensaver-pipeworks-dream.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-pipeworks-dream-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-pipeworks-dream-tablet.jpg 2x"><img src="docs/screenshots/screensaver-pipeworks-dream.jpg" alt="Pipeworks Dream" title="Pipeworks Dream"></picture></a>
     <a href="docs/screenshots/screensaver-aqua-surface-drift.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-aqua-surface-drift-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-aqua-surface-drift-tablet.jpg 2x"><img src="docs/screenshots/screensaver-aqua-surface-drift.jpg" alt="Aqua Surface Drift" title="Aqua Surface Drift"></picture></a>
+    <a href="docs/screenshots/screensaver-earthbound-orbit.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-earthbound-orbit-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-earthbound-orbit-tablet.jpg 2x"><img src="docs/screenshots/screensaver-earthbound-orbit.jpg" alt="Earthbound Orbit" title="Earthbound Orbit"></picture></a>
     <a href="docs/screenshots/screensaver-snoozy.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-snoozy-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-snoozy-tablet.jpg 2x"><img src="docs/screenshots/screensaver-snoozy.jpg" alt="Snoozy" title="Snoozy"></picture></a>
     <a href="docs/screenshots/screensaver-androsaver.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-androsaver-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-androsaver-tablet.jpg 2x"><img src="docs/screenshots/screensaver-androsaver.jpg" alt="AndroSaver" title="AndroSaver"></picture></a>
     <a href="docs/screenshots/screensaver-colors.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/screensaver-colors-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/screensaver-colors-tablet.jpg 2x"><img src="docs/screenshots/screensaver-colors.jpg" alt="Colors, built into the TV" title="Colors, built into the TV"></picture></a>
