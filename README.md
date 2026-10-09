@@ -33,6 +33,7 @@
 
 - [What it does](#what-it-does)
 - [Features](#features)
+- [Available screensavers](#available-screensavers)
 - [Screenshots](#screenshots)
 - [Platform support](#platform-support)
 - [Requirements](#requirements)
@@ -74,6 +75,37 @@ so you can run just the part you need later.
 - **Full revert**: put the TV back how it was, item by item, then remove the tool from your computer.
 - **Script friendly**: every command takes flags, answers `--help`, and exits non-zero on failure.
 - **Safe by default**: nothing changes until you confirm, Esc cancels any prompt, and risky steps need a typed confirmation.
+
+## Available screensavers
+
+Every screensaver here is an optional install from its own repository. Each one was checked for ads, analytics and tracking before it was added, and every download is verified against its published SHA-256 (see [Screensavers](docs/SCREENSAVERS.md)).
+
+| Screensaver | Install id | What it is |
+|-------------|------------|------------|
+| [Aerial Views](https://github.com/jeremykenedy/AerialViews) (default) | `aerial` | Aerial drone footage, the Apple TV screensaver look |
+| [AndroSaver](https://github.com/jeremykenedy/androsaver) | `androsaver` | Photo slideshow or music visualizer |
+| [Snoozy](https://github.com/jeremykenedy/Snoozy) | `snoozy` | Animated Snoopy screensaver |
+| [Aquarium Live](https://github.com/jeremykenedy/aquarium-live) | `aquarium-live` | A living aquarium drawn in real time. Four scenes, six looks, day and night |
+| [Aquarium 4K](https://github.com/jeremykenedy/fire-tv-aquarium) | `aquarium-4k` | Offline 4K aquarium footage with custom fish, sea life and backgrounds |
+| [Jellyfish Drift](https://github.com/jeremykenedy/jellyfish-drift) | `jellyfish-drift` | Animated jellyfish with adjustable water, density, motion, species and light rays |
+| [Firefly Grove](https://github.com/jeremykenedy/firefly-grove) | `firefly-grove` | Animated fireflies in a quiet grove with adjustable density, motion and color |
+| [Neon Corridor](https://github.com/jeremykenedy/neon-corridor) | `neon-corridor` | A procedural neon tunnel with adjustable density, speed, color, brightness and geometry |
+| [Starfield Drift](https://github.com/jeremykenedy/starfield-drift) | `starfield-drift` | A procedural animated starfield with adjustable density, speed, color, luminance and meteors |
+| [Rain on Glass](https://github.com/jeremykenedy/rain-on-glass) | `rain-on-glass` | Animated rainfall on soft or crisp glass with adjustable lighting, density, speed and distant lights |
+| [Rainforest Cascade](https://github.com/jeremykenedy/rainforest-cascade) | `rainforest-cascade` | An animated waterfall with adjustable surroundings, day or night, width, flow, mist and sunlight shimmer |
+| [Blue Meridian](https://github.com/jeremykenedy/blue-meridian) | `blue-meridian` | A rotating Earth with moving camera, atmosphere, night lights, clouds and adjustable stars |
+
+These come with the TV and can be made active with `screensaver --set=<id>`:
+
+| Screensaver | Id | What it is |
+|-------------|----|------------|
+| Colors | `colors` | Android's built-in slow color wash |
+| Amazon with Ads | `amazon` | Amazon's own screensaver, which shows ads |
+
+```bash
+firetv-screensavers --install=jellyfish-drift,blue-meridian --yes
+screensaver --set=jellyfish-drift
+```
 
 ## Screenshots
 

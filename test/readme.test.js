@@ -9,3 +9,9 @@ test('README mentions every command the package installs', () => {
   const missing = COMMANDS.map((c) => c.name).filter((name) => !readme.includes(name));
   assert.deepEqual(missing, []);
 });
+
+test('README lists every screensaver with a link to its repository', async () => {
+  const { SCREENSAVERS } = await import('../src/screensaver-registry.js');
+  const missing = SCREENSAVERS.filter((s) => !readme.includes(`[${s.name}](https://github.com/${s.repo})`) || !readme.includes(`\`${s.id}\``));
+  assert.deepEqual(missing.map((s) => s.id), []);
+});
