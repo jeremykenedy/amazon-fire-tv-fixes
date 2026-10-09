@@ -62,6 +62,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/firefly-grove',
     blurb: 'Animated fireflies in a quiet grove with adjustable density, motion and color. No ads, analytics or tracking.',
   },
+  {
+    id: 'neon-corridor',
+    name: 'Neon Corridor',
+    pkg: 'com.jeremykenedy.neoncorridor',
+    dreamComponent: 'com.jeremykenedy.neoncorridor/.NeonDreamService',
+    repo: 'jeremykenedy/neon-corridor',
+    blurb: 'A procedural neon tunnel with adjustable density, speed, color, brightness and geometry. No ads, analytics or tracking.',
+  },
 ];
 
 /**
