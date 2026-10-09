@@ -47,7 +47,7 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. See [Guard](GUARD.md). | `--check` puts back anything Amazon changed and reports it, `--off` turns the guard off, `--yes` skips the confirmation |
+| `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. See [Guard](GUARD.md). | `--check` puts back anything Amazon changed and reports it, `--off` turns the guard off, `--unlock=screensaver` / `--lock=screensaver` stop or restart guarding which screensaver is active, `--yes` skips the confirmation |
 
 ## Home screen
 
@@ -83,6 +83,7 @@ screensaver --set=aquarium-4k
 optimize --yes
 guard --yes
 guard --check
+guard --unlock=screensaver
 launcher --install --use=at4k
 firetv-timeout-sleep --minutes=30 --yes
 firetv-revert --all --force

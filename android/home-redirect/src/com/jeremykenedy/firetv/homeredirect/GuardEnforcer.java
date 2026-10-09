@@ -83,8 +83,18 @@ final class GuardEnforcer {
      * keeps the new value instead of putting the old one back.
      */
     static void remember(Context context, String setting, String value) {
-        if (isLocked(context) && Guard.isGuarded(setting)) {
+        if (isLocked(context) && prefs(context).contains(setting)) {
             prefs(context).edit().putString(setting, value).apply();
+        }
+    }
+
+    /**
+     * Stops guarding one setting until the next lock, so it can be changed
+     * from anywhere.
+     */
+    static void forget(Context context, String setting) {
+        if (Guard.isGuarded(setting)) {
+            prefs(context).edit().remove(setting).apply();
         }
     }
 

@@ -43,12 +43,12 @@ after(() => {
 });
 
 test('the guard state round-trips through .env and is removed when off', () => {
-  const state = { on: true, disabled: [EASY], background: { [OTA]: 'default' } };
+  const state = { on: true, disabled: [EASY], background: { [OTA]: 'default' }, unlocked: ['screensaver'] };
   const raw = mergeGuardEnv('FIRE_TV_IP=1.2.3.4\n', state);
   assert.deepEqual(parseGuardEnv(raw), state);
   assert.deepEqual(parseGuardEnv(mergeGuardEnv(null, state)), state);
   assert.equal(mergeGuardEnv(raw, { on: false, disabled: [], background: {} }), 'FIRE_TV_IP=1.2.3.4\n');
-  assert.deepEqual(parseGuardEnv(null), { on: false, disabled: [], background: {} });
+  assert.deepEqual(parseGuardEnv(null), { on: false, disabled: [], background: {}, unlocked: [] });
 });
 
 test('versionAtLeast and parseCheck read versions and guard replies', () => {
@@ -71,7 +71,7 @@ test('turning the guard on locks the TV, disables the updaters it can, and holds
   assert.equal(s.appops[OTA].RUN_ANY_IN_BACKGROUND, 'ignore');
   assert.equal(s.appops[OVERRIDE].RUN_ANY_IN_BACKGROUND, 'ignore');
   assert.deepEqual(s.grants[HOME_REDIRECT.pkg], ['android.permission.WRITE_SECURE_SETTINGS']);
-  assert.deepEqual(guardState(), { on: true, disabled: [EASY], background: { [OTA]: 'default', [OVERRIDE]: 'default' } });
+  assert.deepEqual(guardState(), { on: true, disabled: [EASY], background: { [OTA]: 'default', [OVERRIDE]: 'default' }, unlocked: [] });
 });
 
 test('with the guard on, the toolkit tells it about guarded settings before changing them', async () => {
@@ -126,7 +126,7 @@ test('turning the guard off unlocks the TV and undoes only what the guard did', 
   assert.equal(s.guard.locked, false);
   assert.deepEqual(s.disabled, [FORCED]);
   assert.equal(s.appops[OTA].RUN_ANY_IN_BACKGROUND, undefined);
-  assert.deepEqual(guardState(), { on: false, disabled: [], background: {} });
+  assert.deepEqual(guardState(), { on: false, disabled: [], background: {}, unlocked: [] });
   assert.doesNotMatch(fs.readFileSync(fake.envFile, 'utf8'), /FIRE_TV_GUARD/);
 });
 
@@ -214,4 +214,35 @@ test('firetv-revert reports a guard that would not turn off', async () => {
   const { result, out } = await captured(() => uninstallEverything(IP, { all: true, force: true }));
   assert.equal(result, 'failed');
   assert.match(out, /The guard could not be fully turned off/);
+});
+
+test('guard --unlock=screensaver frees the screensaver, keeps it free on a re-lock, and --lock guards it again', async () => {
+  const off = await captured(() => manageGuard(IP, { unlock: 'screensaver' }));
+  assert.match(off.out, /The guard is off, so nothing is locked/);
+
+  await captured(() => turnGuardOn(IP));
+  const unlocked = await captured(() => manageGuard(IP, { unlock: 'screensaver' }));
+  assert.match(unlocked.out, /✔ Left the screensaver unlocked/);
+  assert.match(unlocked.out, /The screensaver is unlocked/);
+  assert.deepEqual(fake.readState().guard.forgotten, ['secure/screensaver_components', 'secure/screensaver_default_component']);
+  assert.deepEqual(guardState().unlocked, ['screensaver']);
+  await captured(() => manageGuard(IP, { unlock: 'screensaver' }));
+  assert.deepEqual(guardState().unlocked, ['screensaver']);
+
+  await captured(() => turnGuardOn(IP));
+  assert.equal(fake.readState().guard.forgotten.length, 2, 'a re-lock leaves the screensaver unlocked');
+
+  const locked = await captured(() => manageGuard(IP, { lock: 'screensaver' }));
+  assert.match(locked.out, /The screensaver is locked again/);
+  assert.deepEqual(fake.readState().guard.forgotten, []);
+  assert.deepEqual(guardState().unlocked, []);
+});
+
+test('an unlock the TV does not confirm is reported and not saved', async () => {
+  await captured(() => turnGuardOn(IP));
+  fake.setState({ forgetReply: 'unknown' });
+  const r = await captured(() => manageGuard(IP, { unlock: 'screensaver' }));
+  assert.match(r.out, /✖ Left the screensaver unlocked/);
+  assert.deepEqual(guardState().unlocked, []);
+  assert.equal(process.exitCode, 1);
 });

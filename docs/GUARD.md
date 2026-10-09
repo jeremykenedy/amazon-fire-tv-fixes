@@ -10,6 +10,8 @@ guard            # explain, confirm, then turn it on
 guard --yes      # turn it on without asking
 guard --check    # put back anything Amazon changed, and say what it was
 guard --off      # turn it off and undo what it did
+guard --unlock=screensaver   # stop guarding which screensaver is active
+guard --lock=screensaver     # guard it again, as it is now
 ```
 
 `start` and `update` also offer it, after the optimize step.
@@ -38,6 +40,15 @@ It puts a setting back:
 Change settings with this toolkit (any command) or the Screensavers tile on the
 TV, and the guard keeps your new value. A change made in Fire OS Settings is
 put back, because to the guard it looks like Amazon.
+
+## Unlocking the screensaver
+
+`guard --unlock=screensaver` stops guarding which screensaver is active and
+the fallback screensaver (`screensaver_components` and
+`screensaver_default_component`), so any app or Fire OS Settings can change
+them. Everything else stays guarded, including the screensaver switches and
+timeouts. It stays unlocked when the guard is turned on again, until
+`guard --lock=screensaver` locks it as it is at that moment.
 
 ## Amazon's updates
 
