@@ -18,6 +18,7 @@ const ANDROSAVER = SCREENSAVERS.find((s) => s.id === 'androsaver');
 const COLORS = BUILT_IN_SCREENSAVERS.find((s) => s.id === 'colors');
 const AERIAL_ENTRY = SCREENSAVERS.find((s) => s.id === 'aerial');
 const JELLYFISH_DRIFT = SCREENSAVERS.find((s) => s.id === 'jellyfish-drift');
+const FIREFLY_GROVE = SCREENSAVERS.find((s) => s.id === 'firefly-grove');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -94,6 +95,17 @@ test('Jellyfish Drift registry entry points to its released app and installer re
     dreamComponent: 'com.jeremykenedy.jellyfishdrift/.JellyfishDreamService',
     repo: 'jeremykenedy/jellyfish-drift',
     blurb: 'Animated jellyfish with adjustable water, density, motion, species and light rays. No ads, analytics or tracking.',
+  });
+});
+
+test('Firefly Grove registry entry points to its released app and installer repository', () => {
+  assert.deepEqual(FIREFLY_GROVE, {
+    id: 'firefly-grove',
+    name: 'Firefly Grove',
+    pkg: 'com.jeremykenedy.fireflygrove',
+    dreamComponent: 'com.jeremykenedy.fireflygrove/.FireflyDreamService',
+    repo: 'jeremykenedy/firefly-grove',
+    blurb: 'Animated fireflies in a quiet grove with adjustable density, motion and color. No ads, analytics or tracking.',
   });
 });
 
