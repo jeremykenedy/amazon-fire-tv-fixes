@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.8.0] - 2026-10-09
+
+### Added in 3.8.0
+
+- Add Helios Lightfield to the guided screensaver installer and selector, with its verified release checksum and README preview. It installs Helios Lightfield 1.0.1, which runs at about 55 frames per second on a 1080p Fire TV instead of about 8.
+
+### Fixed in 3.8.0
+
+- The command reference now lists every screensaver id for `screensaver --set`, including Cloud Drift Clock, Perseid Passage, Split-Flap Drift, Canopy Drift, Contour Flow, Skyburst Nocturne and Pulse Circuit, which were missing.
+
+### Upgrade
+
+Run `git pull` on the Toolkit checkout, then `node setup.js` to refresh command links. Install with `firetv-screensavers --install=helios-lightfield --yes` and activate it with `screensaver --set=helios-lightfield`.
+
 ## [3.7.0] - 2026-10-09
 
 ### Added in 3.7.0

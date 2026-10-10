@@ -222,6 +222,14 @@ export const SCREENSAVERS = [
     repo: 'jeremykenedy/pulse-circuit',
     blurb: 'Animated geometric patterns with adjustable arena, shape density, geometry, motion, palette, pulse rhythm and light intensity.',
   },
+  {
+    id: 'helios-lightfield',
+    name: 'Helios Lightfield',
+    pkg: 'com.jeremykenedy.helioslightfield',
+    dreamComponent: 'com.jeremykenedy.helioslightfield/.HeliosLightfieldDreamService',
+    repo: 'jeremykenedy/helios-lightfield',
+    blurb: 'Animated luminous filaments looping around a dark field, with adjustable solar or polar palette, strand density, motion speed and glow.',
+  },
 ];
 
 /**

@@ -120,6 +120,14 @@ test('Fire TV UI Home replaces conflicting launcher services and preserves unrel
     ['reader/Service', AT4K.service, HOME_REDIRECT.service]);
 });
 
+test('Fire TV UI Home is refused and nothing changes when Fire TV UI is not installed', async () => {
+  fake.setState({ installed: [AT4K.pkg, HOME_REDIRECT.pkg],
+    secure: { [SERVICES]: `reader/Service:${AT4K.service}:${HOME_REDIRECT.service}`, accessibility_enabled: '1' } });
+  assert.equal(await useHome(ip, FIRE_TV_UI.id), false);
+  assert.equal(fake.readState().secure[SERVICES], `reader/Service:${AT4K.service}:${HOME_REDIRECT.service}`);
+  assert.equal(fake.readState().secure.accessibility_enabled, '1');
+});
+
 test('a partially rejected Home change restores the previous services and enabled setting', async () => {
   fake.setState({ installed: [FIRE_TV_UI.pkg], secure: { [SERVICES]: 'reader/Service', accessibility_enabled: '0' },
     dropWrites: ['accessibility_enabled'] });
