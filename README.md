@@ -1,6 +1,8 @@
 <p align="center">
     <picture>
+        <source media="(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)" srcset="art/banner-still-dark.svg">
         <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.svg">
+        <source media="(prefers-reduced-motion: reduce)" srcset="art/banner-still-light.svg">
         <source media="(prefers-color-scheme: light)" srcset="art/banner-light.svg">
         <img src="art/banner-light.svg" alt="Fire TV Toolkit" width="800">
     </picture>
