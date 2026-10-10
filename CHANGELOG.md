@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.9.0] - 2026-10-09
+
+### Added in 3.9.0
+
+- LTvLauncher as a second optional home screen beside AT4K. `launcher --install-ltv` installs it with Home Redirect, `launcher --use=ltv` sends the Home button to it, and the guided menu, `firetv-revert` and `uninstall` cover it the same way as AT4K. It is installed unmodified from its own release, pinned by tag and SHA-256, and has no internet permission.
+- Home Redirect 1.2.5 opens either AT4K or LTvLauncher, chosen with its new `home` command. It still opens AT4K unless told otherwise.
+
+### Changed in 3.9.0
+
+- `firetv-revert` and `uninstall` no longer remove AT4K or LTvLauncher unless you tick them. Removing a launcher deletes its home screen layout, so they start unticked and `firetv-revert --all` leaves them installed.
+
+### Upgrade
+
+Run `git pull` on the Toolkit checkout, then `node setup.js` to refresh command links. To try LTvLauncher, run `launcher --install-ltv --use=ltv`; `launcher --use=at4k` switches back.
+
 ## [3.8.0] - 2026-10-09
 
 ### Added in 3.8.0

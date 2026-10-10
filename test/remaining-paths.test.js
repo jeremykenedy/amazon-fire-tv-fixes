@@ -7,7 +7,7 @@ import { installFakeAdb, captured } from './helpers/fake-adb.js';
 import { drive, DOWN, ENTER } from './helpers/drive.js';
 import { fakeBinDir } from './helpers/setup-fakes.js';
 import { launcherFetch } from './helpers/launcher-fakes.js';
-import { AT4K, HOME_REDIRECT } from '../src/launcher-registry.js';
+import { AT4K, LTV, HOME_REDIRECT } from '../src/launcher-registry.js';
 import { setEnvPathForTesting, saveIp, getEnvPath } from '../src/device-config.js';
 import { parseBaselineFromEnv } from '../src/timeout-config.js';
 import { findTimeoutById, getTimeoutMs } from '../src/apply/timeouts.js';
@@ -174,6 +174,23 @@ test('the interactive revert warns about removing screensavers and reports a stu
   assert.match(r.out, /removes screensavers from the TV/);
   assert.match(r.out, /could not be removed/);
   assert.equal(r.code, 1, r.out);
+});
+
+test('the interactive revert keeps AT4K and LTvLauncher with their settings unless ticked', async () => {
+  installedEnv();
+  fake.setState({
+    installed: [AT4K.pkg, LTV.pkg, HOME_REDIRECT.pkg],
+    secure: { ...fake.readState().secure, enabled_accessibility_services: `${AT4K.service}:${HOME_REDIRECT.service}` },
+  });
+  const r = await drive('bin/firetv-revert.js', [], [
+    { expect: 'What should be reverted?', send: ENTER },
+    CONTINUE,
+    { expect: 'Type "yes"', send: `yes${ENTER}` },
+  ]);
+  assert.match(r.out, /Remove AT4K Launcher and its home screen settings from the TV/);
+  const s = fake.readState();
+  assert.ok(s.installed.includes(AT4K.pkg) && s.installed.includes(LTV.pkg), r.out);
+  assert.ok(!s.installed.includes(HOME_REDIRECT.pkg), r.out);
 });
 
 test('timeout readers handle a missing, unreadable or unreachable value', async () => {

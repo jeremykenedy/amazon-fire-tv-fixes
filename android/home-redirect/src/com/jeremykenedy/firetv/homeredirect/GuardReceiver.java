@@ -15,6 +15,7 @@ import android.content.Intent;
  * and for remember: --es setting secure/screensaver_components --es value X
  * and for forget: --es setting secure/screensaver_components
  * and for ADB debugging: --es cmd adb --es value on|off (no value just reports)
+ * and for the Home launcher: --es cmd home --es value at4k|ltv (no value just reports)
  */
 public class GuardReceiver extends BroadcastReceiver {
     static final String ACTION = "com.jeremykenedy.firetv.homeredirect.GUARD";
@@ -52,6 +53,15 @@ public class GuardReceiver extends BroadcastReceiver {
                 AdbKeeper.setKept(context, "on".equals(value));
             }
             setResultData("adb=" + (AdbKeeper.isKept(context) ? "kept" : "released"));
+        } else if ("home".equals(cmd)) {
+            String value = intent.getStringExtra("value");
+            if (HomeTarget.isKnown(value)) {
+                HomeTargetStore.set(context, value);
+            } else if (value != null) {
+                setResultData("unknown");
+                return;
+            }
+            setResultData("home=" + HomeTargetStore.get(context));
         } else {
             setResultData("unknown");
         }

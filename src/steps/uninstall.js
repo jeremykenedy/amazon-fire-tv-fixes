@@ -14,7 +14,9 @@ import { markFailed } from '../exit-status.js';
 import { setTimeoutMs } from '../apply/timeouts.js';
 import { probeTimeouts, msToLabel } from './timeouts-shared.js';
 import { launcherState, useHome, removeLauncherApp } from '../apply/launcher.js';
-import { LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
+import { AT4K, LTV, HOME_REDIRECT, FIRE_TV_UI } from '../launcher-registry.js';
+
+const REMOVABLE_LAUNCHER_APPS = [AT4K, LTV, HOME_REDIRECT];
 import { uninstallFireTvUi } from '../apply/fire-tv-ui.js';
 import { savedOriginals, revertOptimizations } from '../apply/optimize.js';
 import { guardState } from '../guard-config.js';
@@ -43,17 +45,21 @@ export function buildTimeoutRevertOptions(probed) {
 }
 
 /**
- * Pure: revert options for the optional AT4K home screen.
- * @param {{home: 'at4k' | 'amazon', installed: string[]}} state
+ * Pure: revert options for the optional AT4K and LTvLauncher home screens.
+ * @param {{home: 'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui', installed: string[]}} state
  * @returns {Array<{name: string, value: string}>}
  */
 export function buildLauncherRevertOptions(state) {
   const options = [];
-  if (state.home === 'at4k' || state.home === FIRE_TV_UI.id) {
+  if (state.home !== 'amazon') {
     options.push({ name: 'Send the Home button back to the Amazon menu', value: 'home' });
   }
-  for (const app of LAUNCHER_APPS.filter((a) => state.installed.includes(a.id))) {
-    options.push({ name: `Remove ${app.name} from the TV`, value: `launcher:${app.id}` });
+  for (const app of REMOVABLE_LAUNCHER_APPS.filter((a) => state.installed.includes(a.id))) {
+    // A launcher holds the home screen layout, which uninstalling deletes, so
+    // it is only removed when picked by hand.
+    options.push(app === HOME_REDIRECT
+      ? { name: `Remove ${app.name} from the TV`, value: `launcher:${app.id}` }
+      : { name: `Remove ${app.name} and its home screen settings from the TV`, value: `launcher:${app.id}`, keep: true });
   }
   if (state.installed.includes(FIRE_TV_UI.id)) {
     options.push({ name: 'Remove Fire TV UI and keep its TV layout backup', value: 'launcher:fire-tv-ui' });
@@ -128,7 +134,7 @@ async function applySelection(ip, selected, installedScreensavers, probedTimeout
   if (selected.includes('home')) {
     results.push(await applyHomeRevert(ip));
   }
-  for (const app of LAUNCHER_APPS.filter((a) => selected.includes(`launcher:${a.id}`))) {
+  for (const app of REMOVABLE_LAUNCHER_APPS.filter((a) => selected.includes(`launcher:${a.id}`))) {
     results.push(await applyLauncherRemoval(ip, app));
   }
   if (selected.includes('launcher:fire-tv-ui')) {
@@ -262,7 +268,7 @@ export async function uninstallEverything(ip, flags = {}) {
   }
 
   if (flags.all) {
-    const selected = options.map((o) => o.value);
+    const selected = options.filter((o) => !o.keep).map((o) => o.value);
     const allowed = await enforceGuardrail({
       risky: true,
       warning: 'This reverts every fix and removes every screensaver this tool installed.',
@@ -292,7 +298,7 @@ export async function uninstallEverything(ip, flags = {}) {
         prompt: () =>
           checkbox({
             message: 'What should be reverted?',
-            choices: options.map((o) => ({ ...o, checked: true })),
+            choices: options.map(({ keep, ...o }) => ({ ...o, checked: !keep })),
           }),
       },
     ],

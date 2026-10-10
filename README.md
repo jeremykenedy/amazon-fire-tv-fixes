@@ -58,7 +58,7 @@ change is explained before it happens, confirmed by you, and reversible.
 
 Run `start` and it walks you through it: connect to the TV, turn on the Alexa
 deep-sleep fix, install ad-free screensavers, pick the one you want, and
-optionally swap the home screen for AT4K. Every step is also its own command,
+optionally swap the home screen for AT4K or LTvLauncher. Every step is also its own command,
 so you can run just the part you need later.
 
 ## Features
@@ -66,7 +66,7 @@ so you can run just the part you need later.
 - **Alexa deep-sleep fix**: keeps Alexa able to reach the TV while it sleeps. Fire OS has a setting for this that its own toggle never writes.
 - **Ad-free screensavers**: replaces Amazon's ad-serving screensaver with Aerial Views (the default), AndroSaver, Snoozy, Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift, Contour Flow, Skyburst Nocturne, Pulse Circuit, or Helios Lightfield, each an optional install. Android's built-in Colors, and Amazon with Ads, stay available to switch back to.
 - **Verified downloads**: every APK comes from a GitHub release and is checked against a published SHA-256 before it is installed.
-- **Optional AT4K home screen**: an ad-free home screen in place of the Amazon menu, switched on or off with one command.
+- **Optional AT4K or LTvLauncher home screen**: an ad-free home screen in place of the Amazon menu, switched on or off, or between the two, with one command.
 - **Fire TV UI**: install a fully customizable launcher with on-TV screensaver previews, timer controls, memory and storage usage, persistent backups, and local settings protection. Its installer collects all choices before making changes.
 - **On-TV screensaver picker**: a Screensavers tile on the TV for switching the screensaver from the couch, since Fire OS Settings only offers Amazon's.
 - **Optimize for screensavers**: checks the TV for settings that stop or spoil a screensaver (screensaver switched off, sleep coming before the screensaver, Amazon's Ambient Experience, Aerial Views' frame rate permission) and fixes only the ones it has. Offered during `start` and `update`, or run `optimize` any time.
@@ -131,6 +131,7 @@ Captured on an Insignia Fire TV Edition TV, Android TV emulators, and in macOS T
 
 <p align="center">
     <a href="docs/screenshots/tv-at4k-home.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/tv-at4k-home-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/tv-at4k-home-tablet.jpg 2x"><img src="docs/screenshots/tv-at4k-home.jpg" alt="The optional AT4K home screen" title="The optional AT4K home screen"></picture></a>
+    <a href="docs/screenshots/tv-ltv-home.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/tv-ltv-home-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/tv-ltv-home-tablet.jpg 2x"><img src="docs/screenshots/tv-ltv-home.jpg" alt="The optional LTvLauncher home screen" title="The optional LTvLauncher home screen"></picture></a>
     <a href="docs/screenshots/tv-at4k-screensavers-tile.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/tv-at4k-screensavers-tile-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/tv-at4k-screensavers-tile-tablet.jpg 2x"><img src="docs/screenshots/tv-at4k-screensavers-tile.jpg" alt="The Screensavers tile on the AT4K home screen" title="The Screensavers tile on the AT4K home screen"></picture></a>
     <a href="docs/screenshots/tv-screensaver-picker.jpg"><picture><source media="(min-width: 1280px)" srcset="docs/screenshots/grid/tv-screensaver-picker-desktop.jpg 2x"><source media="(min-width: 600px)" srcset="docs/screenshots/grid/tv-screensaver-picker-tablet.jpg 2x"><img src="docs/screenshots/tv-screensaver-picker.jpg" alt="The on-TV screensaver picker" title="The on-TV screensaver picker"></picture></a>
 </p>
@@ -219,6 +220,7 @@ Captured on an Insignia Fire TV Edition TV, Android TV emulators, and in macOS T
 - **adb**: every change on the TV is a plain adb command; [How it works](docs/HOW-IT-WORKS.md) lists them all.
 - **GitHub Releases**: screensaver and Home Redirect APKs are downloaded from releases and checked against their published SHA-256.
 - **AT4K launcher**: installed from its author's own release and checked against a hash pinned in this tool. See [Home screen](docs/LAUNCHER.md).
+- **LTvLauncher**: installed from its authors' own release, pinned by tag and hash in this tool because its releases publish no checksum. It has no internet permission. See [Home screen](docs/LAUNCHER.md).
 - **Fire OS settings**: the Alexa fix, the active screensaver, the timeouts and the accessibility services the home screen uses.
 
 ## Putting your Fire TV in developer mode
@@ -260,7 +262,7 @@ doing anything else.
 
 2. Pick what to do on the checklist: install the dependencies and link every command onto your PATH, and launch the guided app. Nothing runs until you confirm.
 3. In the guided app, confirm developer mode is on and enter your TV's IP address. It is saved to `.env` so you are not asked again.
-4. Choose what to set up: the Alexa fix, screensavers, timeouts, and optionally the AT4K home screen.
+4. Choose what to set up: the Alexa fix, screensavers, timeouts, and optionally the AT4K or LTvLauncher home screen.
 
 Run `start` any time to open the guided menu again. To install by hand instead: `npm install`, `npm link`, then `start`.
 
@@ -282,7 +284,7 @@ each one are listed in [Commands](docs/COMMANDS.md).
 | `screensaver`, `firetv-set-screensaver` | Chooses which installed screensaver is active. |
 | `optimize`, `firetv-optimize` | Sets the TV up for screensavers, changing only settings it has. |
 | `guard`, `firetv-guard` | Keeps Amazon from undoing your setup. `--check` puts back anything that changed, `--unlock=screensaver` frees the screensaver choice, `--off` turns it off. |
-| `launcher`, `firetv-launcher` | Installs the AT4K home screen and switches the Home button between it and the Amazon menu. |
+| `launcher`, `firetv-launcher` | Installs the AT4K or LTvLauncher home screen and switches the Home button between them and the Amazon menu. |
 | `firetv-ui` | Installs or updates Fire TV UI, chooses a saved simple layout or restored settings, configures Home and screensavers, transfers backups, or uninstalls while keeping the backup. |
 | `firetv-timeouts` | Reviews, edits or resets the sleep and screensaver timeouts in one flow. |
 | `firetv-timeout-sleep` | Changes the sleep timeout. |
@@ -299,7 +301,7 @@ each one are listed in [Commands](docs/COMMANDS.md).
 
 1. Pull the latest code: `git pull`.
 2. Run `node setup.js` and choose to install and link the commands.
-3. Run `start` to pick up anything new, such as the AT4K home screen.
+3. Run `start` to pick up anything new, such as the AT4K or LTvLauncher home screen.
 
 Your saved IP and timeout baselines in `.env` are kept. Coming from version 2
 (`amazon-fire-tv-fixes`), the commands were renamed: remove the old links with
@@ -317,7 +319,7 @@ Every key is described in [Configuration](docs/CONFIGURATION.md).
 
 ```text
 fire-tv-toolkit/
-├── android/home-redirect/   # The Home Redirect app: sends Home to AT4K, adds the Screensavers tile
+├── android/home-redirect/   # The Home Redirect app: sends Home to AT4K or LTvLauncher, adds the Screensavers tile
 ├── art/                     # README banners
 ├── bin/                     # One entry point per command
 ├── docs/                    # Guides, references and screenshots
@@ -325,7 +327,7 @@ fire-tv-toolkit/
 │   ├── apply/               # The adb changes themselves
 │   ├── steps/               # Each command's prompts and flags
 │   ├── adb.js               # Talking to the TV
-│   ├── launcher-registry.js # AT4K and Home Redirect, with their sources and checksums
+│   ├── launcher-registry.js # AT4K, LTvLauncher and Home Redirect, with their sources and checksums
 │   └── screensaver-registry.js # The vetted screensavers
 ├── test/                    # Tests, with a fake TV so no real device is needed
 ├── setup.js                 # First-run setup on a fresh clone
@@ -342,7 +344,7 @@ Every guide is also on the project site: [jeremykenedy.github.io/fire-tv-toolkit
 | [Configuration](docs/CONFIGURATION.md) | The `.env` file and each saved value |
 | [How it works](docs/HOW-IT-WORKS.md) | The exact adb settings each command changes |
 | [Screensavers](docs/SCREENSAVERS.md) | Each screensaver, where it comes from, and how downloads are verified |
-| [Home screen](docs/LAUNCHER.md) | The AT4K home screen, Home Redirect and the on-TV picker |
+| [Home screen](docs/LAUNCHER.md) | The AT4K and LTvLauncher home screens, Home Redirect and the on-TV picker |
 | [Guard](docs/GUARD.md) | What the guard keeps, how it fights Amazon's updates, and its limits |
 | [Fire TV UI](docs/FIRE-TV-UI.md) | The launcher wizard, persistent TV backups, Home routing, timers and update protection |
 | [Optimizing](docs/OPTIMIZE.md) | What `optimize` checks, what it changes, and how it is undone |
@@ -373,6 +375,7 @@ original work belongs to their authors:
 - [androsaver](https://github.com/Whichcraft/androsaver) by Whichcraft
 - [Snoozy](https://github.com/avadhesh18/Snoozy) by avadhesh18
 - [AT4K Launcher](https://github.com/avadhesh18/at4k) by avadhesh18, installed unmodified from its own release
+- [LTvLauncher](https://github.com/leanbitlab-org/LtvLauncher) by LeanBitLab, a fork of FLauncher under GPL-3.0, installed unmodified from its own release
 
 ## License
 

@@ -62,9 +62,11 @@ See [Guard](GUARD.md).
 ## The home screen
 
 ```bash
-adb shell settings put secure enabled_accessibility_services <AT4K>:<Home Redirect>
+adb shell settings put secure enabled_accessibility_services <AT4K>:<Home Redirect>   # or just <Home Redirect> for LTvLauncher
 adb shell settings put secure accessibility_enabled 1
 adb shell pm grant com.jeremykenedy.firetv.homeredirect android.permission.WRITE_SECURE_SETTINGS
+adb shell am broadcast -n com.jeremykenedy.firetv.homeredirect/.GuardReceiver \
+  -a com.jeremykenedy.firetv.homeredirect.GUARD --es cmd home --es value ltv   # or at4k
 ```
 
 See [Home screen](LAUNCHER.md).

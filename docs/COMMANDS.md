@@ -53,7 +53,7 @@ Screensaver ids: `aerial` (the default), `androsaver`, `snoozy`,
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `launcher`, `firetv-launcher` | Installs AT4K and the Home Redirect app, or switches Home between AT4K, installed Fire TV UI, and Amazon. | `--install`, `--use=<at4k\|fire-tv-ui\|amazon>`, `--yes` (still needs `--install` or `--use`) |
+| `launcher`, `firetv-launcher` | Installs AT4K or LTvLauncher with the Home Redirect app, or switches Home between AT4K, LTvLauncher, installed Fire TV UI, and Amazon. | `--install`, `--install-ltv`, `--use=<at4k\|ltv\|fire-tv-ui\|amazon>`, `--yes` (still needs `--install`, `--install-ltv` or `--use`) |
 | `firetv-ui` | Installs or removes Fire TV UI with layout, Home, screensaver, protection, and backup choices. | See [Fire TV UI](FIRE-TV-UI.md) for every flag. |
 
 ## Timeouts
@@ -73,7 +73,7 @@ For the Fire TV UI launcher, use `firetv-ui` to collect installation, layout, Ho
 
 | Command | What it does | Flags |
 |---------|--------------|-------|
-| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button, the launcher apps, the screensaver optimizations and the guard. | `--all` reverts everything, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
+| `firetv-revert` | Puts the TV back how it was with a checklist: the Alexa fix, the active screensaver, installed screensavers, changed timeouts, the Home button, the launcher apps, the screensaver optimizations and the guard. AT4K and LTvLauncher start unticked, because removing them deletes your home screen layout. | `--all` reverts everything except removing AT4K and LTvLauncher, `--force` skips the typed confirmation, `--yes` (reverts nothing without `--all`) |
 | `uninstall` | Runs `firetv-revert` first, then removes the commands and resets `.env`, then offers to delete the repo. | none |
 | `delete`, `remove` | Deletes this repo from your computer after you type `confirm`. Does not touch the TV. | none |
 
@@ -108,6 +108,7 @@ guard --yes
 guard --check
 guard --unlock=screensaver
 launcher --install --use=at4k
+launcher --install-ltv --use=ltv
 firetv-timeout-sleep --minutes=30 --yes
 firetv-revert --all --force
 ```

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { installFakeAdb, captured, AERIAL } from './helpers/fake-adb.js';
 import { drive, DOWN, ENTER } from './helpers/drive.js';
 import { launcherFetch, useDroppingAdb } from './helpers/launcher-fakes.js';
-import { AT4K, HOME_REDIRECT, FIRE_TV_UI } from '../src/launcher-registry.js';
+import { AT4K, LTV, HOME_REDIRECT, FIRE_TV_UI } from '../src/launcher-registry.js';
 import {
   parseServices,
   servicesFor,
@@ -47,6 +47,11 @@ after(() => {
 
 const secure = (extra) => ({ ...fake.readState().secure, ...extra });
 const bothInstalled = (extra = {}) => fake.setState({ installed: [AERIAL, AT4K.pkg, HOME_REDIRECT.pkg], ...extra });
+const ltvInstalled = (extra = {}) => fake.setState({
+  installed: [AERIAL, AT4K.pkg, LTV.pkg, HOME_REDIRECT.pkg],
+  versions: { [HOME_REDIRECT.pkg]: '1.2.5' },
+  ...extra,
+});
 
 test('parseServices treats an unset value as empty and drops blanks', () => {
   assert.deepEqual(parseServices(null), []);
@@ -203,7 +208,7 @@ test('launcher menu offers installed Fire TV UI before applying the reviewed cho
   installedEnv();
   fake.setState({ installed: [FIRE_TV_UI.pkg] });
   const on = await drive('bin/launcher.js', [], [
-    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${ENTER}` },
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${DOWN}${ENTER}` },
     CONTINUE,
   ], withFetchStub);
   assert.equal(on.code, 0, on.out);
@@ -253,7 +258,7 @@ test('launcher menu: switch the Home button to AT4K, then back with firetv-launc
   installedEnv();
   bothInstalled();
   const on = await drive('bin/launcher.js', [], [
-    { expect: 'What would you like to do?', send: `${DOWN}${ENTER}` },
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${ENTER}` },
     CONTINUE,
   ], withFetchStub);
   assert.equal(on.code, 0, on.out);
@@ -262,11 +267,118 @@ test('launcher menu: switch the Home button to AT4K, then back with firetv-launc
   assert.match(fake.readState().secure[SERVICES], /HomeRedirectService/);
 
   const off = await drive('bin/firetv-launcher.js', [], [
-    { expect: 'What would you like to do?', send: `${DOWN}${ENTER}` },
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${ENTER}` },
     CONTINUE,
   ], withFetchStub);
   assert.equal(off.code, 0, off.out);
   assert.match(off.out, /Go back to the Amazon home screen/);
   assert.match(off.out, /now goes to the Amazon menu/);
   assert.doesNotMatch(fake.readState().secure[SERVICES], /HomeRedirectService/);
+});
+
+test('servicesFor sends Home to LTvLauncher through Home Redirect and turns AT4K\'s own service off', () => {
+  const current = ['other/svc', AT4K.service, FIRE_TV_UI.controls, FIRE_TV_UI.service];
+  assert.deepEqual(servicesFor(current, 'ltv'), ['other/svc', HOME_REDIRECT.service]);
+  assert.deepEqual(servicesFor(['other/svc', HOME_REDIRECT.service], 'at4k'), ['other/svc', AT4K.service, HOME_REDIRECT.service]);
+});
+
+test('useHome switches between LTvLauncher and AT4K and back to Amazon, keeping AT4K installed', async () => {
+  ltvInstalled({ disabled: [LTV.pkg] });
+  fake.setState({ secure: secure({ [SERVICES]: `other/svc:${AT4K.service}:${HOME_REDIRECT.service}` }) });
+  assert.equal((await launcherState(ip)).home, 'at4k');
+
+  assert.equal(await useHome(ip, 'ltv'), true);
+  let s = fake.readState();
+  assert.equal(s.guard.home, 'ltv');
+  assert.equal(s.secure[SERVICES], `other/svc:${HOME_REDIRECT.service}`);
+  assert.deepEqual(s.disabled, []);
+  assert.equal((await launcherState(ip)).home, 'ltv');
+
+  assert.equal(await useHome(ip, 'at4k'), true);
+  s = fake.readState();
+  assert.equal(s.guard.home, 'at4k');
+  assert.equal(s.secure[SERVICES], `other/svc:${AT4K.service}:${HOME_REDIRECT.service}`);
+
+  assert.equal(await useHome(ip, 'ltv'), true);
+  assert.equal(await useHome(ip, 'amazon'), true);
+  s = fake.readState();
+  assert.equal(s.secure[SERVICES], 'other/svc');
+  assert.ok(s.installed.includes(AT4K.pkg));
+});
+
+test('useHome refuses LTvLauncher when Home Redirect cannot open it and changes nothing', async () => {
+  ltvInstalled({ homeRedirectWithoutTargets: true });
+  fake.setState({ secure: secure({ [SERVICES]: `${AT4K.service}:${HOME_REDIRECT.service}` }) });
+  assert.equal(await useHome(ip, 'ltv'), false);
+  assert.equal(fake.readState().secure[SERVICES], `${AT4K.service}:${HOME_REDIRECT.service}`);
+  assert.equal((await launcherState(ip)).home, 'at4k');
+});
+
+test('a failed switch away from LTvLauncher puts Home Redirect back on LTvLauncher', async () => {
+  ltvInstalled();
+  fake.setState({ secure: secure({ [SERVICES]: HOME_REDIRECT.service }) });
+  assert.equal(await useHome(ip, 'ltv'), true);
+  fake.setState({ dropWrites: [SERVICES] });
+  assert.equal(await useHome(ip, 'at4k'), false);
+  assert.equal(fake.readState().guard.home, 'ltv');
+  assert.equal((await launcherState(ip)).home, 'ltv');
+});
+
+test('firetv-launcher --use=ltv needs LTvLauncher, Home Redirect and a Home Redirect that can open it', async () => {
+  bothInstalled();
+  const missing = await captured(() => manageLauncher(ip, { use: 'ltv' }));
+  assert.match(missing.out, /LTvLauncher and the Home Redirect app both need to be installed first. Run firetv-launcher --install-ltv/);
+  assert.equal(process.exitCode, 1);
+
+  process.exitCode = undefined;
+  ltvInstalled({ versions: { [HOME_REDIRECT.pkg]: '1.2.4' } });
+  const old = await captured(() => manageLauncher(ip, { use: 'ltv' }));
+  assert.match(old.out, /Home Redirect app needs updating to open LTvLauncher/);
+  assert.equal(process.exitCode, 1);
+
+  process.exitCode = undefined;
+  ltvInstalled();
+  const on = await captured(() => manageLauncher(ip, { use: 'ltv' }));
+  assert.match(on.out, /now goes to LTvLauncher/);
+  const again = await captured(() => manageLauncher(ip, { use: 'ltv' }));
+  assert.match(again.out, /already goes to LTvLauncher/);
+  assert.notEqual(process.exitCode, 1);
+});
+
+test('firetv-launcher --install-ltv installs Home Redirect, reports LTvLauncher\'s pinned checksum and leaves AT4K alone', async () => {
+  fake.setState({ installed: [AERIAL, AT4K.pkg] });
+  const { out } = await captured(() => manageLauncher(ip, { 'install-ltv': true, use: 'ltv' }));
+  assert.match(out, /Home Redirect and Screensaver Picker installed/);
+  assert.match(out, /LTvLauncher: .*Checksum mismatch/);
+  assert.doesNotMatch(out, /now goes to/);
+  assert.equal(process.exitCode, 1);
+  const s = fake.readState();
+  assert.ok(s.installed.includes(AT4K.pkg));
+  assert.ok(!s.installed.includes(LTV.pkg));
+});
+
+test('launcher menu offers LTvLauncher once installed, then AT4K and Amazon from it', async () => {
+  installedEnv();
+  ltvInstalled();
+  const on = await drive('bin/firetv-launcher.js', [], [
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${DOWN}${ENTER}` },
+    CONTINUE,
+  ], withFetchStub);
+  assert.equal(on.code, 0, on.out);
+  assert.match(on.out, /Update LTvLauncher and the Home Redirect app/);
+  assert.match(on.out, /now goes to LTvLauncher/);
+
+  const back = await drive('bin/firetv-launcher.js', [], [
+    { expect: 'What would you like to do?', send: `${DOWN}${DOWN}${ENTER}` },
+    CONTINUE,
+  ], withFetchStub);
+  assert.equal(back.code, 0, back.out);
+  assert.match(back.out, /Right now the Home button goes to LTvLauncher/);
+  assert.match(back.out, /now goes to AT4K/);
+});
+
+test('a TV that drops the connection while asked for the Home launcher is read as AT4K, the old default', async () => {
+  ltvInstalled({ homeDisconnects: 1 });
+  fake.setState({ secure: secure({ [SERVICES]: HOME_REDIRECT.service }) });
+  assert.equal((await launcherState(ip)).home, 'at4k');
 });

@@ -98,6 +98,30 @@ public final class AdbTest {
   execFileSync('java', ['-cp', dir, 'com.jeremykenedy.firetv.homeredirect.AdbTest']);
 });
 
+test('the native helper opens AT4K unless told to open LTvLauncher', () => {
+  const dir = path.join(fake.dir, 'native-home');
+  fs.mkdirSync(dir);
+  const source = path.join(dir, 'HomeTest.java');
+  fs.writeFileSync(source, `package com.jeremykenedy.firetv.homeredirect;
+public final class HomeTest {
+  public static void main(String[] args) {
+    if (!HomeTarget.packageFor("ltv").equals("com.leanbitlab.ltvL"))
+      throw new AssertionError("ltv must open LTvLauncher");
+    for (String other : new String[] {"at4k", null, "", "launcher"}) {
+      if (!HomeTarget.packageFor(other).equals("com.overdevs.at4k"))
+        throw new AssertionError("anything else must keep opening AT4K: " + other);
+    }
+    if (!HomeTarget.isKnown("at4k") || !HomeTarget.isKnown("ltv") || HomeTarget.isKnown("amazon") || HomeTarget.isKnown(null))
+      throw new AssertionError("only AT4K and LTvLauncher are Home targets");
+    if (!HomeTarget.DEFAULT.equals("at4k"))
+      throw new AssertionError("AT4K stays the default");
+  }
+}`);
+  const target = new URL('../android/home-redirect/src/com/jeremykenedy/firetv/homeredirect/HomeTarget.java', import.meta.url);
+  execFileSync('javac', ['-d', dir, source, target.pathname]);
+  execFileSync('java', ['-cp', dir, 'com.jeremykenedy.firetv.homeredirect.HomeTest']);
+});
+
 test('the guard state round-trips through .env and is removed when off', () => {
   const state = { on: true, disabled: [EASY], background: { [OTA]: 'default' }, unlocked: ['screensaver'] };
   const raw = mergeGuardEnv('FIRE_TV_IP=1.2.3.4\n', state);

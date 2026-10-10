@@ -18,10 +18,11 @@ On the TV this was tested on, a restart set `str.auto_wake_up_enabled` back to
 `0`: Amazon's Alexa app writes its default at boot. Run `enable-alexa-fix`
 again after a restart or an update.
 
-## Home goes to the Amazon menu instead of AT4K
+## Home goes to the Amazon menu instead of AT4K or LTvLauncher
 
-Run `launcher --use=at4k`. Updating Home Redirect can make Android drop it from
-the enabled accessibility services; `launcher --install` puts it back for you.
+Run `launcher --use=at4k` or `launcher --use=ltv`. Updating Home Redirect can
+make Android drop it from the enabled accessibility services; `launcher
+--install` and `launcher --install-ltv` put it back for you.
 
 ## A screensaver will not install
 

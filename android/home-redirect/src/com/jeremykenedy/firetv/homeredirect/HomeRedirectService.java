@@ -12,14 +12,15 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 
 /**
- * Sends the Home button to the AT4K launcher. Fire OS has no setting for
- * choosing a Home app and does not hand the Home key to accessibility
- * services, so this watches for the Amazon home screen coming to the front
- * and opens AT4K over it.
+ * Sends the Home button to the chosen launcher, AT4K or LTvLauncher. Fire OS
+ * has no setting for choosing a Home app and does not hand the Home key to
+ * accessibility services, so this watches for the Amazon home screen coming
+ * to the front and opens the launcher over it.
  *
  * Fire OS opens Settings by showing the home screen first and putting
- * Settings on top a moment later, and Settings is opened from AT4K's own gear
- * icon. So when the home screen appears straight after AT4K or Amazon's
+ * Settings on top a moment later, and Settings is opened from the launcher's
+ * own gear icon. So when the home screen appears straight after the launcher
+ * or Amazon's
  * settings app, the redirect waits briefly and is called off if another
  * Amazon launcher screen arrives. Coming from any other app there is nothing
  * to wait for, so the redirect is immediate. That is what keeps Settings
@@ -35,8 +36,6 @@ public class HomeRedirectService extends AccessibilityService {
 
     private static final String AMAZON_SETTINGS_PREFIX =
             "com.amazon.tv.settings";
-
-    private static final String TARGET_LAUNCHER = "com.overdevs.at4k";
 
     private static final long SETTLE_MS = 550;
 
@@ -79,11 +78,11 @@ public class HomeRedirectService extends AccessibilityService {
     private boolean settingsMayFollow;
 
     /**
-     * AT4K's gear icon hands off to Amazon's settings app, which is what
-     * brings the home screen up.
+     * The launcher's gear icon hands off to Amazon's settings app, which is
+     * what brings the home screen up.
      */
-    static boolean canOpenSettings(CharSequence pkg) {
-        return TARGET_LAUNCHER.contentEquals(pkg)
+    static boolean canOpenSettings(CharSequence pkg, String launcher) {
+        return launcher.contentEquals(pkg)
                 || pkg.toString().startsWith(AMAZON_SETTINGS_PREFIX);
     }
 
@@ -122,7 +121,7 @@ public class HomeRedirectService extends AccessibilityService {
         }
         if (!isAmazonHome(pkg, event.getClassName())) {
             cancelWait();
-            settingsMayFollow = canOpenSettings(pkg);
+            settingsMayFollow = canOpenSettings(pkg, targetLauncher());
             return;
         }
         if (waiting) {
@@ -141,11 +140,15 @@ public class HomeRedirectService extends AccessibilityService {
         handler.removeCallbacks(redirect);
     }
 
+    private String targetLauncher() {
+        return HomeTarget.packageFor(HomeTargetStore.get(this));
+    }
+
     private void openTargetLauncher() {
-        Intent launch =
-                getPackageManager().getLaunchIntentForPackage(TARGET_LAUNCHER);
+        String launcher = targetLauncher();
+        Intent launch = getPackageManager().getLaunchIntentForPackage(launcher);
         if (launch == null) {
-            Log.w(TAG, TARGET_LAUNCHER
+            Log.w(TAG, launcher
                     + " is not installed, leaving the Amazon home screen up");
             return;
         }

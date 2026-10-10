@@ -41,6 +41,10 @@ test('buildLauncherRevertOptions offers the Home revert and each installed launc
   assert.deepEqual(buildLauncherRevertOptions({ home: 'amazon', installed: [] }), []);
   const options = buildLauncherRevertOptions({ home: 'at4k', installed: ['at4k', 'home-redirect'] });
   assert.deepEqual(options.map((o) => o.value), ['home', 'launcher:at4k', 'launcher:home-redirect']);
+  const ltv = buildLauncherRevertOptions({ home: 'ltv', installed: ['at4k', 'ltv', 'home-redirect'] });
+  assert.deepEqual(ltv.map((o) => o.value), ['home', 'launcher:at4k', 'launcher:ltv', 'launcher:home-redirect']);
+  assert.deepEqual(ltv.filter((o) => o.keep).map((o) => o.value), ['launcher:at4k', 'launcher:ltv']);
+  assert.match(ltv[1].name, /AT4K Launcher and its home screen settings/);
 });
 
 test('uninstall --all sends Home back, removes the launcher apps and the local clones', async () => {
@@ -51,8 +55,9 @@ test('uninstall --all sends Home back, removes the launcher apps and the local c
   const { result, out } = await captured(() => uninstallEverything(IP, { all: true, force: true }));
   assert.equal(result, 'reverted', out);
   const s = fake.readState();
-  assert.ok(!s.installed.includes(AT4K.pkg) && !s.installed.includes(HOME_REDIRECT.pkg));
-  assert.equal(s.secure.enabled_accessibility_services, undefined);
+  assert.ok(s.installed.includes(AT4K.pkg), 'AT4K and its home screen settings stay unless picked by hand');
+  assert.ok(!s.installed.includes(HOME_REDIRECT.pkg));
+  assert.equal(s.secure.enabled_accessibility_services, AT4K.service);
   assert.equal(fs.existsSync(getScreensaversDir()), false);
   assert.match(out, /Home button sent back to the Amazon menu/);
   assert.match(out, /Local screensaver source removed/);
@@ -71,7 +76,7 @@ test('uninstall --all reports each revert the TV did not take', async () => {
     /Alexa deep-sleep fix is still on/,
     /did not switch back to the Amazon default/,
     /Home button did not switch back/,
-    /AT4K Launcher could not be removed/,
+    /Home Redirect and Screensaver Picker could not be removed/,
     /did not accept the reset/,
   ]) {
     assert.match(out, message);
