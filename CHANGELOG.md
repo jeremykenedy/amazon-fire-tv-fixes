@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.1] - 2026-10-09
+
+### Fixed in 3.9.1
+
+- Home Redirect 1.2.6 describes itself as opening AT4K or LTvLauncher in the TV's accessibility settings, instead of AT4K only.
+- The uninstall guide, the device report form and the package keywords cover LTvLauncher, and the main menu and launcher screenshots show its options.
+
 ## [3.9.0] - 2026-10-09
 
 ### Added in 3.9.0

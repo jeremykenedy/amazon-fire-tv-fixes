@@ -25,6 +25,7 @@ body:
         - label: Installing and choosing screensavers
         - label: The timeouts
         - label: The AT4K home screen and the Screensavers tile
+        - label: The LTvLauncher home screen
   - type: textarea
     id: notes
     attributes:
