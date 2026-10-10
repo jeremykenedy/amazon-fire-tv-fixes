@@ -11,6 +11,7 @@
 
     <queries>
         <package android:name="com.overdevs.at4k" />
+        <package android:name="com.leanbitlab.ltvL" />
         <intent>
             <action android:name="android.service.dreams.DreamService" />
         </intent>

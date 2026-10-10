@@ -66,6 +66,9 @@ else if (cmd === 'shell' && a === 'am' && b === 'broadcast' && args.includes('co
   if (extra('cmd') === 'check' && state.guardCheckDisconnects > 0) {
     state.guardCheckDisconnects--; save(); process.exit(255);
   }
+  if (extra('cmd') === 'home' && state.homeDisconnects > 0) {
+    state.homeDisconnects--; save(); process.exit(255);
+  }
   if (!state.installed.includes('com.jeremykenedy.firetv.homeredirect')) { console.log('Broadcasting: Intent\\nBroadcast completed: result=0'); }
   else {
     const g = state.guard = state.guard || { locked: false, remembered: {} };
@@ -76,6 +79,13 @@ else if (cmd === 'shell' && a === 'am' && b === 'broadcast' && args.includes('co
     else if (cmdName === 'remember') { g.remembered[extra('setting')] = extra('value'); reply = 'remembered'; }
     else if (cmdName === 'forget') { g.forgotten = [...(g.forgotten || []), extra('setting')]; reply = state.forgetReply || 'forgotten'; }
     else if (cmdName === 'check') { reply = state.guardReply || 'guard=' + (g.locked ? 'on' : 'off') + ' restored=' + (state.guardRestored || 'none'); }
+    else if (cmdName === 'home' && !state.homeRedirectWithoutTargets) {
+      const value = extra('value');
+      if (value === undefined || value === 'at4k' || value === 'ltv') {
+        if (value) g.home = value;
+        reply = 'home=' + (g.home || 'at4k');
+      }
+    }
     save(); console.log('Broadcasting: Intent\\nBroadcast completed: result=0, data="' + reply + '"');
   }
 }

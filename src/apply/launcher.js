@@ -1,9 +1,10 @@
-import { getSetting, putSetting, deleteSetting, listPackages, listDisabledPackages, enablePackage, grantPermission, installApk, uninstallPackage, pressHome, describeAdbError, backupOperation } from '../adb.js';
+import { getSetting, putSetting, deleteSetting, listPackages, listDisabledPackages, enablePackage, grantPermission, installApk, uninstallPackage, pressHome, describeAdbError, backupOperation, sendGuard } from '../adb.js';
 import { downloadApk, removeDownload } from './screensavers.js';
-import { AT4K, HOME_REDIRECT, LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
+import { AT4K, LTV, HOME_REDIRECT, FIRE_TV_UI, HOME_LAUNCHERS, launcherApps } from '../launcher-registry.js';
 
 const SERVICES_KEY = 'enabled_accessibility_services';
 const ENABLED_KEY = 'accessibility_enabled';
+const KNOWN_APPS = [AT4K, LTV, HOME_REDIRECT, FIRE_TV_UI];
 
 /**
  * Pure: the colon-separated accessibility services setting as a list. The TV
@@ -19,42 +20,67 @@ export function parseServices(raw) {
 }
 
 /**
- * Pure: the services list with AT4K's home screen switched on or off. Any
- * other accessibility service the TV already runs is left exactly as it was.
- * AT4K's own service stays on in both modes; only Home Redirect decides
- * where the Home button goes.
+ * Pure: the services list with a launcher's home screen switched on or off.
+ * Any other accessibility service the TV already runs is left exactly as it
+ * was. AT4K's own service stays on when going back to Amazon; only Home
+ * Redirect decides where the Home button goes. It is switched off for
+ * LTvLauncher and Fire TV UI, so it cannot pull Home back to AT4K.
  * @param {string[]} current
- * @param {'at4k' | 'amazon'} mode
+ * @param {'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui'} mode
  * @returns {string[]}
  */
 export function servicesFor(current, mode) {
   const replaced = [HOME_REDIRECT.service, FIRE_TV_UI.service, FIRE_TV_UI.controls,
     'com.overdevs.at4khelper/com.overdevs.at4khelper.HomeRedirectAccessibilityService'];
   const others = current.filter((s) => !replaced.includes(s)
-    && (mode !== 'fire-tv-ui' || s !== AT4K.service));
+    && ((mode !== FIRE_TV_UI.id && mode !== LTV.id) || s !== AT4K.service));
   if (mode === 'amazon') {
     return others;
   }
-  if (mode === 'fire-tv-ui') {
+  if (mode === FIRE_TV_UI.id) {
     return [...others, FIRE_TV_UI.controls, FIRE_TV_UI.service];
+  }
+  if (mode === LTV.id) {
+    return [...others, HOME_REDIRECT.service];
   }
   const withAt4k = others.includes(AT4K.service) ? others : [...others, AT4K.service];
   return [...withAt4k, HOME_REDIRECT.service];
 }
 
 /**
+ * Asks Home Redirect which launcher it opens, or tells it to open another.
+ * A Home Redirect older than 1.2.5 only knows AT4K and replies "unknown".
  * @param {string} ip
- * @returns {Promise<{installed: string[], disabled: string[], services: string[], home: 'at4k' | 'amazon'}>}
+ * @param {string} [value] 'at4k' or 'ltv' to change it
+ * @returns {Promise<string | null>} the reply, such as "home=ltv"
+ */
+async function homeTarget(ip, value) {
+  try {
+    return await sendGuard(ip, 'home', value ? { value } : {});
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string} ip
+ * @returns {Promise<{installed: string[], disabled: string[], services: string[], home: 'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui'}>}
  */
 export async function launcherState(ip) {
   const packages = await listPackages(ip);
   const disabled = await listDisabledPackages(ip);
   const services = parseServices(await getSetting(ip, 'secure', SERVICES_KEY));
+  let home = 'amazon';
+  if (services.includes(FIRE_TV_UI.service)) {
+    home = FIRE_TV_UI.id;
+  } else if (services.includes(HOME_REDIRECT.service)) {
+    home = (await homeTarget(ip)) === `home=${LTV.id}` ? LTV.id : AT4K.id;
+  }
   return {
-    installed: [...LAUNCHER_APPS, FIRE_TV_UI].filter((app) => packages.includes(app.pkg)).map((app) => app.id),
-    disabled: [...LAUNCHER_APPS, FIRE_TV_UI].filter((app) => disabled.includes(app.pkg)).map((app) => app.id),
+    installed: KNOWN_APPS.filter((app) => packages.includes(app.pkg)).map((app) => app.id),
+    disabled: KNOWN_APPS.filter((app) => disabled.includes(app.pkg)).map((app) => app.id),
     services,
-    home: services.includes(FIRE_TV_UI.service) ? 'fire-tv-ui' : services.includes(HOME_REDIRECT.service) ? 'at4k' : 'amazon',
+    home,
   };
 }
 
@@ -114,17 +140,21 @@ export async function installLauncherApp(ip, app) {
 }
 
 /**
- * Sends the Home button to AT4K or back to the Amazon menu, then presses Home
- * so the result is on screen straight away.
+ * Sends the Home button to AT4K, LTvLauncher, Fire TV UI or back to the Amazon
+ * menu, then presses Home so the result is on screen straight away.
  * @param {string} ip
- * @param {'at4k' | 'amazon'} mode
+ * @param {'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui'} mode
  * @returns {Promise<boolean>} whether the TV reads back the requested mode
  */
 export async function useHome(ip, mode) {
   const before = await launcherState(ip);
-  if (mode === 'at4k') {
-    for (const app of LAUNCHER_APPS.filter((a) => before.disabled.includes(a.id))) {
+  if (HOME_LAUNCHERS.some((app) => app.id === mode)) {
+    for (const app of launcherApps(mode).filter((a) => before.disabled.includes(a.id))) {
       await enablePackage(ip, app.pkg);
+    }
+    const reply = await homeTarget(ip, mode);
+    if (mode === LTV.id && reply !== `home=${LTV.id}`) {
+      return false;
     }
   }
   if (mode === 'fire-tv-ui') {
@@ -148,6 +178,9 @@ export async function useHome(ip, mode) {
       throw new Error('The TV did not save the Home button setting.');
     }
   } catch {
+    if (HOME_LAUNCHERS.some((app) => app.id === before.home) && before.home !== mode) {
+      await homeTarget(ip, before.home);
+    }
     if (before.installed.includes(FIRE_TV_UI.id)) {
       await backupOperation(ip, FIRE_TV_UI.pkg, before.home === FIRE_TV_UI.id ? 'home-preference-on' : 'home-preference-off').catch(() => {});
     }

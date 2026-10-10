@@ -4,29 +4,34 @@ import { explainStep } from '../ui.js';
 import { runWizard } from '../wizard.js';
 import { startSpinner } from '../spinner.js';
 import { launcherState, installLauncherApp, useHome } from '../apply/launcher.js';
-import { LAUNCHER_APPS, FIRE_TV_UI } from '../launcher-registry.js';
+import { versionAtLeast } from '../apply/guard.js';
+import { packageVersion } from '../adb.js';
+import { AT4K, LTV, HOME_REDIRECT, FIRE_TV_UI, HOME_LAUNCHERS, HOME_TARGET_VERSION, launcherApps } from '../launcher-registry.js';
 import { markFailed } from '../exit-status.js';
 import { print } from '../output.js';
 
 export const FLAG_SPEC = {
   install: { type: 'boolean', desc: 'Install or update AT4K and the Home Redirect app.' },
-  use: { type: 'string', choices: ['at4k', 'amazon', 'fire-tv-ui'], desc: 'Where the Home button goes: at4k, amazon or fire-tv-ui.' },
-  yes: { type: 'boolean', desc: 'For scripts; --install or --use is still required.' },
+  'install-ltv': { type: 'boolean', desc: 'Install or update LTvLauncher and the Home Redirect app.' },
+  use: { type: 'string', choices: ['at4k', 'ltv', 'amazon', 'fire-tv-ui'], desc: 'Where the Home button goes: at4k, ltv, amazon or fire-tv-ui.' },
+  yes: { type: 'boolean', desc: 'For scripts; --install, --install-ltv or --use is still required.' },
 };
 
-const HOME_NAMES = { at4k: 'AT4K', amazon: 'the Amazon menu', 'fire-tv-ui': 'Fire TV UI' };
+const HOME_NAMES = { at4k: 'AT4K', ltv: 'LTvLauncher', amazon: 'the Amazon menu', 'fire-tv-ui': 'Fire TV UI' };
 
 /**
- * Installs both launcher apps, reporting each one.
+ * Installs a launcher and the Home Redirect app, reporting each one.
  * @param {string} ip
+ * @param {'at4k' | 'ltv'} id
  * @returns {Promise<boolean>} whether both are installed afterwards
  */
-async function installAll(ip) {
+async function installAll(ip, id) {
   // Updating Home Redirect in place can make Android drop it from the enabled
   // accessibility services, which quietly sends Home back to the Amazon menu.
   const homeBefore = (await launcherState(ip)).home;
+  const apps = launcherApps(id);
   let ok = true;
-  for (const app of LAUNCHER_APPS) {
+  for (const app of apps) {
     const spinner = startSpinner(`Installing ${app.name}`);
     const result = await installLauncherApp(ip, app);
     if (result.ok) {
@@ -37,15 +42,17 @@ async function installAll(ip) {
     }
   }
   const state = await launcherState(ip);
-  if (homeBefore === 'at4k' && state.home !== 'at4k') {
-    await useHome(ip, 'at4k');
+  if (HOME_LAUNCHERS.some((app) => app.id === homeBefore) && state.home !== homeBefore) {
+    await useHome(ip, homeBefore);
   }
-  return ok || LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
+  return ok || apps.every((app) => state.installed.includes(app.id));
 }
+
+const INSTALL_FLAGS = { at4k: 'install', ltv: 'install-ltv' };
 
 /**
  * @param {string} ip
- * @param {'at4k' | 'amazon' | 'fire-tv-ui'} mode
+ * @param {'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui'} mode
  * @returns {Promise<void>}
  */
 async function switchHome(ip, mode) {
@@ -55,8 +62,13 @@ async function switchHome(ip, mode) {
     markFailed();
     return;
   }
-  if (mode === 'at4k' && !LAUNCHER_APPS.every((app) => state.installed.includes(app.id))) {
-    print(chalk.red('\nAT4K and the Home Redirect app both need to be installed first. Run firetv-launcher --install.\n'));
+  if (INSTALL_FLAGS[mode] && !launcherApps(mode).every((app) => state.installed.includes(app.id))) {
+    print(chalk.red(`\n${HOME_NAMES[mode]} and the Home Redirect app both need to be installed first. Run firetv-launcher --${INSTALL_FLAGS[mode]}.\n`));
+    markFailed();
+    return;
+  }
+  if (mode === LTV.id && !versionAtLeast(await packageVersion(ip, HOME_REDIRECT.pkg), HOME_TARGET_VERSION)) {
+    print(chalk.red(`\nThe Home Redirect app needs updating to open LTvLauncher. Run firetv-launcher --install-ltv.\n`));
     markFailed();
     return;
   }
@@ -74,13 +86,15 @@ async function switchHome(ip, mode) {
 
 /**
  * @param {string} ip
- * @param {{install?: boolean, use?: 'at4k' | 'amazon' | 'fire-tv-ui'}} flags
+ * @param {{install?: boolean, 'install-ltv'?: boolean, use?: 'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui'}} flags
  */
 async function runFromFlags(ip, flags) {
-  if (flags.install && !(await installAll(ip))) {
-    markFailed();
-    if (flags.use === 'at4k') {
-      return;
+  for (const id of [AT4K.id, LTV.id]) {
+    if (flags[INSTALL_FLAGS[id]] && !(await installAll(ip, id))) {
+      markFailed();
+      if (flags.use === id) {
+        return;
+      }
     }
   }
   if (flags.use) {
@@ -89,11 +103,18 @@ async function runFromFlags(ip, flags) {
 }
 
 function menuChoices(state) {
-  const installed = LAUNCHER_APPS.every((app) => state.installed.includes(app.id));
-  const choices = [{ name: installed ? 'Update AT4K and the Home Redirect app' : 'Install AT4K and the Home Redirect app', value: 'install' }];
-  if (state.home === 'amazon') {
-    choices.push({ name: 'Use AT4K as the home screen', value: 'at4k' });
-  } else {
+  const choices = [];
+  for (const app of HOME_LAUNCHERS) {
+    const installed = launcherApps(app.id).every((a) => state.installed.includes(a.id));
+    choices.push({ name: `${installed ? 'Update' : 'Install'} ${HOME_NAMES[app.id]} and the Home Redirect app`, value: `install:${app.id}` });
+  }
+  if (state.home === 'amazon' || (state.home !== AT4K.id && state.installed.includes(AT4K.id))) {
+    choices.push({ name: 'Use AT4K as the home screen', value: AT4K.id });
+  }
+  if (state.home !== LTV.id && state.installed.includes(LTV.id)) {
+    choices.push({ name: 'Use LTvLauncher as the home screen', value: LTV.id });
+  }
+  if (state.home !== 'amazon') {
     choices.push({ name: 'Go back to the Amazon home screen', value: 'amazon' });
   }
   if (state.installed.includes(FIRE_TV_UI.id) && state.home !== FIRE_TV_UI.id) {
@@ -103,19 +124,19 @@ function menuChoices(state) {
 }
 
 /**
- * `firetv-launcher`: installs the optional AT4K home screen and switches the
- * Home button between installed launchers and the Amazon menu.
+ * `firetv-launcher`: installs the optional AT4K or LTvLauncher home screen and
+ * switches the Home button between installed launchers and the Amazon menu.
  * @param {string} ip
- * @param {{install?: boolean, use?: 'at4k' | 'amazon' | 'fire-tv-ui', yes?: boolean}} [flags]
+ * @param {{install?: boolean, 'install-ltv'?: boolean, use?: 'at4k' | 'ltv' | 'amazon' | 'fire-tv-ui', yes?: boolean}} [flags]
  * @returns {Promise<void>}
  */
 export async function manageLauncher(ip, flags = {}) {
-  if (flags.install || flags.use) {
+  if (flags.install || flags['install-ltv'] || flags.use) {
     await runFromFlags(ip, flags);
     return;
   }
   if (flags.yes) {
-    print(chalk.red('\n--yes alone does not pick anything. Pass --install, --use=at4k, --use=amazon or --use=fire-tv-ui.\n'));
+    print(chalk.red('\n--yes alone does not pick anything. Pass --install, --install-ltv, --use=at4k, --use=ltv, --use=amazon or --use=fire-tv-ui.\n'));
     markFailed();
     return;
   }
@@ -124,10 +145,11 @@ export async function manageLauncher(ip, flags = {}) {
   explainStep({
     title: 'Step: Choose the home screen',
     body: [
-      'AT4K is an optional, ad-free home screen. Fire OS has no setting for',
-      'choosing a home app, so the Home Redirect app sends the Home button to',
-      'AT4K. It also adds a Screensavers tile to the TV for switching the',
-      'screensaver from the couch. Going back to the Amazon menu is one step.',
+      'AT4K and LTvLauncher are optional, ad-free home screens. Fire OS has no',
+      'setting for choosing a home app, so the Home Redirect app sends the Home',
+      'button to the one you pick. It also adds a Screensavers tile to the TV',
+      'for switching the screensaver from the couch. Going back to the Amazon',
+      'menu is one step.',
       '',
       `Right now the Home button goes to ${HOME_NAMES[state.home]}.`,
     ],
@@ -140,8 +162,9 @@ export async function manageLauncher(ip, flags = {}) {
     steps: [{ key: 'action', prompt: () => select({ message: 'What would you like to do?', choices: menuChoices(state) }) }],
     buildSummary: (answers) => [{ label: menuChoices(state).find((c) => c.value === answers.action).name }],
     onConfirm: async (answers) => {
-      if (answers.action === 'install') {
-        await runFromFlags(ip, { install: true });
+      if (answers.action.startsWith('install:')) {
+        const id = answers.action.slice('install:'.length);
+        await runFromFlags(ip, { [INSTALL_FLAGS[id]]: true });
       } else {
         await switchHome(ip, answers.action);
       }
