@@ -22,3 +22,11 @@ test('README shows a screenshot of every screensaver', async () => {
     .filter((file) => !readme.includes(file) || !fs.existsSync(new URL(`../${file}`, import.meta.url)));
   assert.deepEqual(missing, []);
 });
+
+test('the command reference lists every screensaver id for --set', async () => {
+  const { SCREENSAVERS } = await import('../src/screensaver-registry.js');
+  const commands = fs.readFileSync(new URL('../docs/COMMANDS.md', import.meta.url), 'utf8');
+  const setIds = /--set=<([^>]+)>/.exec(commands)[1].split('\\|');
+  const missing = SCREENSAVERS.filter((s) => !setIds.includes(s.id) || !commands.includes(`\`${s.id}\``));
+  assert.deepEqual(missing.map((s) => s.id), []);
+});

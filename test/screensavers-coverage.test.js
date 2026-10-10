@@ -33,6 +33,7 @@ const PIPEWORKS_DREAM = SCREENSAVERS.find((s) => s.id === 'pipeworks-dream');
 const AQUA_SURFACE = SCREENSAVERS.find((s) => s.id === 'aqua-surface');
 const CLOUD_DRIFT_CLOCK = SCREENSAVERS.find((s) => s.id === 'cloud-drift-clock');
 const EARTHBOUND_ORBIT = SCREENSAVERS.find((s) => s.id === 'earthbound-orbit');
+const HELIOS_LIGHTFIELD = SCREENSAVERS.find((s) => s.id === 'helios-lightfield');
 const apkBytes = (pkg) => Buffer.from(`pkg:${pkg}`);
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -382,7 +383,7 @@ test('Twilight Hearth can be installed and selected through the CLI', async () =
   assert.equal(fake.readState().secure.screensaver_components, TWILIGHT_HEARTH.dreamComponent);
 });
 
-for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM, CLOUD_DRIFT_CLOCK, EARTHBOUND_ORBIT]) {
+for (const saver of [NEBULA_DRIFT, VORTEX_SPIRAL, SIGNAL_RAIN, RETRO_FLIGHT, PIPEWORKS_DREAM, CLOUD_DRIFT_CLOCK, EARTHBOUND_ORBIT, HELIOS_LIGHTFIELD]) {
   test(`${saver.name} can be installed and selected through the CLI`, async () => {
     const installed = await captured(() => withFetch(
       pkgFetch(saver),

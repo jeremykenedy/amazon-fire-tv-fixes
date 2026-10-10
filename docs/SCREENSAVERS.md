@@ -29,9 +29,10 @@
 | `contour-flow` | Contour Flow | `com.jeremykenedy.contourflow` | [jeremykenedy/contour-flow](https://github.com/jeremykenedy/contour-flow) | Animated topographic contour fields with adjustable relief, palette, density, drift speed, line weight, lighting and brightness |
 | `skyburst-nocturne` | Skyburst Nocturne | `com.jeremykenedy.skyburstnocturne` | [jeremykenedy/skyburst-nocturne](https://github.com/jeremykenedy/skyburst-nocturne) | Animated fireworks with adjustable frequency, size, speed, star density, palette and scene brightness |
 | `pulse-circuit` | Pulse Circuit | `com.jeremykenedy.pulsecircuit` | [jeremykenedy/pulse-circuit](https://github.com/jeremykenedy/pulse-circuit) | Animated geometric patterns with adjustable arena, shape density, geometry, motion, palette, pulse rhythm and light intensity |
+| `helios-lightfield` | Helios Lightfield | `com.jeremykenedy.helioslightfield` | [jeremykenedy/helios-lightfield](https://github.com/jeremykenedy/helios-lightfield) | Animated luminous filaments looping around a dark field, with adjustable solar or polar palette, strand density, motion speed and glow |
 
 The first three are forks of third-party projects (see Credits in the
-README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift, Contour Flow, Skyburst Nocturne and Pulse Circuit are original projects.
+README). Aquarium Live, Aquarium 4K, Cloud Drift Clock, Jellyfish Drift, Firefly Grove, Neon Corridor, Starfield Drift, Rain on Glass, Rainforest Cascade, Blue Meridian, Twilight Hearth, Nebula Drift, Vortex Spiral, Signal Rain, Retro Flight, Pipeworks Dream, Aqua Surface Drift, Earthbound Orbit, Perseid Passage, Split-Flap Drift, Canopy Drift, Contour Flow, Skyburst Nocturne, Pulse Circuit and Helios Lightfield are original projects.
 
 Aerial Views is the default: on a TV with none of these installed it starts
 checked in `firetv-screensavers`, and `screensaver --yes` picks it whenever it
@@ -88,6 +89,7 @@ device, preview hash, and source hash belong in `app/previews/sources.json`.
 |----|--------------------------|---------------|-------|---------|-------------------|
 | `skyburst-nocturne` | `com.jeremykenedy.skyburstnocturne/.FireworksDreamService` | [v1.0.0 APK](https://github.com/jeremykenedy/skyburst-nocturne/releases/download/v1.0.0/skyburst-nocturne.apk) | 37748 | `2ce571933d6f4a8017ada3c5598d21edc363b51598f4d4c302bafebb0863a57a` | `content://com.jeremykenedy.skyburstnocturne.settings/schema` |
 | `pulse-circuit` | `com.jeremykenedy.pulsecircuit/.PulseDreamService` | [v1.0.0 APK](https://github.com/jeremykenedy/pulse-circuit/releases/download/v1.0.0/pulse-circuit.apk) | 33485 | `5e71095d0b2966d1cf803ad9299ad7a233309848d1aea8e27423cfcf8ff96c95` | `content://com.jeremykenedy.pulsecircuit.settings/schema` |
+| `helios-lightfield` | `com.jeremykenedy.helioslightfield/.HeliosLightfieldDreamService` | [v1.0.1 APK](https://github.com/jeremykenedy/helios-lightfield/releases/download/v1.0.1/helios-lightfield.apk) | 33485 | `2716752c678916f947dec465213f23be20af4eb224272a54e9ae500c5bed6eb2` | `content://com.jeremykenedy.helioslightfield.settings/schema` |
 
 ## Notes
 

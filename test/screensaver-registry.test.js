@@ -22,7 +22,7 @@ test('screensaver package names are unique', () => {
   assert.equal(new Set(pkgs).size, pkgs.length);
 });
 
-test('Skyburst Nocturne and Pulse Circuit keep their published package identities', () => {
+test('Skyburst Nocturne, Pulse Circuit and Helios Lightfield keep their published package identities', () => {
   const expected = {
     'skyburst-nocturne': [
       'com.jeremykenedy.skyburstnocturne',
@@ -33,6 +33,11 @@ test('Skyburst Nocturne and Pulse Circuit keep their published package identitie
       'com.jeremykenedy.pulsecircuit',
       'com.jeremykenedy.pulsecircuit/.PulseDreamService',
       'jeremykenedy/pulse-circuit',
+    ],
+    'helios-lightfield': [
+      'com.jeremykenedy.helioslightfield',
+      'com.jeremykenedy.helioslightfield/.HeliosLightfieldDreamService',
+      'jeremykenedy/helios-lightfield',
     ],
   };
 
